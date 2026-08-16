@@ -180,3 +180,64 @@ tbody tr:hover { background: var(--accent-soft); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* --------------------------------------------------------------- Diagramme
+   Alle Diagramme sind statisches SVG. Farben kommen aus den CSS-Variablen,
+   damit sie im hellen und dunklen Modus lesbar bleiben. Parteifarben werden
+   im SVG direkt gesetzt, weil sie Daten sind und kein Thema. */
+
+.chart { margin: 1.5rem 0; }
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  padding: 0.5rem;
+}
+.chart figcaption {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  max-width: 72ch;
+}
+
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .axis { stroke: var(--rule-strong); stroke-width: 1.2; }
+.chart .axis-dash { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 4 3; opacity: 0.55; }
+.chart .threshold { stroke: var(--warn-rule); stroke-width: 1.6; stroke-dasharray: 6 4; }
+
+.chart text {
+  font-family: var(--font-num);
+  fill: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.chart .tick { font-size: 11px; fill: var(--muted); }
+.chart .tick-y { text-anchor: end; }
+.chart .tick-x { text-anchor: middle; }
+.chart .lbl { font-size: 11px; fill: var(--muted); }
+.chart .lgd { font-size: 12px; }
+.chart .cat { font-size: 12.5px; text-anchor: end; }
+.chart .cat-left { text-anchor: start; font-size: 12px; fill: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.chart .val { font-size: 12.5px; font-weight: 600; }
+.chart .val-muted { fill: var(--muted); font-weight: 400; font-size: 11px; }
+.chart .series { font-size: 12px; font-weight: 600; }
+.chart .seg { font-size: 11px; fill: #fff; text-anchor: middle; paint-order: stroke; }
+.chart .cap { font-size: 11px; fill: var(--muted); }
+.chart .delta { font-size: 12px; text-anchor: end; }
+.chart .delta.up { fill: #1d7a4c; }
+.chart .delta.down { fill: #a63232; }
+
+@media (prefers-color-scheme: dark) {
+  .chart .delta.up { fill: #56c58c; }
+  .chart .delta.down { fill: #e07a7a; }
+}
+
+.chart-hemicycle svg { padding-bottom: 0.25rem; }
+
+/* Kennzahlenband */
+.kpis { display: grid; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); background: var(--rule); border: 1px solid var(--rule); margin: 1.5rem 0; }
+.kpi { background: var(--card); padding: 0.85rem 1rem; }
+.kpi dt { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
+.kpi dd { margin: 0; font-family: var(--font-num); font-size: 1.5rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .kpi-sub { display: block; font-size: 0.72rem; color: var(--muted); font-family: var(--font-text); margin-top: 0.2rem; }

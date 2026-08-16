@@ -9,6 +9,7 @@ import { esc, num, int, deDate, slug, daysBetween } from './lib/util.mjs';
 import { computeTrend, computeSpread } from './lib/trend.mjs';
 import { distribute } from './lib/seats.mjs';
 import { findCoalitions } from './lib/coalitions.mjs';
+import { hemicycle, timeline, comparison, coalitionBars, scenarioStrip } from './lib/charts.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, 'dist');
@@ -16,6 +17,7 @@ const OUT = path.join(ROOT, 'dist');
 const site = JSON.parse(await readFile(path.join(ROOT, 'config', 'site.json'), 'utf8'));
 const parliamentConfig = JSON.parse(await readFile(path.join(ROOT, 'config', 'parliaments.json'), 'utf8'));
 const data = JSON.parse(await readFile(path.join(ROOT, 'data', 'surveys.json'), 'utf8'));
+const electionConfig = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
 const provenance = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
 
 const COLORS = parliamentConfig.partyColors;
@@ -137,6 +139,34 @@ ${shown
 ${surveys.length > limit ? `<p class="lede">Angezeigt werden die ${int(limit)} juengsten von ${int(surveys.length)} Umfragen. Der vollstaendige Bestand steht unter <a href="/daten/">Daten</a> als JSON und CSV bereit.</p>` : ''}`;
 }
 
+function kpiBand(p) {
+  const institutes = new Set(p.surveys.map((s) => s.institute).filter(Boolean));
+  const withN = p.surveys.filter((s) => s.surveyedPersons);
+  const totalN = withN.reduce((a, s) => a + s.surveyedPersons, 0);
+  const lead =
+    p.trend && !p.trend.insufficient
+      ? Object.entries(p.trend.values).sort((a, b) => b[1] - a[1]).slice(0, 2)
+      : null;
+  return `<dl class="kpis">
+  <div class="kpi"><dt>Umfragen</dt><dd>${int(p.surveys.length)}<span class="kpi-sub">von ${int(institutes.size)} Instituten</span></dd></div>
+  <div class="kpi"><dt>Juengstes Feldende</dt><dd>${esc(deDate(p.latest.dateEnd ?? p.latest.date))}<span class="kpi-sub">${esc(p.latest.institute ?? 'Institut n.a.')}</span></dd></div>
+  ${lead ? `<div class="kpi"><dt>Fuehrend im Trend</dt><dd>${num(lead[0][1])}&thinsp;%<span class="kpi-sub">${esc(lead[0][0])}, Abstand ${num(lead[0][1] - lead[1][1])} zu ${esc(lead[1][0])}</span></dd></div>` : ''}
+  <div class="kpi"><dt>Befragte insgesamt</dt><dd>${withN.length ? int(totalN) : 'n.a.'}<span class="kpi-sub">${withN.length ? `aus ${int(withN.length)} Umfragen mit Angabe` : 'keine Fallzahl ausgewiesen'}</span></dd></div>
+</dl>`;
+}
+
+function electionComparison(p) {
+  const e = electionConfig.elections[p.name];
+  if (!e || e.verified !== true || !p.trend || p.trend.insufficient) return '';
+  return `<h2 id="vergleich">Vergleich mit der ${esc(e.label)}</h2>
+${comparison(p.trend.values, e.results, {
+    colors: COLORS,
+    previousLabel: `${e.label} (${deDate(e.date)})`,
+    currentLabel: `Trend ${deDate(p.trend.anchorDate)}`,
+  })}
+${e.hinweis ? note('method', 'Zur Einordnung', `<p>${esc(e.hinweis)}</p>`) : ''}`;
+}
+
 function trendBlock(p) {
   if (!p.trend) return '<p>Fuer dieses Parlament liegen keine datierten Umfragen vor.</p>';
   if (p.trend.insufficient) {
@@ -186,10 +216,38 @@ function seatBlock(p) {
 
   const dist = distribute(p.trend.values, p.cfg);
   if (!dist) return '';
-  const coalitions = findCoalitions(dist.seats, dist.majority);
+  const coalitions = findCoalitions(dist.seats, dist.majority).map((c) => ({
+    ...c,
+    seatsByParty: Object.fromEntries(c.parties.map((party) => [party, dist.seats[party]])),
+  }));
   const seatRows = Object.entries(dist.seats)
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
+
+  // Szenarien: was passiert, wenn knapp gescheiterte Parteien die Huerde doch nehmen.
+  const nearMiss = Object.entries(p.trend.values)
+    .filter(([party, v]) => party !== 'Sonstige' && v < dist.thresholdPercent && v >= dist.thresholdPercent - 2)
+    .sort((a, b) => b[1] - a[1])
+    .map(([party]) => party);
+
+  const scenarios = [{ label: 'Basis', extra: [], note: 'Nur Parteien ueber der Sperrklausel.' }];
+  for (const party of nearMiss) {
+    scenarios.push({ label: `${party} zieht ein`, extra: [party], note: `${party} liegt im Trend bei ${num(p.trend.values[party])} Prozent und damit innerhalb der Fehlertoleranz zur Huerde.` });
+  }
+  if (nearMiss.length > 1) scenarios.push({ label: 'beide ziehen ein', extra: nearMiss, note: `${nearMiss.join(' und ')} nehmen die Huerde gemeinsam.` });
+
+  const computed = scenarios
+    .map((sc) => {
+      const forced = { ...p.cfg, thresholdPercent: 0 };
+      const eligible = {};
+      for (const [party, v] of Object.entries(p.trend.values)) {
+        if (party === 'Sonstige') continue;
+        if (v >= dist.thresholdPercent || sc.extra.includes(party)) eligible[party] = v;
+      }
+      const d = distribute(eligible, forced);
+      return d ? { label: sc.label, note: sc.note, seats: d.seats } : null;
+    })
+    .filter(Boolean);
 
   return `<h2 id="sitze">Modellrechnung zur Sitzverteilung</h2>
 ${note(
@@ -197,6 +255,7 @@ ${note(
   'Modellrechnung, keine Prognose',
   `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
 )}
+${hemicycle(dist.seats, { colors: COLORS, majority: dist.majority, totalSeats: dist.totalSeats })}
 <div class="table-scroll"><table>
 <caption>Sitze im Modell, Mehrheit ab ${int(dist.majority)} Sitzen</caption>
 <thead><tr><th class="left">Partei</th><th>Trendwert</th><th>Sitze im Modell</th></tr></thead>
@@ -208,10 +267,15 @@ ${note(
 ${
   coalitions.length === 0
     ? '<p>Im Modell ergibt sich keine Mehrheit mit bis zu vier Partnern.</p>'
-    : `<div class="table-scroll"><table>
-<thead><tr><th class="left">Kombination</th><th>Sitze</th><th>Ueber der Mehrheit</th></tr></thead>
-<tbody>${coalitions.map((c) => `<tr><td class="left">${esc(c.parties.join(' + '))}</td><td>${int(c.seats)}</td><td>${int(c.surplus)}</td></tr>`).join('')}</tbody>
-</table></div>`
+    : coalitionBars(coalitions, { colors: COLORS, totalSeats: dist.totalSeats, majority: dist.majority })
+}
+${
+  computed.length > 1
+    ? `<h3>Was die Sperrklausel entscheidet</h3>
+<p class="lede">Dieselben Umfragewerte, unterschiedliche Sitzverteilung. Der Unterschied entsteht allein daraus, wie viele Stimmen an der Fuenfprozenthuerde verfallen und damit auf die verbleibenden Parteien umgelegt werden.</p>
+${scenarioStrip(computed, { colors: COLORS, totalSeats: dist.totalSeats, majority: dist.majority })}
+${note('warn', 'Warum das kein Detail ist', `<p>Die betroffenen Parteien liegen im Trend bei ${nearMiss.map((x) => `${esc(x)} ${num(p.trend.values[x])}`).join(', ')} Prozent. Der Abstand zur Huerde ist kleiner als die uebliche Fehlertoleranz einer Umfrage. Aus einer Sonntagsfrage laesst sich deshalb nicht ablesen, welches dieser Szenarien eintritt.</p>`)}`
+    : ''
 }`;
 }
 
@@ -344,6 +408,9 @@ for (const p of parliamentList) {
 <p class="eyebrow">${esc(p.surveys[0].parliamentElection ?? 'Wahl')}</p>
 <h1>Sonntagsfrage ${esc(p.name)}</h1>
 <p class="lede">${int(p.surveys.length)} Umfragen von ${int(institutesHere.length)} Instituten, aeltester Datensatz vom ${esc(deDate(p.surveys.at(-1).date))}, juengster vom ${esc(deDate(p.surveys[0].date))}.</p>
+${kpiBand(p)}
+${timeline(p.surveys, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? 5 })}
+${electionComparison(p)}
 ${belegstreifen(p.surveys)}
 <h2 id="trend">Gewichteter Trend</h2>
 ${trendBlock(p)}

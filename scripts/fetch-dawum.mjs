@@ -15,6 +15,8 @@
 //   node scripts/fetch-dawum.mjs             regulaerer Abruf
 //   node scripts/fetch-dawum.mjs --force     Abruf auch bei unveraenderten Daten
 //   node scripts/fetch-dawum.mjs --fixture   Offline-Build mit synthetischen Testdaten
+//   node scripts/fetch-dawum.mjs --file <p>  Offline-Build aus einer lokalen Datei
+//                                            in dawum-Struktur, etwa seed/sachsen-anhalt.json
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -30,6 +32,8 @@ const USER_AGENT = 'Wahlwerk/0.1 (+https://github.com/USER/wahlwerk) Node-Fetch'
 const args = new Set(process.argv.slice(2));
 const useFixture = args.has('--fixture');
 const force = args.has('--force');
+const fileArg = process.argv.slice(2).find((a, i, arr) => arr[i - 1] === '--file');
+if (args.has('--file') && !fileArg) throw new Error('--file erwartet einen Pfad.');
 
 async function getText(url) {
   const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT, Accept: 'text/plain,application/json' } });
@@ -43,7 +47,21 @@ async function main() {
   let rawText;
   let provenance;
 
-  if (useFixture) {
+  if (fileArg) {
+    rawText = await readFile(path.resolve(ROOT, fileArg), 'utf8');
+    provenance = {
+      mode: 'file',
+      source: fileArg,
+      fetchedAt: new Date().toISOString(),
+      license: 'ODC Open Database License (ODbL) 1.0',
+      licenseUrl: 'https://opendatacommons.org/licenses/odbl/1-0/',
+      attribution: 'Daten von dawum.de (Open Database License (ODbL))',
+      attributionUrl: 'https://dawum.de',
+      warning:
+        'Lokale Datei statt Live-Abruf. Der Bestand ist nur so aktuell wie die Datei. Vor einer Veroeffentlichung pruefen, ob ein Live-Abruf sinnvoller ist.',
+    };
+    console.log(`Lokale Datei gelesen: ${fileArg}`);
+  } else if (useFixture) {
     const fixturePath = path.join(ROOT, 'fixtures', 'dawum.sample.json');
     rawText = await readFile(fixturePath, 'utf8');
     provenance = {
@@ -94,7 +112,7 @@ async function main() {
     throw new Error('Keine verwertbaren Umfragen im Datensatz. Build wird abgebrochen, um eine leere Seite zu verhindern.');
   }
 
-  if (!useFixture) {
+  if (!useFixture && !fileArg) {
     provenance.sourceLastUpdateInFile = normalized.meta.sourceLastUpdate;
     if (provenance.sourceLastUpdate && normalized.meta.sourceLastUpdate !== provenance.sourceLastUpdate) {
       console.warn(

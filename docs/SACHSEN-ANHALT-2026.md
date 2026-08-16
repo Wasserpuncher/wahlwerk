@@ -95,3 +95,17 @@ Konstant über alle vier Szenarien: Eine Mehrheit ohne die AfD erfordert mindest
 - **Eine Bewertung der Koalitionen.** Die Liste ist Arithmetik. Ob eine Kombination politisch in Betracht kommt, sagt sie nicht.
 - **Ergebnisse auf Wahlkreisebene.** Dafür braucht es die Daten der Landeswahlleitung, die im Projekt noch nicht angebunden sind.
 - **Die Ministerpräsidentenwahl.** Die Landesverfassung regelt eigene Mehrheitserfordernisse in mehreren Wahlgängen. Das ist nicht modelliert.
+
+## Grafische Umsetzung im Generator
+
+Seit Version 0.2 erzeugt der Build für jede Parlamentsseite fünf Diagramme, alle als statisches SVG ohne JavaScript und ohne Zeichenbibliothek:
+
+1. **Kennzahlenband** mit Umfragezahl, jüngstem Feldende, Vorsprung im Trend und Gesamtzahl der Befragten.
+2. **Verlaufsdiagramm** aller Umfragen mit eingezeichneter Sperrklausel. Fehlende Werte erzeugen Lücken statt Nulllinien.
+3. **Vergleich mit der letzten Wahl** als Paarbalken mit Differenz in Prozentpunkten.
+4. **Sitzbogen**, ein Punkt je Sitz, mit Mehrheitslinie.
+5. **Koalitionsbalken** und **Szenariovergleich** zur Sperrklausel.
+
+Der Szenariovergleich entsteht automatisch: Der Build sucht Parteien, die im Trend weniger als zwei Prozentpunkte unter der Sperrklausel liegen, und rechnet für jede davon eine eigene Sitzverteilung. In Sachsen-Anhalt trifft das auf Grüne und BSW zu, weshalb dort vier Szenarien erscheinen.
+
+Alle Diagramme tragen `title`-Elemente für Screenreader, laufen im hellen und dunklen Modus und funktionieren im Ausdruck.
