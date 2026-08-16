@@ -38,7 +38,17 @@
     "Rheinland-Pfalz": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Rheinland-Pfalz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
     "Saarland": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Saarland", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
     "Sachsen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Saechsisches Wahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Sachsen-Anhalt": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Wahlgesetz des Landes Sachsen-Anhalt", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Sachsen-Anhalt": {
+      "verified": true,
+      "seats": 83,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Wahlgesetz des Landes Sachsen-Anhalt (LWG LSA)",
+      "quelle": "https://wahlen.sachsen-anhalt.de/zu-den-wahlen/allgemeine-informationen-zur-landtagswahl/wahlsystem",
+      "hinweis": "Der Landtag hat mindestens 83 Sitze, davon 41 Direktmandate aus 41 Wahlkreisen und mindestens 42 Listenmandate. Die Modellrechnung nutzt die gesetzliche Mindestzahl. Ueberhang- und Ausgleichsmandate sind NICHT modelliert, weil sie sich aus einer Zweitstimmenumfrage nicht ableiten lassen. In der 8. Wahlperiode fuehrten sie zu 97 statt 83 Sitzen, die tatsaechliche Verteilung kann also deutlich abweichen. Ebenfalls nicht modelliert: der Abzug von Wahlkreissitzen, die von Bewerbern ohne zugelassene Landesliste oder von Listen unterhalb der Sperrklausel gewonnen werden.",
+      "verifiziertAm": "2026-08-16",
+      "verifiziertVon": "Gegen die Darstellung des Wahlsystems bei der Landeswahlleitung Sachsen-Anhalt geprueft. Zusaetzlich gegen die unabhaengig gerechnete Sitzverteilung von dawum.de gegengerechnet, siehe Regressionstest in scripts/check.mjs."
+    },
     "Schleswig-Holstein": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein", "quelle": "", "hinweis": "Der SSW ist von der Sperrklausel befreit. Dieser Sonderfall ist nicht modelliert.", "verifiziertAm": null, "verifiziertVon": null },
     "Thüringen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Thueringer Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
     "Europaparlament": { "verified": false, "seats": null, "method": null, "thresholdPercent": 0, "rechtsgrundlage": "Europawahlgesetz", "quelle": "", "hinweis": "In Deutschland gilt bei Europawahlen derzeit keine nationale Sperrklausel im bisherigen Sinne. Vor Freischaltung pruefen.", "verifiziertAm": null, "verifiziertVon": null }

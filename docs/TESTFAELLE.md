@@ -62,3 +62,26 @@ Zweites Beispiel, A = 5 und B = 5 bei 10 Sitzen, Mehrheit 6: nur {A, B} erreicht
 ## Gleichstände
 
 Treffen in einer Runde zwei identische Quoten aufeinander, entscheidet die alphabetische Reihenfolge des Parteikürzels. Das ist willkürlich, aber deterministisch. Die Alternative, ein Losentscheid, wäre in einem reproduzierbaren Build unbrauchbar, weil zwei Builds derselben Daten unterschiedliche Ergebnisse liefern würden. Bei einer echten Sitzzuteilung entscheidet in solchen Fällen das Gesetz, meist durch Los.
+
+## Regressionstest mit echten Daten: Sachsen-Anhalt
+
+Zusätzlich zu den Lehrbuchbeispielen läuft ein Test gegen einen realen Fall, dessen Ergebnis unabhängig veröffentlicht ist.
+
+Grundlage sind die Wahltrendwerte zur Landtagswahl Sachsen-Anhalt vom 12. August 2026: AfD 42,1, CDU 22,9, Linke 13,0, SPD 6,6. Grüne (4,6), BSW (4,4) und FDP (2,9) scheitern an der Fünfprozenthürde und werden vor der Zuteilung entfernt.
+
+Summe der berücksichtigten Anteile: 84,6. Zu verteilen sind 83 Sitze.
+
+| Partei | exakt | abgerundet | Rest | Restsitz |
+|---|---|---|---|---|
+| AfD | 41,30 | 41 | 0,30 | |
+| CDU | 22,47 | 22 | 0,47 | |
+| Linke | 12,75 | 12 | 0,75 | + 1 |
+| SPD | 6,48 | 6 | 0,48 | + 1 |
+
+Nach dem Abrunden sind 81 Sitze vergeben. Die zwei verbleibenden gehen an die größten Reste, also an Linke und SPD.
+
+Ergebnis: AfD 41, CDU 22, Linke 13, SPD 7. Summe 83.
+
+Mehrheit ab 42 Sitzen. Minimale Mehrheiten: AfD + CDU (63), AfD + Linke (54), AfD + SPD (48), CDU + Linke + SPD (42).
+
+Dieselbe Verteilung und dieselben vier Kombinationen veröffentlicht dawum.de mit einer unabhängigen Implementierung. Der Test schlägt an, sobald eine Änderung am Rechenkern dieses Ergebnis verschiebt.

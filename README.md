@@ -23,6 +23,8 @@ Version 0.1. Was funktioniert:
 
 Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Insbesondere sind die amtlichen Wahlergebnisse noch nicht angebunden, weshalb es noch keine belegbare Institutsabweichung gibt.
 
+Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
+
 ## Schnellstart
 
 ```bash

@@ -64,6 +64,28 @@ assert('minimale Mehrheit ist A allein', eq(coal[0]?.parties, ['A']), JSON.strin
 const coal2 = findCoalitions({ A: 5, B: 5 }, 6);
 assert('Patt erzwingt Zweierbuendnis', coal2.length === 1 && coal2[0].parties.length === 2, JSON.stringify(coal2));
 
+// ---------------------------------------------- Regression Sachsen-Anhalt
+// Echter Fall statt Lehrbuchbeispiel. Grundlage sind die veroeffentlichten
+// Wahltrendwerte zur Landtagswahl Sachsen-Anhalt vom 12.08.2026 (drei Umfragen
+// von pollytix, INSA und Infratest dimap, zusammen 4753 Befragte).
+// Erwartet wird genau die Sitzverteilung, die dawum.de mit einer unabhaengigen
+// Implementierung veroeffentlicht: AfD 41, CDU 22, Linke 13, SPD 7 von 83.
+// Zweck: eine stille Aenderung am Rechenkern faellt sofort auf.
+console.log('\nRegression Sachsen-Anhalt, Landtagswahl 06.09.2026');
+{
+  const trend = { AfD: 42.1, CDU: 22.9, Linke: 13.0, SPD: 6.6 };
+  const seats = hareNiemeyer(trend, 83);
+  assert('Sitzverteilung entspricht der unabhaengigen Rechnung', eq(seats, { AfD: 41, CDU: 22, Linke: 13, SPD: 7 }), JSON.stringify(seats));
+  assert('Summe ergibt 83 Sitze', sumOf(seats) === 83);
+
+  const coal = findCoalitions(seats, 42).map((c) => c.parties.join('+'));
+  assert(
+    'vier minimale Mehrheiten wie veroeffentlicht',
+    eq(coal, ['AfD+CDU', 'AfD+Linke', 'AfD+SPD', 'CDU+Linke+SPD']),
+    coal.join(' | '),
+  );
+}
+
 // Slug-Stabilitaet
 console.log('\nSlugs');
 assert('Umlaute werden transliteriert', slug('Thüringen') === 'thueringen', slug('Thüringen'));
