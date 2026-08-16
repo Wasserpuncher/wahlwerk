@@ -54,6 +54,17 @@ Diese vier Punkte sind Pflicht, sonst ist der Build unbrauchbar oder rechtlich a
 3. **`config/site.json` → `hosting`** mit den tatsächlichen Angaben füllen. Eine Datenschutzerklärung mit falschen Hosting-Angaben ist ein eigener Verstoß.
 4. **Niemals einen Fixture-Build veröffentlichen.** Er enthält frei erfundene Zahlen, ist aber an jedem Warnbanner erkennbar.
 
+## Deploy auf Netlify
+
+[`netlify.toml`](netlify.toml) ist fertig konfiguriert: Build-Befehl `npm run fetch && npm run build && npm run check`, Ausgabeverzeichnis `dist`, Node 22. Schlagen die Selbsttests fehl, bricht Netlify den Deploy ab und die alte Version bleibt online.
+
+Nach dem Verbinden des Repositories sind zwei Dinge zu tun:
+
+1. **`baseUrl` auf die Netlify-Domain setzen.** Die endgültige Adresse steht erst nach dem ersten Deploy fest. Also einmal deployen, dann `config/site.json` anpassen und erneut deployen. Bis dahin sind Sitemap und Canonical-Tags wertlos, der Build warnt entsprechend.
+2. **Regelmäßigen Neubau einrichten.** Netlify baut nur bei einem Push. Ohne Auslöser bleiben die Umfragezahlen auf dem Stand des letzten Commits stehen. Abhilfe: In den Netlify-Einstellungen unter *Build & deploy → Build hooks* eine Hook-URL erzeugen und diese von einem Zeitplan aufrufen lassen, etwa per `curl -X POST` aus einem GitHub-Actions-Cron.
+
+Der mitgelieferte Workflow [`.github/workflows/build.yml`](.github/workflows/build.yml) veröffentlicht auf GitHub Pages, nicht auf Netlify. Beide Wege lassen sich parallel betreiben; dann sollte `baseUrl` auf die Adresse zeigen, die tatsächlich beworben wird, damit die Canonical-Tags nicht auf zwei Domains verweisen.
+
 ## Zwei Lizenzen, sauber getrennt
 
 | Teil | Lizenz | Pflicht bei Weiterverwendung |

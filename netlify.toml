@@ -1,0 +1,40 @@
+# Netlify-Konfiguration.
+#
+# Der Build holt zuerst die aktuellen Umfragedaten bei DAWUM, baut daraus die
+# statische Seite nach dist/ und laesst danach die Selbsttests laufen. Schlagen
+# die Tests fehl, bricht der Deploy ab. Damit kann keine Seite mit kaputten
+# Rechenwegen oder fehlenden Kopfdaten online gehen.
+#
+# Netlify baut nur bei einem Push. Damit die Zahlen auch ohne Codeaenderung
+# frisch bleiben, braucht es einen Build Hook plus Scheduled Function oder einen
+# externen Cron, der den Hook aufruft. Siehe README.
+
+[build]
+  command = "npm run fetch && npm run build && npm run check"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Die Seite ist statisch und fuehrt kein JavaScript aus. Die einzigen
+# <script>-Elemente sind JSON-LD-Datenbloecke, die der Browser nicht ausfuehrt
+# und die deshalb auch ohne script-src funktionieren. 'unsafe-inline' bei
+# style-src ist noetig, weil die Diagramme ihre Balkenbreiten und Parteifarben
+# als style-Attribut mitgeben.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+
+# Stylesheet und Icon liegen unter festen Namen, ohne Inhaltshash. Langes
+# Caching mit immutable waere hier falsch: Ein geaendertes Stylesheet erreicht
+# die Besucher sonst erst nach Ablauf der Frist. Eine Stunde plus
+# Revalidierung gegen das ETag, das Netlify selbst setzt.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
