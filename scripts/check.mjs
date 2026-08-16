@@ -11,7 +11,8 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { sainteLague, hareNiemeyer, dHondt } from './lib/seats.mjs';
+import { sainteLague, hareNiemeyer, dHondt, distribute, detectTies } from './lib/seats.mjs';
+import { wilson, marginPercent, seDifferenceSameSample, kishEffectiveSize, Z } from './lib/stats.mjs';
 import { findCoalitions } from './lib/coalitions.mjs';
 import { slug } from './lib/util.mjs';
 
@@ -84,6 +85,98 @@ console.log('\nRegression Sachsen-Anhalt, Landtagswahl 06.09.2026');
     eq(coal, ['AfD+CDU', 'AfD+Linke', 'AfD+SPD', 'CDU+Linke+SPD']),
     coal.join(' | '),
   );
+}
+
+
+// ------------------------------------------------- Sperrklausel und Sammelposten
+console.log('\nSperrklausel und Sammelposten');
+{
+  const cfg = { verified: true, seats: 100, method: 'hare-niemeyer', thresholdPercent: 5 };
+
+  // Regression zu einem realen Fehler: "Sonstige" ist die Summe mehrerer
+  // Parteien und darf niemals Sitze bekommen, auch nicht mit 6 Prozent.
+  const withAggregate = distribute({ A: 40, B: 30, C: 24, Sonstige: 6 }, cfg, { aggregateCategories: ['Sonstige'] });
+  assert('Sammelposten Sonstige erhaelt keine Sitze', !('Sonstige' in withAggregate.seats), JSON.stringify(withAggregate.seats));
+  assert('Sammelposten wird als entfernt ausgewiesen', eq(withAggregate.removedAggregates, ['Sonstige']));
+  assert('alle Sitze trotzdem vergeben', sumOf(withAggregate.seats) === 100);
+
+  // Die Gesetze sagen "mindestens 5 vom Hundert". Exakt 5,0 muss also drin sein.
+  const exactly5 = distribute({ A: 60, B: 35, C: 5 }, cfg);
+  assert('exakt 5,0 Prozent ueberspringt die Huerde', exactly5.seats.C > 0, JSON.stringify(exactly5.seats));
+
+  const justBelow = distribute({ A: 60, B: 35, C: 4.9 }, cfg);
+  assert('4,9 Prozent scheitert an der Huerde', !('C' in justBelow.seats) && eq(justBelow.excludedParties, ['C']));
+
+  // Invariante: negative Werte muessen einen Fehler ausloesen, nicht durchrutschen.
+  let threw = false;
+  try { distribute({ A: 60, B: -5 }, cfg); } catch { threw = true; }
+  assert('negativer Umfragewert loest einen Fehler aus', threw);
+}
+
+// ------------------------------------------------------------- Gleichstaende
+console.log('\nGleichstandserkennung');
+{
+  // A und B gleichauf, drei Sitze. In Runde drei stehen beide bei Quote 10,
+  // der letzte Sitz faellt nur durch die Tiebreak-Regel. Von Hand nachgerechnet
+  // in docs/TESTFAELLE.md.
+  const tied = detectTies({ A: 30, B: 30 }, 3, 'sainte-lague');
+  assert('Gleichstand bei Sainte-Lague wird erkannt', eq([...tied].sort(), ['A', 'B']), JSON.stringify(tied));
+
+  // Vier gleich starke Parteien, sechs Sitze: alle Reste betragen 0,5, aber nur
+  // zwei Restsitze sind zu vergeben.
+  const tiedHN = detectTies({ A: 25, B: 25, C: 25, D: 25 }, 6, 'hare-niemeyer');
+  assert('Gleichstand bei Hare/Niemeyer wird erkannt', tiedHN.length === 4, JSON.stringify(tiedHN));
+
+  const clean = detectTies({ A: 53, B: 24, C: 23 }, 10, 'sainte-lague');
+  assert('kein falscher Gleichstandsalarm bei Sainte-Lague', clean.length === 0, JSON.stringify(clean));
+  const cleanST = detectTies({ AfD: 42.1, CDU: 22.9, Linke: 13.0, SPD: 6.6 }, 83, 'hare-niemeyer');
+  assert('kein Gleichstand im Fall Sachsen-Anhalt', cleanST.length === 0, JSON.stringify(cleanST));
+}
+
+// ------------------------------------------------------------------ Statistik
+console.log('\nStatistik');
+{
+  const near = (a, b, eps = 5e-4) => Math.abs(a - b) < eps;
+
+  // Wilson-Intervall, publizierte Referenzwerte.
+  // 50 von 100 Erfolgen, 95 Prozent: 0,4038 bis 0,5962
+  const w1 = wilson(0.5, 100);
+  assert('Wilson 50/100 untere Grenze 0,4038', near(w1.lower, 0.4038), w1.lower.toFixed(4));
+  assert('Wilson 50/100 obere Grenze 0,5962', near(w1.upper, 0.5962), w1.upper.toFixed(4));
+  assert('Wilson ist bei p=0,5 symmetrisch', near(w1.centre, 0.5));
+
+  // 0 von 100, 95 Prozent: 0 bis 0,0370. Die Wald-Formel liefert hier faelschlich
+  // ein Intervall der Breite null. Genau deshalb wird Wilson verwendet.
+  const w0 = wilson(0, 100);
+  assert('Wilson 0/100 untere Grenze 0', near(w0.lower, 0));
+  assert('Wilson 0/100 obere Grenze 0,0370', near(w0.upper, 0.0370), w0.upper.toFixed(4));
+
+  assert('Wilson bleibt innerhalb von 0 und 1', wilson(1, 30).upper <= 1 && wilson(0, 30).lower >= 0);
+  assert('groessere Stichprobe verengt das Intervall', wilson(0.3, 4000).half < wilson(0.3, 1000).half);
+  assert('hoeheres Niveau weitet das Intervall', wilson(0.3, 1000, Z[0.99]).half > wilson(0.3, 1000, Z[0.95]).half);
+  assert('Designeffekt 2 weitet wie halbe Fallzahl', near(wilson(0.3, 2000, Z[0.95], 2).half, wilson(0.3, 1000).half, 1e-9));
+
+  let rangeErr = false;
+  try { wilson(1.2, 100); } catch { rangeErr = true; }
+  assert('Anteil ueber 1 loest einen Fehler aus', rangeErr);
+
+  // Fehlertoleranz in Prozentpunkten, asymmetrisch bei kleinen Werten.
+  const m = marginPercent(4.6, 1000);
+  assert('Fehlertoleranz umschliesst den Wert', m.lower < 4.6 && m.upper > 4.6, `${m.lower.toFixed(2)} bis ${m.upper.toFixed(2)}`);
+  assert('Intervall bei kleinem Anteil ist asymmetrisch', m.upperDelta > m.lowerDelta, `${m.lowerDelta.toFixed(3)} / ${m.upperDelta.toFixed(3)}`);
+
+  // Differenz zweier Anteile derselben Stichprobe: die naive Formel
+  // sqrt(se1^2 + se2^2) unterschaetzt, weil die Anteile negativ korreliert sind.
+  const p1 = 42.1, p2 = 22.9, n = 1000;
+  const correct = seDifferenceSameSample(p1, p2, n);
+  const naive = Math.sqrt(((p1 / 100) * (1 - p1 / 100)) / n + ((p2 / 100) * (1 - p2 / 100)) / n) * 100;
+  assert('Differenzfehler beruecksichtigt die negative Kovarianz', correct > naive, `korrekt ${correct.toFixed(3)} gegen naiv ${naive.toFixed(3)}`);
+
+  // Kish: gleiche Gewichte ergeben die Anzahl der Umfragen.
+  const kEqual = kishEffectiveSize([1, 1, 1], [1000, 1000, 1000]);
+  assert('Kish bei gleichen Gewichten', near(kEqual.effectiveSurveys, 3, 1e-9), String(kEqual.effectiveSurveys));
+  const kSkew = kishEffectiveSize([1, 0.1, 0.1], [1000, 1000, 1000]);
+  assert('Kish sinkt bei ungleichen Gewichten', kSkew.effectiveSurveys < 3 && kSkew.effectiveSurveys > 1, kSkew.effectiveSurveys.toFixed(3));
 }
 
 // Slug-Stabilitaet

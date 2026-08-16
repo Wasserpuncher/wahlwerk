@@ -44,7 +44,11 @@
     "halflifeDays": 14,
     "maxAgeDays": 45,
     "referenceSampleSize": 1000,
-    "minSurveys": 3
+    "minSurveys": 3,
+    "precisionExponent": 0.5,
+    "designEffect": 1.0,
+    "_hinweis_precisionExponent": "Exponent des Fallzahlfaktors im Gewicht. 1 ist varianzoptimal, 0.5 daempft bewusst, weil der Fehler einer Wahlumfrage nicht vom Stichprobenfehler dominiert wird. 0 ignoriert die Fallzahl. Siehe scripts/lib/trend.mjs.",
+    "_hinweis_designEffect": "Varianzaufblaehung durch Quotierung, Gewichtung und Nonresponse. 1.0 unterstellt eine reine Zufallsstichprobe und ist damit die UNTERE Schranke der Unsicherheit. Reale Wahlumfragen liegen darueber. Wer den Wert erhoeht, muss die Quelle dafuer in docs/ nennen."
   },
 
   "build": {

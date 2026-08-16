@@ -178,9 +178,29 @@ function trendBlock(p) {
   }
   const entries = Object.entries(p.trend.values).sort((a, b) => b[1] - a[1]);
   const max = Math.max(...entries.map((e) => e[1]), 10);
+  const scale = Math.ceil(max / 5) * 5;
+  const iv = p.trend.intervals ?? {};
+  const threshold = p.cfg?.thresholdPercent ?? 5;
+  const uncertain = entries.filter(
+    ([party]) => party !== 'Sonstige' && iv[party] && iv[party].lower < threshold && iv[party].upper > threshold,
+  );
   return `<div class="panel">
-${entries.map(([party, value]) => bar(party, value, COLORS, Math.ceil(max / 5) * 5)).join('')}
+${entries.map(([party, value]) => bar(party, value, COLORS, scale, iv[party] ?? null)).join('')}
 </div>
+${
+  p.trend.kish
+    ? `<p class="lede">Fehlerbalken: 95-Prozent-Wilson-Intervall auf Basis eines effektiven Stichprobenumfangs von ${int(Math.round(p.trend.kish.effectiveSampleSize))}, berechnet nach Kish aus ${num(p.trend.kish.effectiveSurveys, 2)} effektiven Umfragen bei mittlerer Fallzahl ${int(Math.round(p.trend.kish.meanSampleSize))}. Designeffekt ${num(p.trend.designEffect, 2)}. Das ist die <strong>untere Schranke</strong> der Unsicherheit. Gewichtungsmodelle, Nonresponse und Hauseffekte sind darin nicht enthalten.</p>`
+    : ''
+}
+${
+  uncertain.length > 0
+    ? note(
+        'warn',
+        'An der Sperrklausel nicht entscheidbar',
+        `<p>Bei ${uncertain.map(([party, v]) => `<strong>${esc(party)}</strong> mit ${num(v)}&thinsp;% und einem Intervall von ${num(iv[party].lower)} bis ${num(iv[party].upper)}`).join(' sowie ')} schliesst das Konfidenzintervall die ${num(threshold, 0)}-Prozent-Huerde ein. Aus diesen Daten laesst sich der Einzug weder bejahen noch verneinen. Jede Sitzverteilung weiter unten setzt eine Entscheidung voraus, die die Daten nicht hergeben.</p>`,
+      )
+    : ''
+}
 <p class="lede">Stichtag ${esc(deDate(p.trend.anchorDate))}. Summe der Werte ${num(p.trend.sum)}&thinsp;%. Abweichungen von 100 entstehen durch die Mittelung ueber Umfragen mit unterschiedlichem Parteienausweis und werden nicht wegnormiert.</p>
 <details>
 <summary>Welche Umfragen in diesen Trend eingehen und mit welchem Gewicht</summary>
@@ -214,7 +234,7 @@ function seatBlock(p) {
     );
   }
 
-  const dist = distribute(p.trend.values, p.cfg);
+  const dist = distribute(p.trend.values, p.cfg, { aggregateCategories: parliamentConfig.aggregateCategories });
   if (!dist) return '';
   const coalitions = findCoalitions(dist.seats, dist.majority).map((c) => ({
     ...c,
@@ -244,7 +264,7 @@ function seatBlock(p) {
         if (party === 'Sonstige') continue;
         if (v >= dist.thresholdPercent || sc.extra.includes(party)) eligible[party] = v;
       }
-      const d = distribute(eligible, forced);
+      const d = distribute(eligible, forced, { aggregateCategories: parliamentConfig.aggregateCategories });
       return d ? { label: sc.label, note: sc.note, seats: d.seats } : null;
     })
     .filter(Boolean);
@@ -253,8 +273,13 @@ function seatBlock(p) {
 ${note(
   'method',
   'Modellrechnung, keine Prognose',
-  `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
+  `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${dist.removedAggregates.length > 0 ? `Nicht beruecksichtigt, weil Sammelposten mehrerer Parteien: ${esc(dist.removedAggregates.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
 )}
+${
+  dist.ties.length > 1
+    ? note('warn', 'Der letzte Sitz faellt durch einen Gleichstand', `<p>Bei ${esc(dist.ties.join(' und '))} ist die entscheidende Quote rechnerisch identisch. Dieses Programm vergibt den Sitz nach alphabetischer Reihenfolge, damit der Build reproduzierbar bleibt. Im Wahlrecht entscheidet in solchen Faellen das Los. Die Zuordnung dieses einen Sitzes ist hier also willkuerlich.</p>`)
+    : ''
+}
 ${hemicycle(dist.seats, { colors: COLORS, majority: dist.majority, totalSeats: dist.totalSeats })}
 <div class="table-scroll"><table>
 <caption>Sitze im Modell, Mehrheit ab ${int(dist.majority)} Sitzen</caption>

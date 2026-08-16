@@ -3,6 +3,9 @@
 
   "_verfahren_erlaubt": ["sainte-lague", "hare-niemeyer", "dhondt"],
 
+  "aggregateCategories": ["Sonstige", "Andere", "Sonstige Parteien", "Nichtwaehler"],
+  "_hinweis_aggregateCategories": "Diese Bezeichnungen sind Sammelposten mehrerer Parteien und duerfen NIEMALS Sitze erhalten, auch nicht wenn ihr Wert die Sperrklausel erreicht. Ein Sammelposten von sechs Prozent bedeutet nicht, dass eine Partei mit sechs Prozent einzieht.",
+
   "parliaments": {
     "Bundestag": {
       "verified": true,

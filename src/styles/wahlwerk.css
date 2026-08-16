@@ -241,3 +241,16 @@ tbody tr:hover { background: var(--accent-soft); }
 .kpi dt { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
 .kpi dd { margin: 0; font-family: var(--font-num); font-size: 1.5rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .kpi .kpi-sub { display: block; font-size: 0.72rem; color: var(--muted); font-family: var(--font-text); margin-top: 0.2rem; }
+
+/* Fehlerbalken hinter dem Wertbalken. Bewusst dezent, damit er die Aussage
+   relativiert statt sie zu ueberdecken. */
+.bar-track { position: relative; }
+.bar-ci {
+  position: absolute;
+  left: var(--from);
+  width: calc(var(--to) - var(--from));
+  top: 0;
+  bottom: 0;
+  background: var(--ink);
+  opacity: 0.16;
+}

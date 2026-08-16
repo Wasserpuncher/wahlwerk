@@ -1,3 +1,5 @@
+import { kishEffectiveSize, marginPercent } from './stats.mjs';
+
 // Wahlwerk - Trendberechnung
 // Lizenz: AGPL-3.0-or-later
 //
@@ -11,12 +13,28 @@
 //   2. Je Institut geht nur die juengste Umfrage in die Rechnung ein. Damit
 //      kann kein Institut den Trend durch hohe Publikationsfrequenz dominieren.
 //   3. Gewicht je Umfrage:
-//        w = 2^(-alter / halflifeDays) * sqrt(n / referenceSampleSize)
+//        w = 2^(-alter / halflifeDays) * (n / referenceSampleSize)^exponent
 //      Der erste Faktor ist ein exponentieller Aktualitaetsabschlag mit
-//      Halbwertszeit halflifeDays. Der zweite Faktor bildet ab, dass der
-//      Standardfehler einer Stichprobe mit 1/sqrt(n) faellt. Fehlt die
-//      Fallzahl, wird n = referenceSampleSize gesetzt und die Umfrage in der
-//      Ausgabe als "Fallzahl unbekannt" markiert.
+//      Halbwertszeit halflifeDays.
+//
+//      KORREKTUR vom 16.08.2026 zur Begruendung des zweiten Faktors:
+//      Die bisherige Begruendung war statistisch falsch. Sie lautete, der
+//      Standardfehler falle mit 1/sqrt(n), deshalb sei sqrt(n) das richtige
+//      Gewicht. Das ist ein Denkfehler. Bei varianzoptimaler Mittelung ist das
+//      Gewicht der Kehrwert der Varianz, und die Varianz eines Anteils faellt
+//      mit 1/n. Statistisch optimal waere also der Exponent 1, nicht 0,5.
+//
+//      Der Exponent ist deshalb konfigurierbar (trend.precisionExponent). Der
+//      Standardwert 0,5 ist eine bewusste Daempfung und ausdruecklich keine
+//      Herleitung: Der Fehler einer Wahlumfrage wird nicht vom Stichproben-
+//      fehler dominiert, sondern von Gewichtungsmodellen, Nonresponse und
+//      Hauseffekten. Diese Anteile sinken mit wachsendem n nicht. Exponent 1
+//      wuerde ein grosses Onlinepanel gegenueber einer sorgfaeltigen
+//      Telefonstichprobe deutlich ueberbewerten. Wer rein varianzoptimal
+//      mitteln will, setzt den Exponenten auf 1.
+//
+//      Fehlt die Fallzahl, wird n = referenceSampleSize gesetzt und die
+//      Umfrage in der Ausgabe als angenommen markiert.
 //   4. Der Wert einer Partei ist der gewichtete Mittelwert ihrer Werte.
 //      Umfragen, die eine Partei nicht einzeln ausweisen, gehen fuer diese
 //      Partei nicht in Zaehler und Nenner ein. Sie werden nicht als Null
@@ -27,6 +45,8 @@
 
 export function computeTrend(surveys, config) {
   const { halflifeDays, maxAgeDays, referenceSampleSize, minSurveys } = config;
+  const precisionExponent = config.precisionExponent ?? 0.5;
+  const designEffect = config.designEffect ?? 1;
 
   const dated = surveys.filter((s) => s.dateEnd);
   if (dated.length === 0) return null;
@@ -57,7 +77,7 @@ export function computeTrend(surveys, config) {
     const ageDays = (anchorMs - Date.parse(`${s.dateEnd}T00:00:00Z`)) / 86400000;
     const n = s.surveyedPersons && s.surveyedPersons > 0 ? s.surveyedPersons : referenceSampleSize;
     const recency = Math.pow(2, -ageDays / halflifeDays);
-    const precision = Math.sqrt(n / referenceSampleSize);
+    const precision = Math.pow(n / referenceSampleSize, precisionExponent);
     weighted.push({ survey: s, weight: recency * precision, ageDays, assumedSampleSize: !s.surveyedPersons });
   }
 
@@ -78,11 +98,31 @@ export function computeTrend(surveys, config) {
 
   const sum = Object.values(values).reduce((a, b) => a + b, 0);
 
+  // Effektiver Stichprobenumfang der Zusammenfassung nach Kish. Die blosse
+  // Addition der Fallzahlen waere falsch, weil die Umfragen unterschiedlich
+  // gewichtet eingehen und weil die Werte nicht aus einer einzigen
+  // Zufallsstichprobe stammen.
+  const kish = kishEffectiveSize(
+    weighted.map((w) => w.weight),
+    weighted.map((w) => (w.survey.surveyedPersons && w.survey.surveyedPersons > 0 ? w.survey.surveyedPersons : referenceSampleSize)),
+  );
+
+  const intervals = {};
+  if (kish && kish.effectiveSampleSize > 0) {
+    for (const [party, v] of Object.entries(values)) {
+      intervals[party] = marginPercent(v, kish.effectiveSampleSize, { designEffect });
+    }
+  }
+
   return {
     insufficient: false,
     anchorDate: cutoffAnchor,
     values,
     sum,
+    kish,
+    intervals,
+    designEffect,
+    precisionExponent,
     surveysUsed: weighted.map((w) => ({
       id: w.survey.id,
       institute: w.survey.institute,
@@ -92,7 +132,7 @@ export function computeTrend(surveys, config) {
       ageDays: Math.round(w.ageDays),
       weight: w.weight,
     })),
-    parameters: { halflifeDays, maxAgeDays, referenceSampleSize, minSurveys },
+    parameters: { halflifeDays, maxAgeDays, referenceSampleSize, minSurveys, precisionExponent, designEffect },
   };
 }
 

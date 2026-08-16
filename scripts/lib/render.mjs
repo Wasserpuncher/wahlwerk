@@ -118,12 +118,21 @@ function footer(site) {
 }
 
 /** Balkenzeile fuer einen Parteiwert, rein per CSS, ohne JavaScript. */
-export function bar(party, value, colors, max = 45) {
+export function bar(party, value, colors, max = 45, interval = null) {
   const color = colors[party] ?? colors.Sonstige ?? '#8A8F98';
-  const width = Math.max(0.4, Math.min(100, (value / max) * 100));
-  return `<div class="bar-row">
+  const pct = (v) => Math.max(0, Math.min(100, (v / max) * 100));
+  const width = Math.max(0.4, pct(value));
+  // Fehlerbalken als halbtransparente Spanne hinter dem Wert. Die Grenzen sind
+  // asymmetrisch, weil das Wilson-Intervall bei kleinen Anteilen asymmetrisch ist.
+  const ci = interval
+    ? `<span class="bar-ci" style="--from:${pct(interval.lower).toFixed(2)}%;--to:${pct(interval.upper).toFixed(2)}%"></span>`
+    : '';
+  const title = interval
+    ? ` title="${num(value)} Prozent, 95-Prozent-Intervall ${num(interval.lower)} bis ${num(interval.upper)}"`
+    : '';
+  return `<div class="bar-row"${title}>
   <span class="bar-label">${esc(party)}</span>
-  <span class="bar-track"><span class="bar-fill" style="--w:${width.toFixed(2)}%;--c:${esc(color)}"></span></span>
+  <span class="bar-track">${ci}<span class="bar-fill" style="--w:${width.toFixed(2)}%;--c:${esc(color)}"></span></span>
   <span class="bar-value num">${num(value)}&thinsp;%</span>
 </div>`;
 }
