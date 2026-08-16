@@ -15,6 +15,9 @@ import { sainteLague, hareNiemeyer, dHondt, distribute, detectTies } from './lib
 import { wilson, marginPercent, seDifferenceSameSample, kishEffectiveSize, Z } from './lib/stats.mjs';
 import { findCoalitions } from './lib/coalitions.mjs';
 import { slug } from './lib/util.mjs';
+import { sha256, ingest, verify as verifyArchive, retrieve, readManifest, GENESIS } from './lib/archive.mjs';
+import { mkdtemp, rm, writeFile as wf, readFile as rf } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, 'dist');
@@ -177,6 +180,71 @@ console.log('\nStatistik');
   assert('Kish bei gleichen Gewichten', near(kEqual.effectiveSurveys, 3, 1e-9), String(kEqual.effectiveSurveys));
   const kSkew = kishEffectiveSize([1, 0.1, 0.1], [1000, 1000, 1000]);
   assert('Kish sinkt bei ungleichen Gewichten', kSkew.effectiveSurveys < 3 && kSkew.effectiveSurveys > 1, kSkew.effectiveSurveys.toFixed(3));
+}
+
+
+// ------------------------------------------------------------------- Archiv
+console.log('\nArchiv');
+{
+  const tmp = await mkdtemp(path.join(tmpdir(), 'wahlwerk-archiv-'));
+  try {
+    const a = await ingest(tmp, { source: 'test', sourceUrl: 'https://example.invalid/a', license: 'ODbL', content: '{"v":1}' });
+    assert('erste Aufnahme wird gespeichert', a.status === 'stored' && a.seq === 1, JSON.stringify(a));
+
+    const again = await ingest(tmp, { source: 'test', sourceUrl: 'https://example.invalid/a', license: 'ODbL', content: '{"v":1}' });
+    assert('identischer Inhalt wird nicht doppelt gespeichert', again.status === 'unchanged' && again.seq === 1, JSON.stringify(again));
+
+    const b = await ingest(tmp, { source: 'test', sourceUrl: 'https://example.invalid/a', license: 'ODbL', content: '{"v":2}' });
+    assert('geaenderter Inhalt erzeugt eine neue Aufnahme', b.status === 'stored' && b.seq === 2);
+
+    const back = await retrieve(tmp, a.contentHash);
+    assert('Inhalt kommt unveraendert zurueck', back === '{"v":1}', back);
+
+    const m = await readManifest(tmp);
+    assert('Kette beginnt beim Genesis-Hash', m[0].prev === GENESIS);
+    assert('zweiter Eintrag verweist auf den ersten', m[1].prev === m[0].chain);
+
+    const clean = await verifyArchive(tmp);
+    assert('unversehrtes Archiv meldet keine Befunde', clean.problems.length === 0, clean.problems.join(' | '));
+    assert('alle Objekte wurden geprueft', clean.objectsChecked === 2);
+
+    // Manipulation an einem alten Eintrag muss die Kette brechen.
+    const lines = (await rf(path.join(tmp, 'manifest.jsonl'), 'utf8')).trim().split('\n');
+    const tampered = JSON.parse(lines[0]);
+    tampered.recordedAt = '1999-01-01T00:00:00.000Z';
+    lines[0] = JSON.stringify(tampered);
+    await wf(path.join(tmp, 'manifest.jsonl'), lines.join('\n') + '\n', 'utf8');
+
+    const broken = await verifyArchive(tmp);
+    assert('nachtraegliche Aenderung wird erkannt', broken.problems.length > 0, 'keine Befunde trotz Manipulation');
+    assert('Befund benennt den gebrochenen Eintrag', broken.problems.some((x) => x.includes('Eintrag 1')), broken.problems.join(' | '));
+
+    let leerFehler = false;
+    try { await ingest(tmp, { source: 't', sourceUrl: 'x', license: 'y', content: '' }); } catch { leerFehler = true; }
+    assert('leerer Inhalt wird abgelehnt', leerFehler);
+
+    assert('SHA-256 stimmt mit dem Referenzwert ueberein',
+      sha256(Buffer.from('abc', 'utf8')) === 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+      sha256(Buffer.from('abc', 'utf8')));
+  } finally {
+    await rm(tmp, { recursive: true, force: true });
+  }
+}
+
+// --------------------------------------------------- Historische Wahlergebnisse
+console.log('\nHistorische Wahlergebnisse');
+{
+  const elections = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
+  let geprueft = 0;
+  for (const [land, e] of Object.entries(elections.elections)) {
+    for (const h of e.history ?? []) {
+      const sum = Object.values(h.results).reduce((a, b) => a + b, 0);
+      assert(`${land} ${h.label}: Summe der Anteile bei rund 100`, Math.abs(sum - 100) <= 0.35, `${sum.toFixed(2)} Prozent`);
+      assert(`${land} ${h.label}: keine negativen oder unmoeglichen Werte`, Object.values(h.results).every((v) => v >= 0 && v <= 100));
+      geprueft += 1;
+    }
+  }
+  assert('mindestens vier historische Wahlen erfasst', geprueft >= 4, String(geprueft));
 }
 
 // Slug-Stabilitaet

@@ -1,0 +1,74 @@
+name: Archiv-Snapshot
+
+# Zweck: Quellen verschwinden. Dieser Lauf legt jeden Tag den aktuellen Stand
+# aller freigeschalteten Quellen unveraendert im Repository ab und schreibt ihn
+# als eigenen Commit fest. Damit liegt der Bestand versioniert bei einem
+# Dritten und ist auch dann noch da, wenn das Original nicht mehr existiert.
+#
+# Der Speicher ist inhaltsadressiert: Ist eine Quelle unveraendert, entsteht
+# kein neues Objekt und kein Commit. Ein taeglicher Lauf kostet also nur dann
+# Platz, wenn sich wirklich etwas geaendert hat.
+
+on:
+  schedule:
+    # Zweimal taeglich, versetzt zur vollen Stunde.
+    - cron: '40 4,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: archive
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Archiv vor dem Lauf pruefen
+        run: |
+          node scripts/archive.mjs verify
+          echo "Bestehendes Archiv unbeschaedigt, Aufnahme kann beginnen."
+
+      - name: Snapshot aller freigeschalteten Quellen
+        run: node scripts/archive.mjs snapshot
+
+      - name: Archiv nach dem Lauf pruefen
+        run: node scripts/archive.mjs verify
+
+      - name: Aenderungen festschreiben
+        run: |
+          if [ -z "$(git status --porcelain archive/)" ]; then
+            echo "Keine Quelle hat sich geaendert. Kein Commit noetig."
+            exit 0
+          fi
+          HEAD_CHAIN=$(node -e "console.log(require('./archive/index.json').headChain.slice(0,16))")
+          COUNT=$(node -e "console.log(require('./archive/index.json').totalSnapshots)")
+          git config user.name "wahlwerk-archiv"
+          git config user.email "archiv@users.noreply.github.com"
+          git add archive/
+          git commit -m "Archiv: Snapshot $(date -u +%Y-%m-%dT%H:%MZ), ${COUNT} Aufnahmen, Kette ${HEAD_CHAIN}"
+          git push
+
+      - name: Kettenkopf im Lauf protokollieren
+        # Der Kettenkopf steht damit zusaetzlich im Protokoll von GitHub, also
+        # ausserhalb des Repositories. Wer spaeter das Archiv faelscht, muesste
+        # auch diese Protokolle faelschen.
+        run: |
+          echo "## Archivstand" >> $GITHUB_STEP_SUMMARY
+          node -e "
+            const i = require('./archive/index.json');
+            console.log('Aufnahmen: ' + i.totalSnapshots);
+            console.log('Kettenkopf: ' + i.headChain);
+            console.log('Roh: ' + (i.totalBytes/1048576).toFixed(2) + ' MB, komprimiert: ' + (i.totalCompressedBytes/1048576).toFixed(2) + ' MB');
+            for (const [k,v] of Object.entries(i.sources)) console.log('  ' + k + ': ' + v.snapshots + ' Aufnahmen, ' + v.firstRecordedAt.slice(0,10) + ' bis ' + v.lastRecordedAt.slice(0,10));
+          " >> $GITHUB_STEP_SUMMARY

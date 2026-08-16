@@ -1,6 +1,12 @@
 node_modules/
 dist/
 data/
+
+# WICHTIG: archive/ wird bewusst NICHT ignoriert.
+# Das Archiv ist der eigentliche Wert dieses Projekts. Es gehoert ins
+# Repository, damit jeder Snapshot als Commit mit Zeitstempel bei GitHub liegt
+# und der Bestand auch dann erhalten bleibt, wenn die Quellen verschwinden.
+# Wer archive/ hier eintraegt, hebelt genau das aus.
 *.log
 .DS_Store
 .env

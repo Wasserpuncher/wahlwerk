@@ -155,6 +155,56 @@ function kpiBand(p) {
 </dl>`;
 }
 
+function electionHistory(p) {
+  const e = electionConfig.elections[p.name];
+  if (!e || !Array.isArray(e.history) || e.history.length < 2) return '';
+
+  const pseudo = [...e.history]
+    .sort((a, b) => (a.date < b.date ? -1 : 1))
+    .map((h) => ({ date: h.date, results: h.results, institute: h.label, dateEnd: h.date }));
+
+  const parties = [...new Set(e.history.flatMap((h) => Object.keys(h.results)))]
+    .filter((party) => party !== 'Sonstige' && e.history.some((h) => (h.results[party] ?? 0) >= 4));
+
+  const cols = [...new Set(e.history.flatMap((h) => Object.keys(h.results)))].sort((a, b) => {
+    const newest = e.history[0].results;
+    return (newest[b] ?? 0) - (newest[a] ?? 0);
+  });
+
+  const unverified = e.history.filter((h) => !h.verified);
+
+  return `<h2 id="historie">Alle Wahlergebnisse seit ${esc(e.history.at(-1).date.slice(0, 4))}</h2>
+<p class="lede">Amtliche Zweitstimmenanteile. Amtliche Werke sind nach Paragraf 5 UrhG gemeinfrei und duerfen dauerhaft archiviert und wiedergegeben werden.</p>
+${timeline(pseudo, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? 5, parties })}
+<div class="table-scroll"><table>
+<caption>Zweitstimmenanteile in Prozent, neueste Wahl zuerst</caption>
+<thead><tr><th class="left">Wahl</th>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}<th>Summe</th><th>Sitze</th><th class="left">Beleglage</th></tr></thead>
+<tbody>
+${e.history
+  .map(
+    (h) => `<tr>
+  <td class="left"><time datetime="${esc(h.date)}">${esc(deDate(h.date))}</time></td>
+  ${cols.map((c) => `<td>${h.results[c] != null ? num(h.results[c]) : '—'}</td>`).join('')}
+  <td>${num(h.sum)}</td>
+  <td>${h.seatsActual ? int(h.seatsActual) : 'n.a.'}</td>
+  <td class="left">${h.verified ? 'zwei Quellen' : 'eine Quelle, ungeprueft'}</td>
+</tr>`,
+  )
+  .join('')}
+</tbody>
+</table></div>
+${note('method', 'Warum die Summen nicht exakt 100 ergeben', '<p>Die amtlichen Anteile werden auf eine Nachkommastelle gerundet veroeffentlicht. Die Summe der gerundeten Werte weicht deshalb um wenige Zehntel von 100 ab. Es wird bewusst nicht nachjustiert. Der Build prueft fuer jede Wahl, ob die Summe im Bereich von 100 liegt, und bricht bei groben Abweichungen ab.</p>')}
+${
+  unverified.length > 0
+    ? note(
+        'warn',
+        'Beleglage einzelner Wahlen',
+        `<p>Fuer ${int(unverified.length)} der aufgefuehrten Wahlen liegt bisher nur eine Quelle vor. Diese Werte werden hier wiedergegeben und als ungeprueft gekennzeichnet, aber in <strong>keine Berechnung</strong> uebernommen: weder in den Wahlvergleich noch in die Institutsabweichung. Die amtliche Fundstelle ist das Statistische Landesamt Sachsen-Anhalt. ${e.history.at(-1).date.slice(0, 4) > '1990' ? `Die Landtagswahlen vor ${esc(e.history.at(-1).date.slice(0, 4))} fehlen noch und werden bewusst nicht aus dem Gedaechtnis ergaenzt.` : ''}</p>`,
+      )
+    : ''
+}`;
+}
+
 function electionComparison(p) {
   const e = electionConfig.elections[p.name];
   if (!e || e.verified !== true || !p.trend || p.trend.insufficient) return '';
@@ -344,7 +394,7 @@ function addPage(url, html, { priority = 0.5, changefreq = 'weekly', lastmod = b
       ],
       updated: buildTime,
       body: `${fixtureBanner()}
-<p class="eyebrow">Stand ${esc(deDate(buildTime.slice(0, 10)))}</p>
+<p class="eyebrow">Stand ${esc(deDate(buildTime.slice(0, 10)))}${provenance.mode === 'archive' ? ` \u00b7 Archivstand Nr. ${esc(String(provenance.archiveSeq))} vom ${esc(deDate(provenance.recordedAt.slice(0, 10)))}` : ''}</p>
 <h1>${esc(site.tagline)}</h1>
 <p class="lede">${esc(site.description)}</p>
 ${belegstreifen(data.surveys.slice(0, 400))}
@@ -465,7 +515,8 @@ ${seatBlock(p)}
         })
         .join('')}</ul>
 <h2 id="alle">Alle Umfragen</h2>
-${surveyTable(p.surveys, { caption: `Veroeffentlichte Sonntagsfragen zu ${p.name}, absteigend nach Veroeffentlichungsdatum` })}`,
+${surveyTable(p.surveys, { caption: `Veroeffentlichte Sonntagsfragen zu ${p.name}, absteigend nach Veroeffentlichungsdatum` })}
+${electionHistory(p)}`,
     }),
     { priority: 0.9, changefreq: 'daily' },
   );

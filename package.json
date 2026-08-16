@@ -13,7 +13,12 @@
     "build": "node scripts/build.mjs",
     "all": "npm run fetch && npm run build",
     "serve": "node scripts/serve.mjs",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "archive": "node scripts/archive.mjs snapshot",
+    "archive:verify": "node scripts/archive.mjs verify",
+    "archive:list": "node scripts/archive.mjs list",
+    "archive:restore": "node scripts/archive.mjs restore",
+    "archive:diff": "node scripts/archive.mjs diff"
   },
   "dependencies": {},
   "devDependencies": {}

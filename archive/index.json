@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-08-16T14:01:43.268Z",
+  "totalSnapshots": 2,
+  "totalBytes": 18602,
+  "totalCompressedBytes": 2624,
+  "headChain": "7f8eb2d2eae448e55b2b428070f321d720f4db170a7bd212dd4dbd8632084bd5",
+  "sources": {
+    "lokal": {
+      "snapshots": 2,
+      "firstRecordedAt": "2026-08-16T14:01:43.193Z",
+      "lastRecordedAt": "2026-08-16T14:01:43.265Z",
+      "bytes": 18602,
+      "license": "siehe Einzelfall",
+      "sourceUrl": "file://seed/sachsen-anhalt.json",
+      "entries": [
+        {
+          "seq": 1,
+          "recordedAt": "2026-08-16T14:01:43.193Z",
+          "contentHash": "184d42b22b72f7b413bf0ba35d39963fca8ced9f3605e7eb0c57a1c38313c8a2",
+          "meta": {}
+        },
+        {
+          "seq": 2,
+          "recordedAt": "2026-08-16T14:01:43.265Z",
+          "contentHash": "4e6d6addf1ff9d2d6503e363aa15d39f87b0f8ea88840b529ba1589b8899275c",
+          "meta": {}
+        }
+      ]
+    }
+  }
+}

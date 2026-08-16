@@ -1,0 +1,77 @@
+{
+  "_doku": "Register aller Quellen, die das Archiv aufnehmen darf. Die Schranke ist bewusst restriktiv: enabled steht nur dann auf true, wenn die Lizenzlage eindeutig ist. Alles andere bleibt aus und wird beim Snapshot mit Begruendung uebersprungen. Das dauerhafte Speichern fremder Datenbanken ohne Rechtsgrundlage kann das Datenbankherstellerrecht nach den Paragrafen 87a bis 87e UrhG verletzen. Ein Archiv, das rechtswidrig entstanden ist, muesste im Zweifel geloescht werden und waere damit wertlos.",
+
+  "_lizenzstatus": {
+    "frei-odbl": "Offene Datenbanklizenz mit Attributionspflicht. Archivierung und Weitergabe ausdruecklich erlaubt.",
+    "amtlich": "Amtliches Werk nach Paragraf 5 UrhG. Gemeinfrei, kein Urheberrechtsschutz.",
+    "unklar": "Keine ausdrueckliche Lizenz. Einzelne Zahlen sind Tatsachen und nicht schutzfaehig, die systematische Uebernahme der Sammlung kann aber das Datenbankherstellerrecht beruehren. Nicht ohne Erlaubnis archivieren.",
+    "verboten": "Ausdruecklich untersagt oder durch robots.txt ausgeschlossen."
+  },
+
+  "sources": {
+    "dawum-api": {
+      "enabled": true,
+      "url": "https://api.dawum.de/",
+      "format": "dawum-json",
+      "license": "ODC Open Database License (ODbL) 1.0",
+      "licenseStatus": "frei-odbl",
+      "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+      "attribution": "Daten von dawum.de (Open Database License (ODbL))",
+      "coverage": "Wahlumfragen zu Bundes- und Landtagswahlen ab 2017",
+      "minBytes": 20000,
+      "mustContain": ["Surveys", "Parliaments", "Parties"],
+      "hinweis": "Der Betreiber stellt die Datenbank ausdruecklich als Open Data bereit und dokumentiert die programmatische Nutzung samt Codebeispielen. Die Archivierung ist von der Lizenz gedeckt, die abgeleitete Datenbank steht ebenfalls unter ODbL."
+    },
+
+    "dawum-last-update": {
+      "enabled": true,
+      "url": "https://api.dawum.de/last_update.txt",
+      "format": "text",
+      "license": "ODC Open Database License (ODbL) 1.0",
+      "licenseStatus": "frei-odbl",
+      "coverage": "Zeitstempel des letzten Datenbankstands",
+      "minBytes": 10,
+      "hinweis": "Winzig, aber wertvoll: belegt unabhaengig vom Hauptobjekt, welcher Stand zu welchem Zeitpunkt galt."
+    },
+
+    "lokal": {
+      "enabled": false,
+      "url": null,
+      "format": "dawum-json",
+      "license": "siehe Einzelfall",
+      "licenseStatus": "frei-odbl",
+      "coverage": "Platzhalter fuer manuelle Aufnahmen ueber snapshot --file",
+      "hinweis": "Wird nicht automatisch abgerufen, dient nur als Quellenschluessel fuer lokale Aufnahmen."
+    },
+
+    "wahlrecht-landtage": {
+      "enabled": false,
+      "url": "https://www.wahlrecht.de/umfragen/landtage/",
+      "format": "html",
+      "license": "keine offene Lizenz",
+      "licenseStatus": "unklar",
+      "coverage": "Wahlumfragen zu Landtagswahlen zurueck bis in die 1990er Jahre, also weit vor dem Beginn der dawum-Datenbank",
+      "hinweis": "Inhaltlich die wertvollste Ergaenzung, weil sie genau die Luecke vor 2017 fuellt. Rechtlich die heikelste: Die Zusammenstellung ist eine Datenbank im Sinne der Paragrafen 87a folgende UrhG, und ihre vollstaendige Uebernahme waere die Uebernahme eines wesentlichen Teils. Vor der Freischaltung ist eine schriftliche Erlaubnis der Betreiber einzuholen. Bis dahin bleibt diese Quelle aus. Einzelne Werte daraus koennen als Tatsachen zitiert werden, das ersetzt aber keine Massenuebernahme."
+    },
+
+    "bundeswahlleiterin-opendata": {
+      "enabled": false,
+      "url": null,
+      "format": "csv",
+      "license": "amtliches Werk",
+      "licenseStatus": "amtlich",
+      "coverage": "Amtliche Ergebnisse der Bundestags- und Europawahlen samt Strukturdaten der Wahlkreise",
+      "hinweis": "Lizenzrechtlich unproblematisch, weil amtliches Werk. Noch nicht freigeschaltet, weil der passende Adapter fehlt: die Dateien liegen je Wahl unter eigenen Pfaden und in wechselndem Aufbau. Siehe docs/ROADMAP.md."
+    },
+
+    "wahlergebnisse-sachsen-anhalt": {
+      "enabled": false,
+      "url": null,
+      "format": "html",
+      "license": "amtliches Werk",
+      "licenseStatus": "amtlich",
+      "coverage": "Amtliche Ergebnisse aller Landtagswahlen in Sachsen-Anhalt ab 1990, herausgegeben vom Statistischen Landesamt und der Landeswahlleiterin",
+      "hinweis": "Gemeinfrei und archivierbar. Adapter fehlt noch. Die Ergebnisse ab 1998 sind bereits manuell in config/elections.json erfasst und dort einzeln als geprueft oder ungeprueft markiert."
+    }
+  }
+}
