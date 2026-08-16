@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-16T14:01:43.268Z",
-  "totalSnapshots": 2,
-  "totalBytes": 18602,
-  "totalCompressedBytes": 2624,
-  "headChain": "7f8eb2d2eae448e55b2b428070f321d720f4db170a7bd212dd4dbd8632084bd5",
+  "generatedAt": "2026-08-16T16:57:33.409Z",
+  "totalSnapshots": 4,
+  "totalBytes": 1033588,
+  "totalCompressedBytes": 98307,
+  "headChain": "46c68dd2b55ace21a9e5af03a8cc003b7db6fe7d36f8069aaa7193b43d782ac8",
   "sources": {
     "lokal": {
       "snapshots": 2,
@@ -23,6 +23,45 @@
           "seq": 2,
           "recordedAt": "2026-08-16T14:01:43.265Z",
           "contentHash": "4e6d6addf1ff9d2d6503e363aa15d39f87b0f8ea88840b529ba1589b8899275c",
+          "meta": {}
+        }
+      ]
+    },
+    "dawum-api": {
+      "snapshots": 1,
+      "firstRecordedAt": "2026-08-16T16:57:33.305Z",
+      "lastRecordedAt": "2026-08-16T16:57:33.305Z",
+      "bytes": 1014961,
+      "license": "ODC Open Database License (ODbL) 1.0",
+      "sourceUrl": "https://api.dawum.de/",
+      "entries": [
+        {
+          "seq": 3,
+          "recordedAt": "2026-08-16T16:57:33.305Z",
+          "contentHash": "4622b3c771b4e9b84d6614c902377cefac8c2ded434f0cc62309f34a18fb4c06",
+          "meta": {
+            "surveys": 3900,
+            "parliaments": 18,
+            "institutes": 22,
+            "sourceLastUpdate": "2026-08-15T18:18:34+02:00",
+            "oldestSurvey": "2017-01-18",
+            "newestSurvey": "2026-08-15"
+          }
+        }
+      ]
+    },
+    "dawum-last-update": {
+      "snapshots": 1,
+      "firstRecordedAt": "2026-08-16T16:57:33.408Z",
+      "lastRecordedAt": "2026-08-16T16:57:33.408Z",
+      "bytes": 25,
+      "license": "ODC Open Database License (ODbL) 1.0",
+      "sourceUrl": "https://api.dawum.de/last_update.txt",
+      "entries": [
+        {
+          "seq": 4,
+          "recordedAt": "2026-08-16T16:57:33.408Z",
+          "contentHash": "edf0d6ebd216d692976b9b786609bc53ee5fb9eeb8079b5f10759b75bb42a558",
           "meta": {}
         }
       ]
