@@ -1,0 +1,53 @@
+<h1>Methodik</h1>
+<p class="lede">Auf dieser Seite steht jede Rechenvorschrift, die auf {{SITE_NAME}} eine Zahl erzeugt. Wer sie nachrechnen will, findet den Quellcode dazu im Repository. Nichts davon ist geheim, nichts davon ist ein Modell mit unveroeffentlichten Parametern.</p>
+
+<h2>Was hier nicht passiert</h2>
+<ul>
+  <li>{{SITE_NAME}} erhebt <strong>keine eigenen Umfragen</strong>. Alle Werte stammen von Meinungsforschungsinstituten und werden unveraendert wiedergegeben.</li>
+  <li>Es findet <strong>keine Korrektur von Hauseffekten</strong> statt. Wenn ein Institut eine Partei systematisch hoeher ausweist als andere, wird das hier sichtbar gemacht, aber nicht wegkorrigiert.</li>
+  <li>Es werden <strong>keine Werte auf 100 Prozent hochgerechnet</strong>. Weicht die Summe ab, wird die Abweichung ausgewiesen.</li>
+  <li>Es wird <strong>keine Wahlprognose</strong> erstellt. Eine Sonntagsfrage misst die Wahlabsicht im Befragungszeitraum, nicht das Ergebnis eines kuenftigen Wahltags.</li>
+  <li>Es findet <strong>keine politische Bewertung</strong> statt, weder von Parteien noch von Koalitionsoptionen noch von Instituten.</li>
+</ul>
+
+<h2>Der gewichtete Trend</h2>
+<p>Der Trend eines Parlaments wird in vier Schritten gebildet.</p>
+<ol>
+  <li><strong>Stichtag.</strong> Stichtag ist der juengste letzte Befragungstag unter allen Umfragen des Parlaments.</li>
+  <li><strong>Zeitfenster.</strong> Beruecksichtigt werden nur Umfragen, deren letzter Befragungstag hoechstens {{MAXAGE}} Tage vor dem Stichtag liegt.</li>
+  <li><strong>Eine Umfrage je Institut.</strong> Aus dem Fenster geht je Institut nur die juengste Umfrage ein. Damit kann kein Institut den Trend allein durch eine hohe Veroeffentlichungsfrequenz dominieren.</li>
+  <li><strong>Gewichtung.</strong> Jede verbleibende Umfrage <em>i</em> erhaelt das Gewicht
+    <br><code>w<sub>i</sub> = 2<sup>(-alter<sub>i</sub> / {{HALFLIFE}})</sup> &middot; &radic;(n<sub>i</sub> / {{REFN}})</code>
+    <br>Dabei ist <code>alter<sub>i</sub></code> der Abstand des letzten Befragungstags zum Stichtag in Tagen und <code>n<sub>i</sub></code> die Fallzahl.
+  </li>
+</ol>
+<p>Der erste Faktor ist ein exponentieller Aktualitaetsabschlag mit einer Halbwertszeit von {{HALFLIFE}} Tagen: eine {{HALFLIFE}} Tage alte Umfrage zaehlt halb so viel wie eine taggleiche. Der zweite Faktor bildet ab, dass der Standardfehler einer Zufallsstichprobe mit dem Kehrwert der Wurzel aus der Fallzahl faellt. Eine Umfrage mit 4000 Befragten zaehlt damit doppelt so viel wie eine mit 1000.</p>
+<p>Der Trendwert einer Partei ist der gewichtete Mittelwert ihrer Werte. Umfragen, die eine Partei nicht einzeln ausweisen, gehen fuer diese Partei weder in den Zaehler noch in den Nenner ein. Ein fehlender Wert wird also <strong>nicht als null Prozent gewertet</strong>, weil "nicht ausgewiesen" und "null Prozent" verschiedene Aussagen sind.</p>
+<p>Liegt keine Fallzahl vor, wird ersatzweise {{REFN}} angesetzt und die Umfrage in der Aufschluesselung als angenommen markiert. Liegen weniger als {{MINSURVEYS}} Umfragen im Fenster, wird gar kein Trend ausgegeben.</p>
+<p>Auf jeder Parlamentsseite ist aufklappbar dokumentiert, welche Umfragen mit welchem Gewicht eingehen. Damit ist der Trend von Hand nachrechenbar.</p>
+
+<h2>Streuung</h2>
+<p>Zusaetzlich zum Mittelwert wird je Partei der niedrigste und der hoechste Wert unter den verwendeten Umfragen ausgewiesen, samt Institut. Ein Mittelwert allein verdeckt, wie weit die Institute auseinanderliegen. Eine Spanne von mehreren Prozentpunkten bedeutet, dass der Mittelwert eine schwache Aussage ist.</p>
+
+<h2>Sitzverteilung</h2>
+<p>Eine Sitzverteilung wird nur dann berechnet, wenn Sitzzahl, Zuteilungsverfahren und Sperrklausel des Parlaments in der Konfiguration als <em>verifiziert</em> markiert sind. Ist das nicht der Fall, bleibt der Abschnitt leer. Eine ungepruefte Sitzzahl waere eine erfundene Zahl, und erfundene Zahlen gibt es hier nicht.</p>
+<p>Implementiert sind drei Verfahren:</p>
+<ul>
+  <li><strong>Sainte-Lague/Schepers</strong>, umgesetzt als Hoechstzahlverfahren mit den Divisoren 1, 3, 5, 7 und so fort.</li>
+  <li><strong>Hare/Niemeyer</strong>, Quotenverfahren mit groesstem Rest.</li>
+  <li><strong>dHondt</strong>, Hoechstzahlverfahren mit den Divisoren 1, 2, 3 und so fort.</li>
+</ul>
+<p>Grenzen dieser Rechnung: Eine Sonntagsfrage erhebt die Zweitstimmenabsicht. Direktmandate, Grundmandatsklauseln, regionale Sonderregeln, Sperrklauselbefreiungen und Systeme, in denen Erst- und Zweitstimme zusammenzaehlen, lassen sich daraus grundsaetzlich nicht ableiten. Die Sitzverteilung ist deshalb eine Modellrechnung unter vereinfachenden Annahmen und keine Vorhersage der Parlamentszusammensetzung.</p>
+
+<h2>Koalitionsrechnung</h2>
+<p>Aus der Modellsitzverteilung werden alle Parteienkombinationen mit bis zu vier Partnern ermittelt, die mehr als die Haelfte der Sitze erreichen. Ausgegeben werden nur <em>minimale</em> Mehrheiten, also solche, bei denen der Verlust eines beliebigen Partners die Mehrheit kostet.</p>
+<p>Diese Liste ist rein arithmetisch. Sie enthaelt bewusst auch Kombinationen, die politisch ausgeschlossen sind. Der Grund: welche Kombination als ausgeschlossen gilt, ist eine redaktionelle Wertung, die sich mit Parteitagsbeschluessen aendert. {{SITE_NAME}} trifft diese Wertung nicht.</p>
+
+<h2>Rundung und Darstellung</h2>
+<p>Alle Prozentwerte werden mit einer Nachkommastelle angezeigt, intern aber ungerundet weitergerechnet. Gewichte werden mit drei Nachkommastellen ausgewiesen. Bei exakten Gleichstaenden in der Sitzzuteilung entscheidet die alphabetische Reihenfolge des Parteikuerzels. Das ist willkuerlich, aber deterministisch, damit zwei Builds derselben Daten dasselbe Ergebnis liefern.</p>
+
+<h2>Reproduzierbarkeit</h2>
+<p>Der Build ist deterministisch: gleiche Eingangsdaten und gleiche Konfiguration erzeugen byteidentische Seiten. Die Rohdatei der Quelle wird bei jedem Abruf mitgespeichert, sodass sich jede angezeigte Zahl bis zum unveraenderten Quelldatensatz zurueckverfolgen laesst.</p>
+
+<h2>Fehler melden</h2>
+<p>Wenn eine Zahl falsch ist, ist das ein Fehler und kein Meinungsunterschied. Meldungen bitte als Issue im Repository, moeglichst mit der Datensatz-ID von der jeweiligen Belegseite.</p>

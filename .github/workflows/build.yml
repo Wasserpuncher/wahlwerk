@@ -1,0 +1,72 @@
+name: Build und Deploy
+
+# Baut die Seite taeglich neu und veroeffentlicht sie auf GitHub Pages.
+# Der Build bricht ab, wenn die Selbsttests fehlschlagen. Damit kann keine
+# Seite mit kaputten Rechenwegen oder fehlenden Kopfdaten online gehen.
+
+on:
+  schedule:
+    # 05:20 und 17:20 UTC. Versetzt zur vollen Stunde, um Lastspitzen bei der
+    # Quelle zu vermeiden.
+    - cron: '20 5,17 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Daten abrufen
+        run: npm run fetch
+
+      - name: Seite bauen
+        run: npm run build
+
+      - name: Selbsttests
+        run: npm run check
+
+      - name: Auf Platzhalter pruefen
+        run: |
+          if grep -rq "BITTE AUSFUELLEN" dist/; then
+            echo "::error::Es stehen noch Konfigurationsplatzhalter im Build. config/site.json ausfuellen."
+            exit 1
+          fi
+          if grep -rq "example.invalid" dist/sitemap.xml; then
+            echo "::error::baseUrl steht noch auf dem Platzhalter."
+            exit 1
+          fi
+          if grep -rq "SYNTHETISCHE TESTDATEN" dist/; then
+            echo "::error::Build enthaelt synthetische Testdaten und darf nicht veroeffentlicht werden."
+            exit 1
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

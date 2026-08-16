@@ -1,0 +1,38 @@
+<h1>Datenexport</h1>
+<p class="lede">Der gesamte Bestand steht als JSON und CSV bereit. Kein Login, kein Schluessel, keine Begrenzung.</p>
+
+<ul class="linklist">
+  <li><a href="/daten/wahlwerk.json">wahlwerk.json</a><span class="meta">alle Umfragen und alle berechneten Trends</span></li>
+  <li><a href="/daten/umfragen.csv">umfragen.csv</a><span class="meta">Semikolon getrennt, UTF-8 mit BOM, Dezimalkomma</span></li>
+  <li><a href="/feed.xml">feed.xml</a><span class="meta">RSS mit den 50 zuletzt veroeffentlichten Umfragen</span></li>
+</ul>
+
+<h2>Lizenz und Pflichten bei Weiterverwendung</h2>
+<p>Diese Daten sind eine abgeleitete Datenbank auf Grundlage von dawum.de und stehen unter der <a href="https://opendatacommons.org/licenses/odbl/1-0/" rel="license external">ODC Open Database License (ODbL) 1.0</a>. Wer sie weiterverwendet, muss dawum.de und die Lizenz nennen und verlinken. Wer daraus eine eigene Datenbank baut und veroeffentlicht, muss diese ebenfalls unter ODbL stellen. Der Code dieser Website steht getrennt davon unter der AGPL-3.0.</p>
+<p>Die Umfragen selbst stammen von den jeweils genannten Instituten. Die Lizenz betrifft die Datenbank, nicht die Urheberschaft an den Erhebungen.</p>
+
+<h2>Felder in der CSV</h2>
+<div class="table-scroll"><table>
+<thead><tr><th class="left">Feld</th><th class="left">Bedeutung</th><th class="left">Leer, wenn</th></tr></thead>
+<tbody>
+<tr><td class="left">id</td><td class="left">Datensatz-ID, identisch mit der ID auf der Belegseite</td><td class="left">nie</td></tr>
+<tr><td class="left">parlament</td><td class="left">Parlament, auf das sich die Sonntagsfrage bezieht</td><td class="left">nie</td></tr>
+<tr><td class="left">institut</td><td class="left">erhebendes Meinungsforschungsinstitut</td><td class="left">Quelle weist keines aus</td></tr>
+<tr><td class="left">auftraggeber</td><td class="left">Auftraggeber der Erhebung</td><td class="left">Quelle weist keinen aus</td></tr>
+<tr><td class="left">methode</td><td class="left">Befragungsmethode</td><td class="left">Quelle weist keine aus</td></tr>
+<tr><td class="left">veroeffentlicht</td><td class="left">Veroeffentlichungsdatum, ISO 8601</td><td class="left">nie</td></tr>
+<tr><td class="left">feld_start, feld_ende</td><td class="left">erster und letzter Befragungstag</td><td class="left">Quelle weist keinen Zeitraum aus</td></tr>
+<tr><td class="left">befragte</td><td class="left">Fallzahl</td><td class="left">Quelle weist keine aus</td></tr>
+<tr><td class="left">je Partei eine Spalte</td><td class="left">Prozentwert der Partei in dieser Umfrage</td><td class="left">Partei wurde in dieser Umfrage nicht einzeln ausgewiesen</td></tr>
+</tbody>
+</table></div>
+<p><strong>Wichtig fuer die Auswertung:</strong> Eine leere Parteispalte bedeutet, dass das Institut die Partei nicht einzeln ausgewiesen hat. Sie bedeutet <em>nicht</em> null Prozent. Wer leere Zellen mit Nullen fuellt, erzeugt falsche Zeitreihen.</p>
+
+<h2>Bestand</h2>
+<div class="provenance"><dl>
+  <dt>Umfragen</dt><dd>{{SURVEY_COUNT}}</dd>
+  <dt>Parlamente</dt><dd>{{PARLIAMENT_COUNT}}</dd>
+  <dt>Institute</dt><dd>{{INSTITUTE_COUNT}}</dd>
+  <dt>Stand der Quelle</dt><dd>{{SOURCE_UPDATE}}</dd>
+  <dt>Letzter Build</dt><dd>{{BUILD_TIME}}</dd>
+</dl></div>

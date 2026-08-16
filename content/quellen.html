@@ -1,0 +1,39 @@
+<h1>Quellenverzeichnis</h1>
+<p class="lede">Jede Zahl auf dieser Seite stammt aus einer der unten genannten Quellen. Angegeben sind Betreiber, Lizenz, Abrufweg und die bekannten Grenzen der jeweiligen Quelle. Was hier nicht steht, wird auch nicht verwendet.</p>
+
+<h2>Verwendet</h2>
+
+<h3>dawum.de, Datenbank fuer Wahlumfragen</h3>
+<div class="provenance"><dl>
+  <dt>Inhalt</dt><dd>Wahlumfragen zu Bundes- und Landtagswahlen</dd>
+  <dt>Abruf</dt><dd>https://api.dawum.de/ als JSON</dd>
+  <dt>Aktualitaetspruefung</dt><dd>https://api.dawum.de/last_update.txt</dd>
+  <dt>Lizenz</dt><dd>ODC Open Database License (ODbL) 1.0</dd>
+  <dt>Stand der Quelle</dt><dd>{{SOURCE_UPDATE}}</dd>
+  <dt>Erfasste Umfragen</dt><dd>{{SURVEY_COUNT}}</dd>
+</dl></div>
+<p>Die API liefert je Umfrage Parlament, Institut, Auftraggeber, Befragungsmethode, Veroeffentlichungsdatum, Befragungszeitraum, Fallzahl und die Ergebnisse je Partei. Die Struktur ist von dawum.de dokumentiert, die programmatische Nutzung ausdruecklich vorgesehen.</p>
+<p><strong>Grenze dieser Quelle:</strong> Die API enthaelt nach Angabe des Betreibers Wahlumfragen ab 2017. Aeltere Umfragewerte sind darin nicht enthalten und werden hier folglich auch nicht dargestellt. Wer laengere Zeitreihen braucht, muss zusaetzliche Quellen erschliessen.</p>
+<p><strong>Lizenzfolge:</strong> Diese Website enthaelt eine abgeleitete Datenbank im Sinne der ODbL. Sie steht deshalb ebenfalls unter ODbL, mit Nennung und Verlinkung von dawum.de sowie der Lizenz. Der Datenexport unter <a href="/daten/">Daten</a> traegt diese Angaben maschinenlesbar mit.</p>
+<p>Die Umfragen selbst stammen von den jeweils genannten Meinungsforschungsinstituten und deren Auftraggebern. Weder dawum.de noch {{SITE_NAME}} erheben eigene Umfragen.</p>
+
+<h2>Vorgesehen, aber noch nicht angebunden</h2>
+<p>Die folgenden Quellen sind im Projekt geplant und im Repository als offene Aufgaben dokumentiert. Sie sind hier aufgefuehrt, damit erkennbar ist, was fehlt, und nicht damit es nach mehr aussieht als vorhanden ist. Solange eine Quelle nicht angebunden ist, erscheint auf der Seite auch kein Wert aus ihr.</p>
+<ul>
+  <li><strong>Die Bundeswahlleiterin.</strong> Amtliche Ergebnisse der Bundestags- und Europawahlen sowie Strukturdaten der Wahlkreise, angeboten als CSV und XML zur maschinellen Weiterverarbeitung. Verwendungszweck hier: Vergleich der letzten Umfrage vor einer Wahl mit dem amtlichen Ergebnis, also eine belegbare Institutsabweichung statt einer geschaetzten.</li>
+  <li><strong>Landeswahlleitungen der 16 Laender.</strong> Amtliche Landtagswahlergebnisse. Die Formate sind uneinheitlich und muessen je Land einzeln erschlossen werden.</li>
+  <li><strong>abgeordnetenwatch.de.</strong> Offene API zu Abgeordneten, Mandaten, Kandidaturen, Wahlkreisen und Abstimmungsverhalten, nutzbar unter Fair-Use-Bedingungen mit einer Begrenzung auf 30 Anfragen pro Minute und der Bitte, groessere Abrufe nachts durchzufuehren.</li>
+  <li><strong>Deutscher Bundestag, Open Data.</strong> Plenarprotokolle und Drucksachen ab der ersten Wahlperiode als XML und JSON, Biografiedaten der Abgeordneten seit 1949, namentliche Abstimmungen als Tabellen. Dazu die DIP-Schnittstelle fuer parlamentarische Vorgaenge.</li>
+  <li><strong>GESIS.</strong> Archivierte Politbarometer-Mikrodaten seit 1977. Nur nach Registrierung und nicht fuer beliebige Weiterverbreitung, deshalb allenfalls fuer aggregierte Auswertungen geeignet.</li>
+</ul>
+
+<h2>Bewusst nicht verwendet</h2>
+<ul>
+  <li><strong>Automatisiertes Auslesen von Nachrichtenseiten.</strong> Umfragewerte aus Presseartikeln zu ziehen, waere schneller, aber die Herkunft einer einzelnen Zahl liesse sich dann nicht mehr sauber belegen, und die Rechtslage beim Auslesen fremder Seiten ist nicht eindeutig.</li>
+  <li><strong>Eigene Schaetzungen und Interpolationen.</strong> Fehlt ein Wert, bleibt er leer. Es wird nichts aufgefuellt.</li>
+  <li><strong>Prognosemodelle.</strong> Ein Modell, das aus Umfragen ein Wahlergebnis vorhersagt, waere nicht mehr durch die Quelle gedeckt.</li>
+</ul>
+
+<h2>Nachvollziehbarkeit</h2>
+<p>Bei jedem Datenabruf wird die unveraenderte Quelldatei mitgespeichert. Jede Umfrage hat eine eigene Belegseite mit Institut, Auftraggeber, Feldzeit, Fallzahl, Methode, Wertsumme und Datensatz-ID. Von jedem Trendwert fuehrt ein Weg ueber die aufklappbare Gewichtungstabelle zu genau den Einzelumfragen, aus denen er besteht.</p>
+<p>Letzter Build dieser Seite: {{BUILD_TIME}}.</p>

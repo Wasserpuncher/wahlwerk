@@ -1,0 +1,55 @@
+{
+  "name": "Wahlwerk",
+  "tagline": "Wahlumfragen mit Beleg",
+  "description": "Jede Zahl mit Institut, Auftraggeber, Feldzeit, Fallzahl und Quelllink. Offene Daten, offener Code, nachrechenbare Methodik.",
+  "baseUrl": "https://example.invalid",
+  "lang": "de-DE",
+  "locale": "de_DE",
+
+  "_hinweis_baseUrl": "Vor dem ersten Deploy auf die echte Domain aendern. Ohne korrekte baseUrl sind Canonical-Tags, Sitemap und JSON-LD wertlos.",
+
+  "legal": {
+    "renderImpressum": true,
+    "_hinweis_renderImpressum": "Auf false setzen entfernt die Impressumsseite. Siehe docs/RECHTLICHES.md. Das Weglassen ist nach Paragraf 5 DDG und Paragraf 18 Abs. 2 MStV riskant und spart nichts, weil Art. 13 DSGVO die Nennung des Verantwortlichen in der Datenschutzerklaerung ohnehin verlangt.",
+    "verantwortlicher": {
+      "name": "BITTE AUSFUELLEN",
+      "strasse": "BITTE AUSFUELLEN",
+      "plz": "BITTE AUSFUELLEN",
+      "ort": "BITTE AUSFUELLEN",
+      "land": "Deutschland",
+      "email": "BITTE AUSFUELLEN",
+      "telefon": ""
+    },
+    "aufsichtsbehoerde": "Bayerisches Landesamt fuer Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach"
+  },
+
+  "hosting": {
+    "anbieter": "BITTE AUSFUELLEN",
+    "serverstandort": "BITTE AUSFUELLEN",
+    "avvVorhanden": false,
+    "logRetentionDays": 7,
+    "_hinweis": "Diese Angaben landen woertlich in der Datenschutzerklaerung. Falsche Angaben dort sind ein eigener Rechtsverstoss."
+  },
+
+  "privacy": {
+    "cookies": false,
+    "analytics": false,
+    "externalFonts": false,
+    "externalScripts": false,
+    "externalImages": false,
+    "_hinweis": "Der Generator erzeugt bewusst keine Cookies, kein Tracking und keine Requests an Dritte. Wer das aendert, muss die Datenschutzerklaerung anpassen und ggf. eine Einwilligungsloesung nach Paragraf 25 TDDDG einbauen."
+  },
+
+  "trend": {
+    "halflifeDays": 14,
+    "maxAgeDays": 45,
+    "referenceSampleSize": 1000,
+    "minSurveys": 3
+  },
+
+  "build": {
+    "generateSurveyPages": true,
+    "surveyPageMinAgeDays": 0,
+    "sitemapChunkSize": 5000
+  }
+}

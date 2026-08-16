@@ -1,0 +1,61 @@
+{
+  "_doku": "Sitzzuteilungsregeln je Parlament. Der Generator zeigt eine Sitzverteilung NUR an, wenn verified true ist. Alles andere bleibt leer, statt geraten zu werden. Wer eine Zeile verifiziert, traegt Sitzzahl, Verfahren, Huerde, Rechtsgrundlage und Quelllink ein und setzt verified auf true. Bitte immer gegen das jeweils geltende Wahlgesetz pruefen, nicht gegen Wikipedia.",
+
+  "_verfahren_erlaubt": ["sainte-lague", "hare-niemeyer", "dhondt"],
+
+  "parliaments": {
+    "Bundestag": {
+      "verified": true,
+      "seats": 630,
+      "method": "sainte-lague",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Bundeswahlgesetz in der Fassung nach der Wahlrechtsreform 2023",
+      "quelle": "https://www.gesetze-im-internet.de/bwahlg/",
+      "hinweis": "Seit der Wahlrechtsreform 2023 keine Ueberhang- oder Ausgleichsmandate. Eine mogliche Grundmandatsklausel ist hier bewusst NICHT modelliert, weil sie sich aus einer Sonntagsfrage ohnehin nicht ableiten laesst: die Sonntagsfrage erhebt die Zweitstimmenabsicht, nicht gewonnene Wahlkreise.",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Berlin": {
+      "verified": false,
+      "seats": null,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz Berlin",
+      "quelle": "",
+      "hinweis": "Verfahren Hare/Niemeyer und Fuenfprozenthuerde sind angesetzt, die Sitzzahl ist nicht verifiziert. Solange seats null ist, wird keine Sitzverteilung ausgegeben.",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Baden-Württemberg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landtagswahlgesetz Baden-Wuerttemberg", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Bayern": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Bayern", "quelle": "", "hinweis": "In Bayern zaehlen Erst- und Zweitstimmen zusammen. Eine Sonntagsfrage bildet das nicht ab. Sitzverteilung hier nur mit ausdruecklichem methodischem Vorbehalt freischalten.", "verifiziertAm": null, "verifiziertVon": null },
+    "Brandenburg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Brandenburgisches Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Bremen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Bremisches Wahlgesetz", "quelle": "", "hinweis": "Bremen wertet Bremen und Bremerhaven getrennt aus. Sonderfall.", "verifiziertAm": null, "verifiziertVon": null },
+    "Hamburg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Buergerschaftswahlgesetz Hamburg", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Hessen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landtagswahlgesetz Hessen", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Mecklenburg-Vorpommern": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landes- und Kommunalwahlgesetz M-V", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Niedersachsen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Niedersaechsisches Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Nordrhein-Westfalen (NRW)": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz NRW", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Rheinland-Pfalz": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Rheinland-Pfalz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Saarland": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Saarland", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Sachsen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Saechsisches Wahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Sachsen-Anhalt": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Wahlgesetz des Landes Sachsen-Anhalt", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Schleswig-Holstein": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein", "quelle": "", "hinweis": "Der SSW ist von der Sperrklausel befreit. Dieser Sonderfall ist nicht modelliert.", "verifiziertAm": null, "verifiziertVon": null },
+    "Thüringen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Thueringer Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Europaparlament": { "verified": false, "seats": null, "method": null, "thresholdPercent": 0, "rechtsgrundlage": "Europawahlgesetz", "quelle": "", "hinweis": "In Deutschland gilt bei Europawahlen derzeit keine nationale Sperrklausel im bisherigen Sinne. Vor Freischaltung pruefen.", "verifiziertAm": null, "verifiziertVon": null }
+  },
+
+  "partyColors": {
+    "_doku": "Konventionelle Zuordnung fuer die Darstellung, keine offiziellen Parteifarben und keine Aussage ueber die Parteien. Fallback ist neutrales Grau.",
+    "CDU/CSU": "#1B1B1B",
+    "CDU": "#1B1B1B",
+    "CSU": "#0B77BE",
+    "SPD": "#D3253C",
+    "Grüne": "#3E8F3E",
+    "AfD": "#0A84C1",
+    "FDP": "#E5B60B",
+    "Linke": "#B5197E",
+    "BSW": "#6E2A8C",
+    "FW": "#F08A24",
+    "Sonstige": "#8A8F98"
+  }
+}

@@ -1,0 +1,22 @@
+name: Tests
+
+# Prueft bei jedem Pull Request, dass die Rechenverfahren stimmen und der
+# Build durchlaeuft. Nutzt synthetische Testdaten, damit kein Netzzugriff
+# auf die Quelle noetig ist.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/make-fixture.mjs
+      - run: npm run fetch:fixture
+      - run: npm run build
+      - run: npm run check

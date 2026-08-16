@@ -1,0 +1,1595 @@
+{
+  "_WARNUNG": "SYNTHETISCHE TESTDATEN. Alle Zahlen und Institutsnamen sind frei erfunden. Nicht veroeffentlichen.",
+  "Database": {
+    "License": {
+      "Name": "SYNTHETISCH - keine Lizenz, keine echten Daten",
+      "Shortcut": "TEST",
+      "Link": "https://example.invalid"
+    },
+    "Publisher": "fixture.invalid",
+    "Author": "Wahlwerk make-fixture.mjs",
+    "Last_Update": "2026-08-16T00:00:00+02:00"
+  },
+  "Parliaments": {
+    "1": {
+      "Shortcut": "Bundestag",
+      "Name": "Bundestag",
+      "Election": "Bundestagswahl"
+    },
+    "2": {
+      "Shortcut": "Sachsen-Anhalt",
+      "Name": "Sachsen-Anhalt",
+      "Election": "Landtagswahl"
+    },
+    "3": {
+      "Shortcut": "Berlin",
+      "Name": "Berlin",
+      "Election": "Abgeordnetenhauswahl"
+    }
+  },
+  "Institutes": {
+    "1": {
+      "Name": "TESTINSTITUT ALPHA (synthetisch)"
+    },
+    "2": {
+      "Name": "TESTINSTITUT BETA (synthetisch)"
+    },
+    "3": {
+      "Name": "TESTINSTITUT GAMMA (synthetisch)"
+    },
+    "4": {
+      "Name": "TESTINSTITUT DELTA (synthetisch)"
+    }
+  },
+  "Taskers": {
+    "1": {
+      "Name": "TESTAUFTRAGGEBER EINS (synthetisch)"
+    },
+    "2": {
+      "Name": "TESTAUFTRAGGEBER ZWEI (synthetisch)"
+    }
+  },
+  "Methods": {
+    "1": {
+      "Name": "Online-Befragung"
+    },
+    "2": {
+      "Name": "Telefonbefragung"
+    },
+    "3": {
+      "Name": "Mixed-Mode"
+    }
+  },
+  "Parties": {
+    "1": {
+      "Shortcut": "CDU/CSU",
+      "Name": "Christlich Demokratische Union / Christlich-Soziale Union"
+    },
+    "2": {
+      "Shortcut": "SPD",
+      "Name": "Sozialdemokratische Partei Deutschlands"
+    },
+    "3": {
+      "Shortcut": "Grüne",
+      "Name": "Bündnis 90/Die Grünen"
+    },
+    "4": {
+      "Shortcut": "FDP",
+      "Name": "Freie Demokratische Partei"
+    },
+    "5": {
+      "Shortcut": "AfD",
+      "Name": "Alternative für Deutschland"
+    },
+    "6": {
+      "Shortcut": "Linke",
+      "Name": "Die Linke"
+    },
+    "7": {
+      "Shortcut": "BSW",
+      "Name": "Bündnis Sahra Wagenknecht"
+    },
+    "8": {
+      "Shortcut": "Sonstige",
+      "Name": "Sonstige Parteien"
+    }
+  },
+  "Surveys": {
+    "1001": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-08-15",
+      "Survey_Period": {
+        "Date_Start": "2026-08-11",
+        "Date_End": "2026-08-14"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 25.1,
+        "2": 15.9,
+        "3": 13.3,
+        "4": 4.3,
+        "5": 26.7,
+        "6": 13.1,
+        "7": 6.4,
+        "8": 6.1
+      }
+    },
+    "1002": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-08-11",
+      "Survey_Period": {
+        "Date_Start": "2026-08-07",
+        "Date_End": "2026-08-10"
+      },
+      "Surveyed_Persons": 1688,
+      "Results": {
+        "1": 24.7,
+        "2": 15.1,
+        "3": 13.4,
+        "4": 3.3,
+        "5": 25.6,
+        "6": 11,
+        "7": 5.5,
+        "8": 8.6
+      }
+    },
+    "1003": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-08-08",
+      "Survey_Period": {
+        "Date_Start": "2026-08-04",
+        "Date_End": "2026-08-07"
+      },
+      "Surveyed_Persons": 1089,
+      "Results": {
+        "1": 24.6,
+        "2": 17.7,
+        "3": 15,
+        "4": 5.1,
+        "5": 24.2,
+        "6": 13.1,
+        "7": 6.5,
+        "8": 9.4
+      }
+    },
+    "1004": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-08-03",
+      "Survey_Period": {
+        "Date_Start": "2026-07-30",
+        "Date_End": "2026-08-02"
+      },
+      "Surveyed_Persons": 2456,
+      "Results": {
+        "1": 23.9,
+        "2": 14.9,
+        "3": 15.9,
+        "4": 5.4,
+        "5": 25.8,
+        "6": 11.7,
+        "7": 5.9,
+        "8": 5.9
+      }
+    },
+    "1005": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-07-30",
+      "Survey_Period": {
+        "Date_Start": "2026-07-26",
+        "Date_End": "2026-07-29"
+      },
+      "Surveyed_Persons": 1711,
+      "Results": {
+        "1": 23.5,
+        "2": 14.6,
+        "3": 15.8,
+        "4": 5.8,
+        "5": 24.3,
+        "6": 10.2,
+        "7": 6.3,
+        "8": 7.8
+      }
+    },
+    "1006": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-07-26",
+      "Survey_Period": {
+        "Date_Start": "2026-07-22",
+        "Date_End": "2026-07-25"
+      },
+      "Surveyed_Persons": 2059,
+      "Results": {
+        "1": 25.3,
+        "2": 17.9,
+        "3": 13.8,
+        "4": 5.4,
+        "5": 26.7,
+        "6": 13,
+        "7": 4.2,
+        "8": 6
+      }
+    },
+    "1007": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-07-21",
+      "Survey_Period": {
+        "Date_Start": "2026-07-17",
+        "Date_End": "2026-07-20"
+      },
+      "Surveyed_Persons": 1655,
+      "Results": {
+        "1": 24.2,
+        "2": 18,
+        "3": 13,
+        "4": 6.1,
+        "5": 26,
+        "6": 11.6,
+        "7": 6.1,
+        "8": 6.6
+      }
+    },
+    "1008": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-07-18",
+      "Survey_Period": {
+        "Date_Start": "2026-07-14",
+        "Date_End": "2026-07-17"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 25.4,
+        "2": 18.2,
+        "3": 14.6,
+        "4": 4.5,
+        "5": 23.9,
+        "6": 12.1,
+        "7": 5.1,
+        "8": 7.8
+      }
+    },
+    "1009": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-07-15",
+      "Survey_Period": {
+        "Date_Start": "2026-07-11",
+        "Date_End": "2026-07-14"
+      },
+      "Surveyed_Persons": 1962,
+      "Results": {
+        "1": 26.3,
+        "2": 18.2,
+        "3": 13.9,
+        "4": 6.1,
+        "5": 25.6,
+        "6": 9.9,
+        "7": 3.6,
+        "8": 8.5
+      }
+    },
+    "1010": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-07-09",
+      "Survey_Period": {
+        "Date_Start": "2026-07-05",
+        "Date_End": "2026-07-08"
+      },
+      "Surveyed_Persons": 1640,
+      "Results": {
+        "1": 24.4,
+        "2": 17.6,
+        "3": 14.6,
+        "4": 3.6,
+        "5": 23.6,
+        "6": 9,
+        "7": 5.1,
+        "8": 6.4
+      }
+    },
+    "1011": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-07-07",
+      "Survey_Period": {
+        "Date_Start": "2026-07-03",
+        "Date_End": "2026-07-06"
+      },
+      "Surveyed_Persons": 2494,
+      "Results": {
+        "1": 26.4,
+        "2": 16.1,
+        "3": 14,
+        "4": 4.2,
+        "5": 23.5,
+        "6": 9.1,
+        "7": 6,
+        "8": 7.6
+      }
+    },
+    "1012": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-07-02",
+      "Survey_Period": {
+        "Date_Start": "2026-06-28",
+        "Date_End": "2026-07-01"
+      },
+      "Surveyed_Persons": 1420,
+      "Results": {
+        "1": 26.1,
+        "2": 14.9,
+        "3": 13.4,
+        "4": 3.1,
+        "5": 24.7,
+        "6": 9.3,
+        "7": 6,
+        "8": 4.2
+      }
+    },
+    "1013": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-06-28",
+      "Survey_Period": {
+        "Date_Start": "2026-06-24",
+        "Date_End": "2026-06-27"
+      },
+      "Surveyed_Persons": 2210,
+      "Results": {
+        "1": 24.7,
+        "2": 14.7,
+        "3": 14.5,
+        "4": 4.7,
+        "5": 24.5,
+        "6": 9.4,
+        "7": 4.1,
+        "8": 6.7
+      }
+    },
+    "1014": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-06-24",
+      "Survey_Period": {
+        "Date_Start": "2026-06-20",
+        "Date_End": "2026-06-23"
+      },
+      "Surveyed_Persons": 2150,
+      "Results": {
+        "1": 25.1,
+        "2": 14,
+        "3": 14.9,
+        "4": 3.7,
+        "5": 24.8,
+        "6": 11,
+        "7": 4.5,
+        "8": 3.8
+      }
+    },
+    "1015": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-06-20",
+      "Survey_Period": {
+        "Date_Start": "2026-06-16",
+        "Date_End": "2026-06-19"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 23.4,
+        "2": 16.3,
+        "3": 11.8,
+        "4": 4,
+        "5": 22.3,
+        "6": 9.7,
+        "7": 3.7,
+        "8": 4.1
+      }
+    },
+    "1016": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-06-15",
+      "Survey_Period": {
+        "Date_Start": "2026-06-11",
+        "Date_End": "2026-06-14"
+      },
+      "Surveyed_Persons": 1375,
+      "Results": {
+        "1": 24.3,
+        "2": 17.2,
+        "3": 14,
+        "4": 2.7,
+        "5": 24.7,
+        "6": 8.8,
+        "7": 3.5,
+        "8": 3.6
+      }
+    },
+    "1017": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-06-12",
+      "Survey_Period": {
+        "Date_Start": "2026-06-08",
+        "Date_End": "2026-06-11"
+      },
+      "Surveyed_Persons": 1518,
+      "Results": {
+        "1": 24.6,
+        "2": 15,
+        "3": 13.4,
+        "4": 5.1,
+        "5": 24.6,
+        "6": 8.7,
+        "7": 2.4,
+        "8": 5.7
+      }
+    },
+    "1018": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-06-07",
+      "Survey_Period": {
+        "Date_Start": "2026-06-03",
+        "Date_End": "2026-06-06"
+      },
+      "Surveyed_Persons": 2241,
+      "Results": {
+        "1": 26.1,
+        "2": 15.5,
+        "3": 11.6,
+        "4": 4.8,
+        "5": 24.3,
+        "6": 10.1,
+        "7": 2.6,
+        "8": 5.9
+      }
+    },
+    "1019": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-06-03",
+      "Survey_Period": {
+        "Date_Start": "2026-05-30",
+        "Date_End": "2026-06-02"
+      },
+      "Surveyed_Persons": 1497,
+      "Results": {
+        "1": 25.8,
+        "2": 15.3,
+        "3": 10.6,
+        "4": 1.3,
+        "5": 22.7,
+        "6": 7.7,
+        "7": 2.4,
+        "8": 6.1
+      }
+    },
+    "1020": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-05-31",
+      "Survey_Period": {
+        "Date_Start": "2026-05-27",
+        "Date_End": "2026-05-30"
+      },
+      "Surveyed_Persons": 2444,
+      "Results": {
+        "1": 25.6,
+        "2": 14,
+        "3": 13.9,
+        "4": 3.3,
+        "5": 21.9,
+        "6": 7.2,
+        "7": 2.3,
+        "8": 3.5
+      }
+    },
+    "1021": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-05-26",
+      "Survey_Period": {
+        "Date_Start": "2026-05-22",
+        "Date_End": "2026-05-25"
+      },
+      "Surveyed_Persons": 2054,
+      "Results": {
+        "1": 24.1,
+        "2": 12.7,
+        "3": 12.7,
+        "4": 3.6,
+        "5": 24.4,
+        "6": 8.9,
+        "7": 3.1,
+        "8": 3.4
+      }
+    },
+    "1022": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-05-24",
+      "Survey_Period": {
+        "Date_Start": "2026-05-20",
+        "Date_End": "2026-05-23"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 24.9,
+        "2": 13.4,
+        "3": 11.3,
+        "4": 2.7,
+        "5": 21.9,
+        "6": 9.4,
+        "7": 3.5,
+        "8": 6.1
+      }
+    },
+    "1023": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-05-19",
+      "Survey_Period": {
+        "Date_Start": "2026-05-15",
+        "Date_End": "2026-05-18"
+      },
+      "Surveyed_Persons": 1444,
+      "Results": {
+        "1": 23.5,
+        "2": 14.8,
+        "3": 13.5,
+        "4": 3.2,
+        "5": 20.6,
+        "6": 7.4,
+        "7": 2,
+        "8": 5
+      }
+    },
+    "1024": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-05-14",
+      "Survey_Period": {
+        "Date_Start": "2026-05-10",
+        "Date_End": "2026-05-13"
+      },
+      "Surveyed_Persons": 2225,
+      "Results": {
+        "1": 22.3,
+        "2": 11.9,
+        "3": 12.2,
+        "4": 3.4,
+        "5": 24.2,
+        "6": 9.9,
+        "7": 2.9,
+        "8": 2.8
+      }
+    },
+    "1025": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-05-11",
+      "Survey_Period": {
+        "Date_Start": "2026-05-07",
+        "Date_End": "2026-05-10"
+      },
+      "Surveyed_Persons": 1183,
+      "Results": {
+        "1": 24.5,
+        "2": 13.7,
+        "3": 12.4,
+        "4": 4,
+        "5": 21.4,
+        "6": 8.4,
+        "7": 2.1,
+        "8": 5.4
+      }
+    },
+    "1026": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-05-08",
+      "Survey_Period": {
+        "Date_Start": "2026-05-04",
+        "Date_End": "2026-05-07"
+      },
+      "Surveyed_Persons": 1261,
+      "Results": {
+        "1": 20.8,
+        "2": 14.1,
+        "3": 12.9,
+        "4": 3.4,
+        "5": 20.7,
+        "6": 10.5,
+        "7": 3.2,
+        "8": 4.4
+      }
+    },
+    "1027": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-05-02",
+      "Survey_Period": {
+        "Date_Start": "2026-04-28",
+        "Date_End": "2026-05-01"
+      },
+      "Surveyed_Persons": 1233,
+      "Results": {
+        "1": 22.6,
+        "2": 15.3,
+        "3": 12.1,
+        "4": 2.2,
+        "5": 21.1,
+        "6": 7,
+        "7": 3.8,
+        "8": 3.9
+      }
+    },
+    "1028": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-04-28",
+      "Survey_Period": {
+        "Date_Start": "2026-04-24",
+        "Date_End": "2026-04-27"
+      },
+      "Surveyed_Persons": 2102,
+      "Results": {
+        "1": 23.9,
+        "2": 14.4,
+        "3": 9.9,
+        "4": 4.6,
+        "5": 22.3,
+        "6": 8,
+        "7": 5.1,
+        "8": 7.2
+      }
+    },
+    "1029": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-04-24",
+      "Survey_Period": {
+        "Date_Start": "2026-04-20",
+        "Date_End": "2026-04-23"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 23.5,
+        "2": 14.4,
+        "3": 11,
+        "4": 2,
+        "5": 24.7,
+        "6": 7.6,
+        "7": 3.5,
+        "8": 4.2
+      }
+    },
+    "1030": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-04-21",
+      "Survey_Period": {
+        "Date_Start": "2026-04-17",
+        "Date_End": "2026-04-20"
+      },
+      "Surveyed_Persons": 1137,
+      "Results": {
+        "1": 22.4,
+        "2": 12.8,
+        "3": 12.5,
+        "4": 1.4,
+        "5": 23.9,
+        "6": 8.7,
+        "7": 3.9,
+        "8": 5.5
+      }
+    },
+    "1031": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-04-17",
+      "Survey_Period": {
+        "Date_Start": "2026-04-13",
+        "Date_End": "2026-04-16"
+      },
+      "Surveyed_Persons": 1278,
+      "Results": {
+        "1": 22.3,
+        "2": 14.1,
+        "3": 11.5,
+        "4": 1.6,
+        "5": 23,
+        "6": 8.7,
+        "7": 4.3,
+        "8": 7.9
+      }
+    },
+    "1032": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-04-14",
+      "Survey_Period": {
+        "Date_Start": "2026-04-10",
+        "Date_End": "2026-04-13"
+      },
+      "Surveyed_Persons": 2417,
+      "Results": {
+        "1": 23.5,
+        "2": 13.9,
+        "3": 14.1,
+        "4": 2.8,
+        "5": 22.1,
+        "6": 11.2,
+        "7": 2.4,
+        "8": 5.1
+      }
+    },
+    "1033": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-04-10",
+      "Survey_Period": {
+        "Date_Start": "2026-04-06",
+        "Date_End": "2026-04-09"
+      },
+      "Surveyed_Persons": 2041,
+      "Results": {
+        "1": 22.6,
+        "2": 15.7,
+        "3": 13.3,
+        "4": 1.8,
+        "5": 25.1,
+        "6": 8.4,
+        "7": 2.8,
+        "8": 7
+      }
+    },
+    "1034": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-04-05",
+      "Survey_Period": {
+        "Date_Start": "2026-04-01",
+        "Date_End": "2026-04-04"
+      },
+      "Surveyed_Persons": 1728,
+      "Results": {
+        "1": 22.9,
+        "2": 13.1,
+        "3": 14.6,
+        "4": 2.5,
+        "5": 25.3,
+        "6": 11.1,
+        "7": 6,
+        "8": 6.2
+      }
+    },
+    "1035": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-04-02",
+      "Survey_Period": {
+        "Date_Start": "2026-03-29",
+        "Date_End": "2026-04-01"
+      },
+      "Surveyed_Persons": 1722,
+      "Results": {
+        "1": 24.3,
+        "2": 13.5,
+        "3": 14,
+        "4": 2.2,
+        "5": 25.1,
+        "6": 11.2,
+        "7": 6.2,
+        "8": 6.6
+      }
+    },
+    "1036": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-03-28",
+      "Survey_Period": {
+        "Date_Start": "2026-03-24",
+        "Date_End": "2026-03-27"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 24.9,
+        "2": 16.4,
+        "3": 13.9,
+        "4": 5.3,
+        "5": 24,
+        "6": 10.7,
+        "7": 5.8,
+        "8": 5.2
+      }
+    },
+    "1037": {
+      "Parliament_ID": "1",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-03-25",
+      "Survey_Period": {
+        "Date_Start": "2026-03-21",
+        "Date_End": "2026-03-24"
+      },
+      "Surveyed_Persons": 2361,
+      "Results": {
+        "1": 24.6,
+        "2": 16.1,
+        "3": 13.8,
+        "4": 5.3,
+        "5": 25.5,
+        "6": 11,
+        "7": 5,
+        "8": 6.7
+      }
+    },
+    "1038": {
+      "Parliament_ID": "1",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-03-19",
+      "Survey_Period": {
+        "Date_Start": "2026-03-15",
+        "Date_End": "2026-03-18"
+      },
+      "Surveyed_Persons": 1329,
+      "Results": {
+        "1": 25.2,
+        "2": 16.4,
+        "3": 12.8,
+        "4": 5.9,
+        "5": 26,
+        "6": 12.5,
+        "7": 5,
+        "8": 6.4
+      }
+    },
+    "1039": {
+      "Parliament_ID": "1",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-03-15",
+      "Survey_Period": {
+        "Date_Start": "2026-03-11",
+        "Date_End": "2026-03-14"
+      },
+      "Surveyed_Persons": 2294,
+      "Results": {
+        "1": 23.1,
+        "2": 17.5,
+        "3": 14.1,
+        "4": 6,
+        "5": 23.3,
+        "6": 11.9,
+        "7": 6.7,
+        "8": 7
+      }
+    },
+    "1040": {
+      "Parliament_ID": "1",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-03-13",
+      "Survey_Period": {
+        "Date_Start": "2026-03-09",
+        "Date_End": "2026-03-12"
+      },
+      "Surveyed_Persons": 1470,
+      "Results": {
+        "1": 23.7,
+        "2": 17.6,
+        "3": 14.9,
+        "4": 4.6,
+        "5": 26.4,
+        "6": 11.3,
+        "7": 4.5,
+        "8": 5.6
+      }
+    },
+    "1041": {
+      "Parliament_ID": "2",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-08-16",
+      "Survey_Period": {
+        "Date_Start": "2026-08-12",
+        "Date_End": "2026-08-15"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 21,
+        "2": 7.6,
+        "3": 4.7,
+        "4": 4.8,
+        "5": 35.4,
+        "6": 15.5,
+        "7": 10.5,
+        "8": 8.9
+      }
+    },
+    "1042": {
+      "Parliament_ID": "2",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-08-04",
+      "Survey_Period": {
+        "Date_Start": "2026-07-31",
+        "Date_End": "2026-08-03"
+      },
+      "Surveyed_Persons": 2240,
+      "Results": {
+        "1": 23.4,
+        "2": 8,
+        "3": 5.8,
+        "4": 2.4,
+        "5": 35,
+        "6": 15,
+        "7": 9.9,
+        "8": 9.9
+      }
+    },
+    "1043": {
+      "Parliament_ID": "2",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-07-23",
+      "Survey_Period": {
+        "Date_Start": "2026-07-19",
+        "Date_End": "2026-07-22"
+      },
+      "Surveyed_Persons": 1937,
+      "Results": {
+        "1": 23.7,
+        "2": 10.2,
+        "3": 6.9,
+        "4": 5.1,
+        "5": 34.5,
+        "6": 14.1,
+        "7": 9.8,
+        "8": 10.3
+      }
+    },
+    "1044": {
+      "Parliament_ID": "2",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-07-14",
+      "Survey_Period": {
+        "Date_Start": "2026-07-10",
+        "Date_End": "2026-07-13"
+      },
+      "Surveyed_Persons": 2192,
+      "Results": {
+        "1": 22.1,
+        "2": 9.8,
+        "3": 6.5,
+        "4": 4,
+        "5": 33.6,
+        "6": 15.9,
+        "7": 9,
+        "8": 12
+      }
+    },
+    "1045": {
+      "Parliament_ID": "2",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-07-01",
+      "Survey_Period": {
+        "Date_Start": "2026-06-27",
+        "Date_End": "2026-06-30"
+      },
+      "Surveyed_Persons": 1495,
+      "Results": {
+        "1": 23,
+        "2": 8.6,
+        "3": 4.4,
+        "4": 2.5,
+        "5": 33.2,
+        "6": 13.6,
+        "7": 8.6,
+        "8": 11.1
+      }
+    },
+    "1046": {
+      "Parliament_ID": "2",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-06-22",
+      "Survey_Period": {
+        "Date_Start": "2026-06-18",
+        "Date_End": "2026-06-21"
+      },
+      "Surveyed_Persons": 1802,
+      "Results": {
+        "1": 23.2,
+        "2": 9.8,
+        "3": 6.3,
+        "4": 3.5,
+        "5": 34,
+        "6": 16.1,
+        "7": 8.4,
+        "8": 10.7
+      }
+    },
+    "1047": {
+      "Parliament_ID": "2",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-06-11",
+      "Survey_Period": {
+        "Date_Start": "2026-06-07",
+        "Date_End": "2026-06-10"
+      },
+      "Surveyed_Persons": 1946,
+      "Results": {
+        "1": 23.6,
+        "2": 9,
+        "3": 8.4,
+        "4": 2.5,
+        "5": 35.5,
+        "6": 13.8,
+        "7": 9.9,
+        "8": 8.4
+      }
+    },
+    "1048": {
+      "Parliament_ID": "2",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-05-30",
+      "Survey_Period": {
+        "Date_Start": "2026-05-26",
+        "Date_End": "2026-05-29"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 21.5,
+        "2": 8.4,
+        "3": 5.2,
+        "4": 5.5,
+        "5": 33.5,
+        "6": 14.5,
+        "7": 10.9,
+        "8": 9.3
+      }
+    },
+    "1049": {
+      "Parliament_ID": "2",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-05-18",
+      "Survey_Period": {
+        "Date_Start": "2026-05-14",
+        "Date_End": "2026-05-17"
+      },
+      "Surveyed_Persons": 1196,
+      "Results": {
+        "1": 21.9,
+        "2": 9.1,
+        "3": 7.1,
+        "4": 3.3,
+        "5": 35.5,
+        "6": 13.8,
+        "7": 7.3,
+        "8": 8.3
+      }
+    },
+    "1050": {
+      "Parliament_ID": "2",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-05-08",
+      "Survey_Period": {
+        "Date_Start": "2026-05-04",
+        "Date_End": "2026-05-07"
+      },
+      "Surveyed_Persons": 1461,
+      "Results": {
+        "1": 24,
+        "2": 8.3,
+        "3": 6.1,
+        "4": 5.8,
+        "5": 33.4,
+        "6": 12.3,
+        "7": 6.7,
+        "8": 11.1
+      }
+    },
+    "1051": {
+      "Parliament_ID": "2",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-04-26",
+      "Survey_Period": {
+        "Date_Start": "2026-04-22",
+        "Date_End": "2026-04-25"
+      },
+      "Surveyed_Persons": 2124,
+      "Results": {
+        "1": 23.9,
+        "2": 8.6,
+        "3": 7.5,
+        "4": 2.7,
+        "5": 34.8,
+        "6": 13.4,
+        "7": 7.9,
+        "8": 8.5
+      }
+    },
+    "1052": {
+      "Parliament_ID": "2",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-04-17",
+      "Survey_Period": {
+        "Date_Start": "2026-04-13",
+        "Date_End": "2026-04-16"
+      },
+      "Surveyed_Persons": 1182,
+      "Results": {
+        "1": 20.8,
+        "2": 8.2,
+        "3": 4.3,
+        "4": 2.5,
+        "5": 35,
+        "6": 14.5,
+        "7": 7.9,
+        "8": 8.4
+      }
+    },
+    "1053": {
+      "Parliament_ID": "2",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-04-04",
+      "Survey_Period": {
+        "Date_Start": "2026-03-31",
+        "Date_End": "2026-04-03"
+      },
+      "Surveyed_Persons": 1538,
+      "Results": {
+        "1": 21.8,
+        "2": 7.6,
+        "3": 6.6,
+        "4": 2.1,
+        "5": 35,
+        "6": 12.5,
+        "7": 6.9,
+        "8": 9.8
+      }
+    },
+    "1054": {
+      "Parliament_ID": "2",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-03-26",
+      "Survey_Period": {
+        "Date_Start": "2026-03-22",
+        "Date_End": "2026-03-25"
+      },
+      "Surveyed_Persons": 1692,
+      "Results": {
+        "1": 23.1,
+        "2": 10.5,
+        "3": 3.8,
+        "4": 3.8,
+        "5": 32.3,
+        "6": 13.2,
+        "7": 7.3,
+        "8": 10.1
+      }
+    },
+    "1055": {
+      "Parliament_ID": "3",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-08-15",
+      "Survey_Period": {
+        "Date_Start": "2026-08-11",
+        "Date_End": "2026-08-14"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 20.3,
+        "2": 17.3,
+        "3": 20.2,
+        "4": 6.7,
+        "5": 14.4,
+        "6": 15,
+        "7": 4,
+        "8": 5
+      }
+    },
+    "1056": {
+      "Parliament_ID": "3",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-08-05",
+      "Survey_Period": {
+        "Date_Start": "2026-08-01",
+        "Date_End": "2026-08-04"
+      },
+      "Surveyed_Persons": 2149,
+      "Results": {
+        "1": 21.6,
+        "2": 19.6,
+        "3": 19.7,
+        "4": 3.3,
+        "5": 15,
+        "6": 17.2,
+        "7": 6,
+        "8": 8.1
+      }
+    },
+    "1057": {
+      "Parliament_ID": "3",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-07-25",
+      "Survey_Period": {
+        "Date_Start": "2026-07-21",
+        "Date_End": "2026-07-24"
+      },
+      "Surveyed_Persons": 1437,
+      "Results": {
+        "1": 24,
+        "2": 19.9,
+        "3": 18.8,
+        "4": 6.3,
+        "5": 17.2,
+        "6": 18.3,
+        "7": 6.1,
+        "8": 5
+      }
+    },
+    "1058": {
+      "Parliament_ID": "3",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-07-14",
+      "Survey_Period": {
+        "Date_Start": "2026-07-10",
+        "Date_End": "2026-07-13"
+      },
+      "Surveyed_Persons": 2232,
+      "Results": {
+        "1": 24.4,
+        "2": 17.9,
+        "3": 17.9,
+        "4": 7.4,
+        "5": 17,
+        "6": 16.4,
+        "7": 4.8,
+        "8": 6.3
+      }
+    },
+    "1059": {
+      "Parliament_ID": "3",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-07-02",
+      "Survey_Period": {
+        "Date_Start": "2026-06-28",
+        "Date_End": "2026-07-01"
+      },
+      "Surveyed_Persons": 2115,
+      "Results": {
+        "1": 23.7,
+        "2": 19,
+        "3": 20,
+        "4": 3.9,
+        "5": 15.5,
+        "6": 15,
+        "7": 6.8,
+        "8": 8.2
+      }
+    },
+    "1060": {
+      "Parliament_ID": "3",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-06-20",
+      "Survey_Period": {
+        "Date_Start": "2026-06-16",
+        "Date_End": "2026-06-19"
+      },
+      "Surveyed_Persons": 1259,
+      "Results": {
+        "1": 22.7,
+        "2": 18.2,
+        "3": 18.8,
+        "4": 3.6,
+        "5": 18.2,
+        "6": 17.6,
+        "7": 3.6,
+        "8": 7
+      }
+    },
+    "1061": {
+      "Parliament_ID": "3",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-06-10",
+      "Survey_Period": {
+        "Date_Start": "2026-06-06",
+        "Date_End": "2026-06-09"
+      },
+      "Surveyed_Persons": 1297,
+      "Results": {
+        "1": 25.2,
+        "2": 20.2,
+        "3": 19.4,
+        "4": 4,
+        "5": 16.2,
+        "6": 15.5,
+        "7": 3.5,
+        "8": 7.1
+      }
+    },
+    "1062": {
+      "Parliament_ID": "3",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-05-31",
+      "Survey_Period": {
+        "Date_Start": "2026-05-27",
+        "Date_End": "2026-05-30"
+      },
+      "Surveyed_Persons": null,
+      "Results": {
+        "1": 22.1,
+        "2": 19.6,
+        "3": 20.8,
+        "4": 3.9,
+        "5": 17,
+        "6": 14.4,
+        "7": 6.5,
+        "8": 5.3
+      }
+    },
+    "1063": {
+      "Parliament_ID": "3",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Date": "2026-05-19",
+      "Survey_Period": {
+        "Date_Start": "2026-05-15",
+        "Date_End": "2026-05-18"
+      },
+      "Surveyed_Persons": 1164,
+      "Results": {
+        "1": 25.4,
+        "2": 19.7,
+        "3": 18,
+        "4": 6.2,
+        "5": 16.1,
+        "6": 16,
+        "7": 6.2,
+        "8": 4.4
+      }
+    },
+    "1064": {
+      "Parliament_ID": "3",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "1",
+      "Date": "2026-05-09",
+      "Survey_Period": {
+        "Date_Start": "2026-05-05",
+        "Date_End": "2026-05-08"
+      },
+      "Surveyed_Persons": 1002,
+      "Results": {
+        "1": 25.3,
+        "2": 17.8,
+        "3": 17.4,
+        "4": 3.8,
+        "5": 16.5,
+        "6": 16.8,
+        "7": 4.1,
+        "8": 3.9
+      }
+    },
+    "1065": {
+      "Parliament_ID": "3",
+      "Institute_ID": "3",
+      "Tasker_ID": "1",
+      "Method_ID": "2",
+      "Date": "2026-04-26",
+      "Survey_Period": {
+        "Date_Start": "2026-04-22",
+        "Date_End": "2026-04-25"
+      },
+      "Surveyed_Persons": 1750,
+      "Results": {
+        "1": 24.8,
+        "2": 18.5,
+        "3": 17.3,
+        "4": 4.8,
+        "5": 15.3,
+        "6": 13.8,
+        "7": 5.9,
+        "8": 3.3
+      }
+    },
+    "1066": {
+      "Parliament_ID": "3",
+      "Institute_ID": "4",
+      "Tasker_ID": "2",
+      "Method_ID": "3",
+      "Date": "2026-04-16",
+      "Survey_Period": {
+        "Date_Start": "2026-04-12",
+        "Date_End": "2026-04-15"
+      },
+      "Surveyed_Persons": 1993,
+      "Results": {
+        "1": 22.8,
+        "2": 16.9,
+        "3": 18.7,
+        "4": 5.8,
+        "5": 17,
+        "6": 16,
+        "7": 5.9,
+        "8": 3.8
+      }
+    },
+    "1067": {
+      "Parliament_ID": "3",
+      "Institute_ID": "1",
+      "Tasker_ID": "1",
+      "Method_ID": "1",
+      "Date": "2026-04-04",
+      "Survey_Period": {
+        "Date_Start": "2026-03-31",
+        "Date_End": "2026-04-03"
+      },
+      "Surveyed_Persons": 1150,
+      "Results": {
+        "1": 23.5,
+        "2": 19.9,
+        "3": 19,
+        "4": 6.4,
+        "5": 14.6,
+        "6": 17.1,
+        "7": 5.3,
+        "8": 6.6
+      }
+    },
+    "1068": {
+      "Parliament_ID": "3",
+      "Institute_ID": "2",
+      "Tasker_ID": "2",
+      "Method_ID": "2",
+      "Date": "2026-03-26",
+      "Survey_Period": {
+        "Date_Start": "2026-03-22",
+        "Date_End": "2026-03-25"
+      },
+      "Surveyed_Persons": 1482,
+      "Results": {
+        "1": 23.1,
+        "2": 17.4,
+        "3": 18.2,
+        "4": 4.5,
+        "5": 16,
+        "6": 14.1,
+        "7": 2.2,
+        "8": 5.7
+      }
+    }
+  }
+}

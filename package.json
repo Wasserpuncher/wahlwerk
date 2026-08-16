@@ -1,0 +1,20 @@
+{
+  "name": "wahlwerk",
+  "version": "0.1.0",
+  "description": "Statischer Generator fuer ein quellenbelegtes Portal zu deutschen Wahlumfragen. Keine Laufzeitabhaengigkeiten.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "fetch": "node scripts/fetch-dawum.mjs",
+    "fetch:fixture": "node scripts/fetch-dawum.mjs --fixture",
+    "build": "node scripts/build.mjs",
+    "all": "npm run fetch && npm run build",
+    "serve": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
