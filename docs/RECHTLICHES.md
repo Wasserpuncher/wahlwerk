@@ -22,6 +22,18 @@ Das Projekt lässt sich so konfigurieren, dass keine Impressumsseite erzeugt wir
 
 Ein Postfach genügt nicht, weil die Anschrift ladungsfähig sein muss.
 
+### Entscheidung für diesen Betrieb, 17.08.2026
+
+`legal.renderImpressum` steht auf `false`. Das ist eine bewusste Entscheidung des Betreibers gegen die Empfehlung dieses Dokuments, und sie wird hier festgehalten statt stillschweigend umgesetzt.
+
+**Begründung.** § 5 DDG verlangt eine ladungsfähige Anschrift; eine E-Mail-Adresse genügt dort nicht. Eine Privatanschrift auf einem Portal zu Wahlumfragen öffentlich zu führen, wurde abgelehnt. Eine c/o- oder Dienstleisteranschrift nach dem Muster oben stand zum Zeitpunkt der Entscheidung nicht zur Verfügung.
+
+**Was trotzdem erfüllt ist.** Art. 13 Abs. 1 lit. a DSGVO verlangt Identität und Kontaktdaten des Verantwortlichen, nicht zwingend eine Postanschrift. Die Datenschutzerklärung nennt beides. Der Generator gibt den Anschriftsblock dort weg, wenn keine Anschrift konfiguriert ist, statt eine leere oder erfundene Zeile auszugeben — siehe `anschriftZeile` in `scripts/build.mjs`. Damit steht dort nichts Unwahres.
+
+**Was nicht erfüllt ist.** Die Anbieterkennzeichnung nach § 5 DDG und, soweit einschlägig, § 18 Abs. 2 MStV. Das Risiko einer Abmahnung besteht fort und ist oben beschrieben.
+
+**Auflösung.** Sobald eine ladungsfähige Zustelladresse vorliegt: `legal.verantwortlicher` in `config/site.json` vollständig ausfüllen und `renderImpressum` wieder auf `true` setzen. Mehr ist nicht nötig, Seite und Footer-Link entstehen dann von selbst.
+
 ## 2. Datenlizenz
 
 Die Umfragedaten stammen von dawum.de und stehen unter der ODC Open Database License (ODbL) 1.0. Daraus folgen drei Pflichten:

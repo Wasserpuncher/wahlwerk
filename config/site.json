@@ -9,16 +9,21 @@
   "_hinweis_baseUrl": "Muss die Adresse sein, unter der die Seite tatsaechlich beworben wird. Ohne korrekte baseUrl sind Canonical-Tags, Sitemap und JSON-LD wertlos. Die Netlify-Adresse visionary-hotteok-2e1d0b.netlify.app liefert dieselben Seiten aus. Genau deshalb muessen die Canonical-Tags auf die eigene Domain zeigen, sonst konkurrieren beide Adressen um dieselben Inhalte. scripts/check.mjs erzwingt das.",
 
   "legal": {
-    "renderImpressum": true,
-    "_hinweis_renderImpressum": "Auf false setzen entfernt die Impressumsseite. Siehe docs/RECHTLICHES.md. Das Weglassen ist nach Paragraf 5 DDG und Paragraf 18 Abs. 2 MStV riskant und spart nichts, weil Art. 13 DSGVO die Nennung des Verantwortlichen in der Datenschutzerklaerung ohnehin verlangt.",
+    "renderImpressum": false,
+    "_hinweis_renderImpressum": "Auf false setzen entfernt die Impressumsseite und den Link im Footer. Siehe docs/RECHTLICHES.md.",
+    "_entscheidung_renderImpressum": "Am 17.08.2026 vom Betreiber bewusst auf false gesetzt. Grund: Paragraf 5 DDG verlangt eine ladungsfaehige Anschrift, eine E-Mail-Adresse genuegt dort nicht. Eine Privatanschrift auf einem Portal zu Wahlumfragen oeffentlich zu fuehren, wurde abgelehnt, eine c/o-Adresse steht derzeit nicht zur Verfuegung. RISIKO, ausdruecklich in Kauf genommen: Das Fehlen der Anbieterkennzeichnung ist nach Paragraf 5 DDG und Paragraf 18 Absatz 2 MStV abmahnfaehig. docs/RECHTLICHES.md raet davon ab. Der Zustand ist als Zwischenloesung gedacht und soll aufgehoben werden, sobald eine ladungsfaehige Zustelladresse vorliegt: dann legal.verantwortlicher vollstaendig ausfuellen und diesen Wert wieder auf true setzen. Die Datenschutzerklaerung bleibt davon unberuehrt und nennt weiterhin Identitaet und Kontaktdaten des Verantwortlichen, wie es Artikel 13 Absatz 1 Buchstabe a DSGVO verlangt.",
     "verantwortlicher": {
-      "name": "BITTE AUSFUELLEN",
-      "strasse": "BITTE AUSFUELLEN",
-      "plz": "BITTE AUSFUELLEN",
-      "ort": "BITTE AUSFUELLEN",
+      "_quelle": "Beide Werte sind vom Betreiber selbst veroeffentlicht und wurden am 17.08.2026 dort abgelesen, nichts davon ist geraten. Der Name steht im oeffentlichen GitHub-Profil des Betreibers (github.com/Wasserpuncher, Feld name), die E-Mail-Adresse im Impressum seiner Hauptdomain kaipfstr.de. Bewusst NICHT verwendet wurde die private Konto-Adresse kaipfister00@gmail.com: Der Betreiber veroeffentlicht sie nirgends selbst, und eine Datenschutzerklaerung ist kein Anlass, eine private Adresse erstmals oeffentlich zu machen.",
+
+      "name": "Kai Pfister",
+      "strasse": "",
+      "plz": "",
+      "ort": "",
       "land": "Deutschland",
-      "email": "BITTE AUSFUELLEN",
-      "telefon": ""
+      "email": "Kai@pfstr.de",
+      "telefon": "",
+
+      "_hinweis_anschrift": "Anschriftsfelder sind bewusst leer. Die Datenschutzerklaerung laesst den Anschriftsblock dann weg, statt eine leere oder erfundene Zeile auszugeben; siehe die Berechnung von anschriftZeile in scripts/build.mjs. Artikel 13 Absatz 1 Buchstabe a DSGVO ist damit erfuellt, weil Identitaet und eine erreichbare Kontaktmoeglichkeit genannt sind. Die Pflicht aus Paragraf 5 DDG ist damit NICHT erfuellt, sie entfaellt hier nur deshalb aus der Ausgabe, weil legal.renderImpressum auf false steht. Siehe die dortige Begruendung. Sobald eine ladungsfaehige Zustelladresse vorliegt: hier eintragen und renderImpressum wieder auf true setzen."
     },
     "aufsichtsbehoerde": "Bayerisches Landesamt fuer Datenschutzaufsicht (BayLDA), Postanschrift: Postfach 1349, 91504 Ansbach, Besucheranschrift: Promenade 18, 91522 Ansbach",
     "_hinweis_aufsichtsbehoerde": "Zustaendig ist die Aufsichtsbehoerde des Bundeslandes, in dem der Verantwortliche seinen Sitz hat. Hier Bayern, vom Betreiber am 17.08.2026 bestaetigt. Bezeichnung und beide Anschriften am selben Tag gegen die Kontaktseite der Behoerde geprueft (https://www.lda.bayern.de/de/kontakt.html). Bei einem Umzug in ein anderes Bundesland ist dieser Eintrag zu aendern, sonst nennt die Datenschutzerklaerung eine unzustaendige Stelle."

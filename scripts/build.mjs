@@ -771,6 +771,19 @@ if (site.legal.renderImpressum) {
   contentPages.push({ file: 'impressum.html', url: '/impressum/', title: 'Impressum', description: 'Anbieterkennzeichnung nach Paragraf 5 DDG und Paragraf 18 Absatz 2 MStV.', priority: 0.3 });
 }
 
+// Anschrift des Verantwortlichen. Sie ist in der Datenschutzerklaerung optional:
+// Artikel 13 Absatz 1 Buchstabe a DSGVO verlangt Identitaet und Kontaktdaten,
+// also Name und eine erreichbare Adresse, nicht zwingend eine Postanschrift.
+// Eine ladungsfaehige Anschrift verlangt dagegen Paragraf 5 DDG fuer das
+// Impressum. Wer ohne Impressum betreibt (legal.renderImpressum false), hat
+// diese Pflicht bewusst nicht erfuellt und soll hier keine leere oder erfundene
+// Zeile ausgeben, sondern gar keine.
+const v = site.legal.verantwortlicher;
+const hatAnschrift = [v.strasse, v.plz, v.ort].every((f) => f && !String(f).includes('BITTE AUSFUELLEN'));
+const anschriftZeile = hatAnschrift
+  ? `<dt>Anschrift</dt><dd>${esc(v.strasse)}, ${esc(`${v.plz} ${v.ort}`)}, ${esc(v.land)}</dd>\n  `
+  : '';
+
 // Speicherdauer der Protokolldaten. Steht logRetentionDays auf 0, wird bewusst
 // KEINE Frist behauptet. Weder Netlify noch Cloudflare veroeffentlichen eine
 // konkrete Aufbewahrungsdauer, und eine erfundene Frist in einer
@@ -784,6 +797,7 @@ for (const c of contentPages) {
   let html = await readFile(path.join(ROOT, 'content', c.file), 'utf8');
   html = html
     .replaceAll('{{VERANTWORTLICHER_NAME}}', esc(site.legal.verantwortlicher.name))
+    .replaceAll('{{VERANTWORTLICHER_ANSCHRIFT}}', anschriftZeile)
     .replaceAll('{{VERANTWORTLICHER_STRASSE}}', esc(site.legal.verantwortlicher.strasse))
     .replaceAll('{{VERANTWORTLICHER_PLZ_ORT}}', esc(`${site.legal.verantwortlicher.plz} ${site.legal.verantwortlicher.ort}`))
     .replaceAll('{{VERANTWORTLICHER_LAND}}', esc(site.legal.verantwortlicher.land))
