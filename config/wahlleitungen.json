@@ -1,0 +1,33 @@
+{
+  "_doku": "Zustaendige Wahlleitungen je Parlament, mit ihrer Behoerden-ID bei FragDenStaat.de. Zweck: Das Projekt weist heute fuer 16 von 18 Parlamenten keine Sitzverteilung aus, weil die Rechtsgrundlage nicht geprueft ist (siehe config/parliaments.json, Feld verified). Diese Datei macht aus der dokumentierten Luecke einen gangbaren Weg: Zu jedem ungeprueften Parlament laesst sich eine vorausgefuellte Anfrage nach dem jeweiligen Informationsfreiheitsgesetz an die zustaendige Stelle richten, die genau die fehlenden Angaben erfragt.",
+
+  "_erhebung": "Am 17.08.2026 ueber die oeffentliche FragDenStaat-API abgefragt (https://fragdenstaat.de/api/v1/publicbody/). Kein Zugangsschluessel noetig, kein Konto. Die IDs stammen unmittelbar aus den Antworten der API, nicht aus einer Abschrift. Namen wie von der API geliefert, einschliesslich der uneinheitlichen Schreibweisen.",
+
+  "_kein_laufzeitzugriff": "Der Generator ruft FragDenStaat NICHT beim Bauen ab. Die IDs stehen fest in dieser Datei, im Ergebnis entsteht nur ein gewoehnlicher Link. Damit bleiben die Zusicherungen des Projekts unberuehrt: keine Abhaengigkeit, kein externer Request beim Seitenaufruf, kein JavaScript.",
+
+  "_hinweis_zustaendigkeit": "Die Zuordnung folgt der Zustaendigkeit fuer die jeweilige Wahl, nicht der Behoerdenbezeichnung. Fuer die Europawahl in Deutschland ist die Bundeswahlleiterin zustaendig, deshalb steht dort dieselbe ID wie beim Bundestag.",
+
+  "basisUrl": "https://fragdenstaat.de/anfrage-stellen/an/",
+
+  "behoerden": {
+    "Bundestag": { "id": 4335, "name": "Bundeswahlleiterin", "ebene": "Bund" },
+    "Europaparlament": { "id": 4335, "name": "Bundeswahlleiterin", "ebene": "Bund", "hinweis": "Fuer die Wahl der deutschen Abgeordneten des Europaeischen Parlaments ist die Bundeswahlleiterin zustaendig." },
+
+    "Baden-Württemberg": { "id": 15190, "name": "Landeswahlleiter Baden-Württemberg", "ebene": "Land" },
+    "Bayern": { "id": 12033, "name": "Landeswahlleiterin des Freistaates Bayern", "ebene": "Land" },
+    "Berlin": { "id": 4334, "name": "Landeswahlleiterin Berlin", "ebene": "Land" },
+    "Brandenburg": { "id": 4336, "name": "Landeswahlleiter Brandenburg", "ebene": "Land" },
+    "Bremen": { "id": 15189, "name": "Landeswahlleitung Bremen", "ebene": "Land" },
+    "Hamburg": { "id": 4338, "name": "Landeswahlamt Hamburg", "ebene": "Land" },
+    "Hessen": { "id": 15181, "name": "Der Landeswahlleiter für Hessen", "ebene": "Land" },
+    "Mecklenburg-Vorpommern": { "id": 15182, "name": "Die Landeswahlleiterin Mecklenburg-Vorpommern", "ebene": "Land" },
+    "Niedersachsen": { "id": 15183, "name": "Niedersächsische Landeswahlleiterin", "ebene": "Land" },
+    "Nordrhein-Westfalen (NRW)": { "id": 4337, "name": "Landeswahlleiterin NRW", "ebene": "Land" },
+    "Rheinland-Pfalz": { "id": 15184, "name": "Der Landeswahlleiter Rheinland-Pfalz", "ebene": "Land" },
+    "Saarland": { "id": 6045, "name": "Landeswahlleiterin Saarland", "ebene": "Land" },
+    "Sachsen": { "id": 51668, "name": "Landeswahlleiter Sachsen", "ebene": "Land" },
+    "Sachsen-Anhalt": { "id": 15186, "name": "Landeswahlleiterin Sachsen-Anhalt", "ebene": "Land" },
+    "Schleswig-Holstein": { "id": 15187, "name": "Der Landeswahlleiter Schleswig-Holstein", "ebene": "Land" },
+    "Thüringen": { "id": 15188, "name": "Landeswahlleiterin Thüringen", "ebene": "Land" }
+  }
+}

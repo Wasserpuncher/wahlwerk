@@ -1,0 +1,62 @@
+name: Neubau anstossen
+
+# Zweck: Die Umfragezahlen sollen frisch bleiben, auch wenn sich am Code nichts
+# aendert.
+#
+# Netlify baut nur bei einem Push. Bis August 2026 kam dieser Push zufaellig
+# zustande: Der Archivlauf in archive.yml schreibt seinen Snapshot als Commit
+# fest, und dieser Commit stiess nebenbei den Netlify-Build an. Das ist keine
+# verlaessliche Grundlage, denn der Archivspeicher ist inhaltsadressiert. Hat
+# sich an keiner Quelle etwas geaendert, entsteht kein Objekt, kein Commit, kein
+# Push und damit auch kein Neubau. Das Standdatum der Seite friert dann ein,
+# ohne dass irgendwo ein Fehler sichtbar wird.
+#
+# Dieser Lauf ruft stattdessen ausdruecklich einen Netlify Build Hook auf. Der
+# Neubau ist damit geplant statt Nebenwirkung.
+#
+# Einrichtung, einmalig:
+#   1. In Netlify unter Site configuration -> Build & deploy -> Build hooks
+#      einen Hook anlegen und die URL kopieren.
+#   2. Im GitHub-Repository unter Settings -> Secrets and variables -> Actions
+#      ein Secret NETLIFY_BUILD_HOOK mit dieser URL anlegen.
+# Fehlt das Secret, endet der Lauf mit einem deutlichen Hinweis statt mit einem
+# stillen Fehlschlag.
+#
+# Der Build auf Netlify holt die Daten, baut die Seite und laesst die
+# Selbsttests laufen. Schlaegt ein Test fehl, bricht der Deploy ab und die
+# bisherige Fassung bleibt online.
+
+on:
+  schedule:
+    # Einmal taeglich um 05:20 UTC, also 40 Minuten nach dem Archivlauf. Bewusst
+    # nur einmal: An den meisten Tagen hat der Archiv-Commit den Neubau ohnehin
+    # schon ausgeloest, und jeder zusaetzliche Lauf verbraucht Netlify-Buildzeit
+    # fuer ein Ergebnis, das sich nicht unterscheidet. Dieser Lauf ist das
+    # Sicherheitsnetz fuer die Tage, an denen sich keine Quelle geaendert hat.
+    - cron: '20 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  anstossen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Hook aufrufen
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Secret NETLIFY_BUILD_HOOK fehlt. Ohne dieses Secret wird die Seite nur dann neu gebaut, wenn zufaellig ein Commit gepusht wird. Einrichtung siehe Kommentarkopf dieser Datei."
+            exit 1
+          fi
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST -d '{}' "$HOOK")
+          echo "Netlify antwortete mit HTTP $CODE."
+          # Netlify quittiert einen angenommenen Hook mit 2xx. Alles andere ist
+          # ein Fehler und soll den Lauf rot faerben, damit er auffaellt.
+          case "$CODE" in
+            2*) echo "Neubau angestossen." ;;
+            *) echo "::error::Build Hook nicht angenommen (HTTP $CODE)."; exit 1 ;;
+          esac

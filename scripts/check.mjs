@@ -278,9 +278,27 @@ const titles = new Map();
 const descriptions = new Map();
 const problems = [];
 
+// Veroeffentlichungsschranken. Diese drei Fehler sind am 17.08.2026 tatsaechlich
+// live gegangen und blieben unbemerkt, weil sie nur eine Konsolenwarnung
+// ausgeloest haben:
+//   - baseUrl stand auf dem Platzhalter, wodurch alle Canonical-Tags und die
+//     gesamte Sitemap auf eine nicht existierende Domain zeigten. Das ist kein
+//     Rangnachteil, sondern ein Indexierungsausschluss.
+//   - Impressum und Datenschutzerklaerung enthielten woertlich "BITTE
+//     AUSFUELLEN", womit Pflichtangaben nach Paragraf 5 DDG und Artikel 13
+//     DSGVO fehlten.
+//   - Nicht ersetzte Platzhalter waeren auf denselben Seiten gelandet.
+// Ab hier sind das Testfehler. netlify.toml fuehrt die Selbsttests als
+// Abbruchbedingung, damit bleibt in so einem Fall die letzte gute Fassung online.
+const leaks = { platzhalterDomain: [], platzhalterText: [], platzhalterRoh: [] };
+
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
   const rel = path.relative(OUT, file);
+
+  if (html.includes('example.invalid')) leaks.platzhalterDomain.push(rel);
+  if (html.includes('BITTE AUSFUELLEN')) leaks.platzhalterText.push(rel);
+  for (const m of html.match(/\{\{[A-Z_]+\}\}/g) ?? []) leaks.platzhalterRoh.push(`${rel}: ${m}`);
 
   const title = html.match(/<title>([^<]*)<\/title>/)?.[1];
   const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1];
@@ -323,6 +341,23 @@ for (const file of htmlFiles) {
 
 assert('alle Seiten haben Titel, Beschreibung, Canonical, JSON-LD und h1', problems.length === 0, problems.slice(0, 8).join(' | '));
 
+console.log('\nVeroeffentlichungsschranken');
+assert(
+  'keine Seite verweist auf die Platzhalterdomain',
+  leaks.platzhalterDomain.length === 0,
+  `${leaks.platzhalterDomain.length} Seite(n), zuerst ${leaks.platzhalterDomain.slice(0, 3).join(', ')}. config/site.json baseUrl setzen.`,
+);
+assert(
+  'keine Seite enthaelt unausgefuellte Pflichtangaben',
+  leaks.platzhalterText.length === 0,
+  `${leaks.platzhalterText.length} Seite(n), zuerst ${leaks.platzhalterText.slice(0, 3).join(', ')}. config/site.json legal.verantwortlicher ausfuellen.`,
+);
+assert(
+  'keine Seite enthaelt nicht ersetzte Platzhalter',
+  leaks.platzhalterRoh.length === 0,
+  leaks.platzhalterRoh.slice(0, 5).join(' | '),
+);
+
 const dupTitles = [...titles.entries()].filter(([, files]) => files.length > 1);
 assert('keine doppelten Seitentitel', dupTitles.length === 0, dupTitles.slice(0, 3).map(([t, f]) => `${t} (${f.length}x)`).join(' | '));
 
@@ -356,6 +391,13 @@ assert('Sitemap deckt alle HTML-Seiten ab (ohne 404)', sitemapUrls === htmlFiles
 const robots = await readFile(path.join(OUT, 'robots.txt'), 'utf8');
 assert('robots.txt verweist auf die Sitemap', robots.includes('Sitemap:'));
 assert('robots.txt sperrt nichts Wesentliches', !/Disallow:\s*\/\s*$/m.test(robots));
+
+// Die Platzhalterdomain darf auch ausserhalb des HTML nicht auftauchen. Eine
+// Sitemap voller toter Adressen ist ebenso wertlos wie ein falsches Canonical.
+for (const datei of ['robots.txt', 'sitemap.xml', 'feed.xml', 'daten/wahlwerk.json', ...chunkNames]) {
+  const inhalt = await readFile(path.join(OUT, datei), 'utf8');
+  assert(`${datei} ohne Platzhalterdomain`, !inhalt.includes('example.invalid'));
+}
 
 // Groesse
 const sizes = await Promise.all(htmlFiles.map(async (f) => (await stat(f)).size));

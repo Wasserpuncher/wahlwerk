@@ -64,6 +64,38 @@
       "hinweis": "Lizenzrechtlich unproblematisch, weil amtliches Werk. Noch nicht freigeschaltet, weil der passende Adapter fehlt: die Dateien liegen je Wahl unter eigenen Pfaden und in wechselndem Aufbau. Siehe docs/ROADMAP.md."
     },
 
+    "fragdenstaat": {
+      "enabled": false,
+      "url": "https://fragdenstaat.de/api/v1/",
+      "format": "json",
+      "license": "Anfragen und Behoerdendaten unter freier Lizenz, Betreiber Open Knowledge Foundation Deutschland e.V.",
+      "licenseStatus": "unklar",
+      "coverage": "Anfragen nach den Informationsfreiheitsgesetzen, Behoerdenverzeichnis, veroeffentlichte Dokumente",
+      "geprueftAm": "2026-08-17",
+      "hinweis": "Am 17.08.2026 geprueft. Die API ist ohne Schluessel und ohne Konto lesbar, /api/v1/publicbody/ antwortet mit HTTP 200. Als DATENQUELLE fuer dieses Projekt aber ungeeignet: Sie fuehrt Anfragen an Behoerden, keine Wahlumfragen und keine Wahlergebnisse. Eine Anbindung wuerde keine einzige Zahl auf dieser Seite belegen und bleibt deshalb aus. enabled steht auf false und soll dort bleiben. Der Nutzen liegt woanders und braucht keine Anbindung: Das Behoerdenverzeichnis enthaelt alle 16 Landeswahlleitungen und die Bundeswahlleiterin mit stabilen IDs. Damit laesst sich zu jedem der 16 ungeprueften Parlamente eine vorausgefuellte Anfrage nach dem jeweiligen Informationsfreiheitsgesetz verlinken, die genau die fehlende Rechtsgrundlage erfragt. Das ist ein gewoehnlicher Link, kein Abruf. Die IDs stehen in config/wahlleitungen.json."
+    },
+
+    "dashboard-deutschland": {
+      "enabled": false,
+      "url": "https://www.dashboard-deutschland.de/api/dashboard/get",
+      "format": "json",
+      "license": "amtliches Werk, Betreiber Statistisches Bundesamt",
+      "licenseStatus": "amtlich",
+      "coverage": "17 Themenbereiche mit Konjunktur- und Strukturindikatoren, ueberwiegend bundesweit",
+      "geprueftAm": "2026-08-17",
+      "hinweis": "Am 17.08.2026 geprueft, Ergebnis negativ. Der genannte Endpunkt antwortet zwar mit HTTP 200 und 43 KB JSON, enthaelt aber ausschliesslich Metadaten: Namen und Beschreibungen der 17 Themenbereiche sowie die IDs ihrer Kacheln. Keine einzige Zahl. Die Endpunkte mit den tatsaechlichen Werten (/api/tiles/, /api/data/, /api/tile/, /api/indicators/) antworten mit HTTP 403 und dem Klartext 'Access denied for requesting user/client', auch mit Browserkopfzeilen und passendem Referer. Das ist eine bewusste Zugangssperre des Betreibers und wird respektiert. Zweiter Grund gegen die Quelle: Dashboard Deutschland fuehrt ueberwiegend bundesweite Konjunkturindikatoren wie Arbeitsmarkt, Preise, Energie und Aussenhandel. Fuer eine Gegenueberstellung von Sozialstruktur und Wahlergebnis braucht es Werte je Kreis oder Wahlkreis, nicht bundesweite Monatsreihen. Die richtige Quelle dafuer ist die Regionalstatistik beziehungsweise GENESIS-Online, siehe Eintrag destatis-genesis."
+    },
+
+    "destatis-genesis": {
+      "enabled": false,
+      "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/",
+      "format": "json",
+      "license": "Datenlizenz Deutschland Namensnennung 2.0",
+      "licenseStatus": "amtlich",
+      "coverage": "Amtliche Statistik des Bundes, ueber die Regionalstatistik bis auf Kreisebene",
+      "hinweis": "Lizenzrechtlich unproblematisch. Noch nicht freigeschaltet, weil ein kostenloser Zugang beantragt und ein Token als Geheimnis im CI hinterlegt werden muss. Anders als Dashboard Deutschland liefert GENESIS Werte je Kreis und damit die Granularitaet, die eine Gegenueberstellung mit Wahlergebnissen ueberhaupt erst sinnvoll macht. Siehe docs/ROADMAP.md."
+    },
+
     "wahlergebnisse-sachsen-anhalt": {
       "enabled": false,
       "url": null,

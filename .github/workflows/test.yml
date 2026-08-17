@@ -1,10 +1,15 @@
 name: Tests
 
-# Prueft bei jedem Pull Request, dass die Rechenverfahren stimmen und der
-# Build durchlaeuft. Nutzt synthetische Testdaten, damit kein Netzzugriff
-# auf die Quelle noetig ist.
+# Prueft, dass die Rechenverfahren stimmen und der Build durchlaeuft. Nutzt
+# synthetische Testdaten, damit kein Netzzugriff auf die Quelle noetig ist.
+#
+# Laeuft auch bei einem Push auf main. Wer direkt auf main committet, saehe
+# sonst in GitHub nie ein Testergebnis und erfuehre von einem Fehler erst,
+# wenn der Netlify-Build abbricht.
 
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

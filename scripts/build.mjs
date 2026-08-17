@@ -771,6 +771,15 @@ if (site.legal.renderImpressum) {
   contentPages.push({ file: 'impressum.html', url: '/impressum/', title: 'Impressum', description: 'Anbieterkennzeichnung nach Paragraf 5 DDG und Paragraf 18 Absatz 2 MStV.', priority: 0.3 });
 }
 
+// Speicherdauer der Protokolldaten. Steht logRetentionDays auf 0, wird bewusst
+// KEINE Frist behauptet. Weder Netlify noch Cloudflare veroeffentlichen eine
+// konkrete Aufbewahrungsdauer, und eine erfundene Frist in einer
+// Datenschutzerklaerung waere ein eigener Verstoss. Siehe config/site.json.
+const speicherdauer =
+  site.hosting.logRetentionDays > 0
+    ? `${int(site.hosting.logRetentionDays)} Tage, danach automatische Loeschung durch den Anbieter.`
+    : 'Die Protokolldaten entstehen ausschliesslich bei den unter Ziffer 4 genannten Anbietern. Diese veroeffentlichen keine feste Aufbewahrungsdauer, weshalb hier keine behauptet wird. Es gelten die Fristen aus deren Datenschutzerklaerungen, die unter Ziffer 4 verlinkt sind.';
+
 for (const c of contentPages) {
   let html = await readFile(path.join(ROOT, 'content', c.file), 'utf8');
   html = html
@@ -782,8 +791,14 @@ for (const c of contentPages) {
     .replaceAll('{{VERANTWORTLICHER_TELEFON}}', esc(site.legal.verantwortlicher.telefon || 'nicht angegeben'))
     .replaceAll('{{AUFSICHTSBEHOERDE}}', esc(site.legal.aufsichtsbehoerde))
     .replaceAll('{{HOSTER}}', esc(site.hosting.anbieter))
+    .replaceAll('{{HOSTER_DATENSCHUTZ}}', esc(site.hosting.anbieterDatenschutz))
+    .replaceAll('{{HOSTER_AVV}}', esc(site.hosting.anbieterAvv))
+    .replaceAll('{{CDN}}', esc(site.hosting.cdn))
+    .replaceAll('{{CDN_DATENSCHUTZ}}', esc(site.hosting.cdnDatenschutz))
+    .replaceAll('{{CDN_AVV}}', esc(site.hosting.cdnAvv))
     .replaceAll('{{SERVERSTANDORT}}', esc(site.hosting.serverstandort))
-    .replaceAll('{{LOG_TAGE}}', esc(String(site.hosting.logRetentionDays)))
+    .replaceAll('{{DRITTLAND_GRUNDLAGE}}', esc(site.hosting.drittlandGrundlage))
+    .replaceAll('{{SPEICHERDAUER}}', speicherdauer)
     .replaceAll('{{SITE_NAME}}', esc(site.name))
     .replaceAll('{{BASE_URL}}', esc(site.baseUrl))
     .replaceAll('{{HALFLIFE}}', esc(String(site.trend.halflifeDays)))
@@ -795,6 +810,14 @@ for (const c of contentPages) {
     .replaceAll('{{INSTITUTE_COUNT}}', int(instituteList.length))
     .replaceAll('{{SOURCE_UPDATE}}', esc(provenance.sourceLastUpdate ?? provenance.fetchedAt ?? 'unbekannt'))
     .replaceAll('{{BUILD_TIME}}', esc(buildTime));
+
+  // Ein nicht ersetzter Platzhalter wuerde woertlich auf einer Rechtsseite
+  // landen. Das ist kein Schoenheitsfehler, sondern eine fehlende Pflichtangabe.
+  // Deshalb Abbruch statt stiller Ausgabe.
+  const offen = [...new Set(html.match(/\{\{[A-Z_]+\}\}/g) ?? [])];
+  if (offen.length > 0) {
+    throw new Error(`${c.file}: nicht ersetzte Platzhalter ${offen.join(', ')}. Entweder fehlt der Wert in config/site.json oder die Ersetzung in build.mjs.`);
+  }
 
   addPage(
     c.url,

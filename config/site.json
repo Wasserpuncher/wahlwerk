@@ -2,11 +2,11 @@
   "name": "Wahlwerk",
   "tagline": "Wahlumfragen mit Beleg",
   "description": "Jede Zahl mit Institut, Auftraggeber, Feldzeit, Fallzahl und Quelllink. Offene Daten, offener Code, nachrechenbare Methodik.",
-  "baseUrl": "https://example.invalid",
+  "baseUrl": "https://wahlen.kaipfstr.de",
   "lang": "de-DE",
   "locale": "de_DE",
 
-  "_hinweis_baseUrl": "Vor dem ersten Deploy auf die echte Domain aendern. Ohne korrekte baseUrl sind Canonical-Tags, Sitemap und JSON-LD wertlos.",
+  "_hinweis_baseUrl": "Muss die Adresse sein, unter der die Seite tatsaechlich beworben wird. Ohne korrekte baseUrl sind Canonical-Tags, Sitemap und JSON-LD wertlos. Die Netlify-Adresse visionary-hotteok-2e1d0b.netlify.app liefert dieselben Seiten aus. Genau deshalb muessen die Canonical-Tags auf die eigene Domain zeigen, sonst konkurrieren beide Adressen um dieselben Inhalte. scripts/check.mjs erzwingt das.",
 
   "legal": {
     "renderImpressum": true,
@@ -20,15 +20,31 @@
       "email": "BITTE AUSFUELLEN",
       "telefon": ""
     },
-    "aufsichtsbehoerde": "Bayerisches Landesamt fuer Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach"
+    "aufsichtsbehoerde": "Bayerisches Landesamt fuer Datenschutzaufsicht (BayLDA), Postanschrift: Postfach 1349, 91504 Ansbach, Besucheranschrift: Promenade 18, 91522 Ansbach",
+    "_hinweis_aufsichtsbehoerde": "Zustaendig ist die Aufsichtsbehoerde des Bundeslandes, in dem der Verantwortliche seinen Sitz hat. Hier Bayern, vom Betreiber am 17.08.2026 bestaetigt. Bezeichnung und beide Anschriften am selben Tag gegen die Kontaktseite der Behoerde geprueft (https://www.lda.bayern.de/de/kontakt.html). Bei einem Umzug in ein anderes Bundesland ist dieser Eintrag zu aendern, sonst nennt die Datenschutzerklaerung eine unzustaendige Stelle."
   },
 
   "hosting": {
-    "anbieter": "BITTE AUSFUELLEN",
-    "serverstandort": "BITTE AUSFUELLEN",
-    "avvVorhanden": false,
-    "logRetentionDays": 7,
-    "_hinweis": "Diese Angaben landen woertlich in der Datenschutzerklaerung. Falsche Angaben dort sind ein eigener Rechtsverstoss."
+    "_quelle": "Alle Angaben in diesem Block sind am 17.08.2026 belegt worden. Anbieter und CDN wurden an den Antwortkopfzeilen der Live-Seite abgelesen (Server: cloudflare, CF-RAY, X-Nf-Request-Id, Cache-Status: Netlify Edge). Firmierungen, Anschriften und Uebermittlungsgrundlagen stammen aus den Datenschutzerklaerungen der Anbieter selbst, nicht aus zweiter Hand.",
+
+    "anbieter": "Netlify, Inc., 101 2nd Street, San Francisco, CA 94105, USA",
+    "anbieterDatenschutz": "https://www.netlify.com/privacy/",
+    "anbieterAvv": "https://www.netlify.com/pdf/netlify-dpa.pdf",
+
+    "cdn": "Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA",
+    "cdnDatenschutz": "https://www.cloudflare.com/privacypolicy/",
+    "cdnAvv": "https://www.cloudflare.com/cloudflare-customer-dpa/",
+
+    "serverstandort": "weltweit verteiltes Content Delivery Network, Auslieferung vom jeweils naechstgelegenen Standort, auch ausserhalb der Europaeischen Union",
+    "drittland": true,
+    "drittlandGrundlage": "Beide Anbieter sind nach dem EU-US Data Privacy Framework zertifiziert und setzen zusaetzlich die Standardvertragsklauseln der Europaeischen Kommission ein. Beides ist in ihren Datenschutzerklaerungen ausgewiesen.",
+
+    "logRetentionDays": 0,
+    "_hinweis_logRetentionDays": "BEWUSST NULL. Weder Netlify noch Cloudflare nennen in ihren Datenschutzerklaerungen eine konkrete Aufbewahrungsdauer fuer Protokolldaten. Der frueher hier stehende Wert 7 war ein Vorgabewert der Projektvorlage und durch nichts belegt. Eine erfundene Speicherdauer in einer Datenschutzerklaerung ist ein eigener Verstoss, deshalb wird jetzt keine Frist behauptet, sondern auf die Anbieter verwiesen. Wer eine Frist eintragen will, braucht dafuer eine schriftliche Auskunft des Anbieters.",
+
+    "_hinweis": "Diese Angaben landen woertlich in der Datenschutzerklaerung. Falsche Angaben dort sind ein eigener Rechtsverstoss.",
+    "_hinweis_cdn": "Cloudflare ist der Domain vorgelagert und sieht damit jede Anfrage. Es verarbeitet die IP-Adresse der Besucher eigenstaendig. Ein Weglassen waere eine unvollstaendige Angabe nach Artikel 13 DSGVO.",
+    "_pruefen_avv": "Beide Anbieter stellen Auftragsverarbeitungsvereinbarungen bereit, die Bestandteil ihrer Nutzungsbedingungen sind. Die Erklaerung sagt deshalb nur, dass diese Vereinbarungen bestehen und wo sie stehen. Ob sie fuer dieses Konto wirksam einbezogen sind, ist einmal im jeweiligen Konto zu bestaetigen."
   },
 
   "privacy": {

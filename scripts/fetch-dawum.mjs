@@ -27,7 +27,7 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const DATA_DIR = path.join(ROOT, 'data');
 const API_URL = 'https://api.dawum.de/';
 const LAST_UPDATE_URL = 'https://api.dawum.de/last_update.txt';
-const USER_AGENT = 'Wahlwerk/0.1 (+https://github.com/USER/wahlwerk) Node-Fetch';
+const USER_AGENT = 'Wahlwerk/0.1 (+https://wahlen.kaipfstr.de) Node-Fetch';
 
 const args = new Set(process.argv.slice(2));
 const useFixture = args.has('--fixture');

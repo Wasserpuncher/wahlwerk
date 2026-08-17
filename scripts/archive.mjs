@@ -22,7 +22,7 @@ const DATA = path.join(ROOT, 'data');
 const sources = JSON.parse(await readFile(path.join(ROOT, 'config', 'sources.json'), 'utf8'));
 const [cmd, ...rest] = process.argv.slice(2);
 
-const USER_AGENT = 'Wahlwerk-Archiv/0.3 (+https://github.com/USER/wahlwerk)';
+const USER_AGENT = 'Wahlwerk-Archiv/0.3 (+https://wahlen.kaipfstr.de)';
 
 function fmtBytes(n) {
   if (n < 1024) return `${n} B`;

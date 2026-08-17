@@ -2,7 +2,7 @@
 
 <aside class="note note-warn">
   <h3>Hinweis des Projekts</h3>
-  <p>Dieser Text ist eine <strong>Vorlage</strong>, die zu diesem konkreten Generator passt: keine Cookies, kein Tracking, keine externen Ressourcen. Sie ist keine Rechtsberatung. Vor der Veroeffentlichung muessen alle Platzhalter ausgefuellt und die Angaben zu Hosting, Protokolldaten und Speicherdauer mit dem tatsaechlichen Betrieb abgeglichen werden. Falsche Angaben in einer Datenschutzerklaerung sind selbst ein Verstoss. Bei Unsicherheit anwaltlich pruefen lassen.</p>
+  <p>Dieser Text beschreibt den tatsaechlichen Betrieb dieser Website: keine Cookies, kein Tracking, keine externen Ressourcen. Die Angaben zu Hosting und Content Delivery Network sind an den Antwortkopfzeilen dieser Seite abgelesen, die Firmierungen und Uebermittlungsgrundlagen den Datenschutzerklaerungen der Anbieter entnommen. Wo eine Angabe nicht belegbar war, steht sie hier nicht: Weder Netlify noch Cloudflare veroeffentlichen eine konkrete Aufbewahrungsdauer fuer Protokolldaten, deshalb wird hier keine behauptet. Dieser Text ist keine Rechtsberatung. Bei Unsicherheit anwaltlich pruefen lassen.</p>
 </aside>
 
 <h2>1. Verantwortlicher</h2>
@@ -30,18 +30,30 @@
 </ul>
 <p><strong>Zweck:</strong> Sicherstellung eines stoerungsfreien Verbindungsaufbaus, Gewaehrleistung einer komfortablen Nutzung, Auswertung der Systemsicherheit und Stabilitaet.</p>
 <p><strong>Rechtsgrundlage:</strong> Artikel 6 Absatz 1 Buchstabe f DSGVO. Das berechtigte Interesse liegt im sicheren und stabilen Betrieb der Website.</p>
-<p><strong>Speicherdauer:</strong> {{LOG_TAGE}} Tage, danach automatische Loeschung. Eine Zusammenfuehrung dieser Daten mit anderen Datenquellen findet nicht statt, und es erfolgt keine Auswertung zu Marketingzwecken.</p>
+<p><strong>Speicherdauer:</strong> {{SPEICHERDAUER}}</p>
+<p>Wir selbst greifen auf diese Protokolldaten nicht zu und werten sie nicht aus. Eine Zusammenfuehrung mit anderen Datenquellen findet nicht statt, eine Auswertung zu Marketingzwecken ebenfalls nicht.</p>
 
-<h2>4. Hosting</h2>
-<p>Diese Website wird bei {{HOSTER}} gehostet. Serverstandort: {{SERVERSTANDORT}}. Der Anbieter verarbeitet die unter Ziffer 3 genannten Daten in unserem Auftrag. Es besteht ein Vertrag ueber die Auftragsverarbeitung nach Artikel 28 DSGVO.</p>
+<h2>4. Hosting und Content Delivery Network</h2>
+<p>An der Auslieferung dieser Website sind zwei Dienstleister beteiligt. Beide verarbeiten dabei die unter Ziffer 3 genannten Daten, insbesondere die IP-Adresse, in unserem Auftrag nach Artikel 28 DSGVO.</p>
+<div class="provenance"><dl>
+  <dt>Hosting</dt><dd>{{HOSTER}}<br>Datenschutzerklaerung: <a href="{{HOSTER_DATENSCHUTZ}}" rel="external nofollow noopener">{{HOSTER_DATENSCHUTZ}}</a><br>Auftragsverarbeitung: <a href="{{HOSTER_AVV}}" rel="external nofollow noopener">{{HOSTER_AVV}}</a></dd>
+  <dt>Content Delivery Network</dt><dd>{{CDN}}<br>Datenschutzerklaerung: <a href="{{CDN_DATENSCHUTZ}}" rel="external nofollow noopener">{{CDN_DATENSCHUTZ}}</a><br>Auftragsverarbeitung: <a href="{{CDN_AVV}}" rel="external nofollow noopener">{{CDN_AVV}}</a></dd>
+  <dt>Serverstandort</dt><dd>{{SERVERSTANDORT}}</dd>
+</dl></div>
+<p>Das Content Delivery Network ist der Website vorgelagert. Jede Anfrage an diese Seite erreicht zuerst dessen Server, unabhaengig davon, welche Seite Sie aufrufen. Beide Anbieter stellen Vereinbarungen zur Auftragsverarbeitung bereit, die Bestandteil ihrer Nutzungsbedingungen sind und oben verlinkt werden.</p>
 
-<h2>5. Kontaktaufnahme</h2>
+<h2>5. Uebermittlung in die Vereinigten Staaten</h2>
+<p>Beide unter Ziffer 4 genannten Anbieter sind Unternehmen mit Sitz in den Vereinigten Staaten. Mit dem Aufruf dieser Website werden die unter Ziffer 3 genannten Daten deshalb in ein Drittland im Sinne des Kapitels V DSGVO uebermittelt.</p>
+<p><strong>Grundlage der Uebermittlung:</strong> {{DRITTLAND_GRUNDLAGE}}</p>
+<p>Trotz dieser Garantien laesst sich nicht vollstaendig ausschliessen, dass US-Behoerden auf Grundlage dortiger Gesetze auf die Daten zugreifen. Wir weisen darauf hin, damit Sie diesen Umstand kennen. Wenn Sie das vermeiden moechten, rufen Sie diese Website nicht auf; saemtliche Inhalte stehen zusaetzlich als Datenexport unter <a href="/daten/">Daten</a> zur Verfuegung und der Quellcode ist oeffentlich.</p>
+
+<h2>6. Kontaktaufnahme</h2>
 <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre Angaben ausschliesslich zur Bearbeitung Ihres Anliegens. Rechtsgrundlage ist Artikel 6 Absatz 1 Buchstabe f DSGVO, bei einem Anliegen mit Vertragsbezug Artikel 6 Absatz 1 Buchstabe b DSGVO. Die Daten werden geloescht, sobald das Anliegen abschliessend bearbeitet ist und keine gesetzlichen Aufbewahrungsfristen entgegenstehen.</p>
 
-<h2>6. Externe Verlinkungen</h2>
+<h2>7. Externe Verlinkungen</h2>
 <p>Diese Website verlinkt auf externe Angebote, insbesondere auf Quellen und Institute. Fuer die Datenverarbeitung auf diesen Seiten ist der jeweilige Anbieter verantwortlich. Es werden beim Aufruf unserer Seiten keine Daten an diese Anbieter uebermittelt, solange Sie den Link nicht anklicken.</p>
 
-<h2>7. Ihre Rechte</h2>
+<h2>8. Ihre Rechte</h2>
 <p>Sie haben gegenueber dem Verantwortlichen folgende Rechte hinsichtlich der Sie betreffenden personenbezogenen Daten:</p>
 <ul>
   <li>Auskunft nach Artikel 15 DSGVO</li>
@@ -53,11 +65,11 @@
 </ul>
 <p>Zur Ausuebung genuegt eine formlose Mitteilung an die oben genannte E-Mail-Adresse.</p>
 
-<h2>8. Beschwerderecht bei der Aufsichtsbehoerde</h2>
+<h2>9. Beschwerderecht bei der Aufsichtsbehoerde</h2>
 <p>Unabhaengig davon steht Ihnen nach Artikel 77 DSGVO ein Beschwerderecht bei einer Aufsichtsbehoerde zu, insbesondere in dem Mitgliedstaat Ihres Aufenthaltsorts, Ihres Arbeitsplatzes oder des Orts des mutmasslichen Verstosses. Zustaendige Aufsichtsbehoerde des Verantwortlichen: {{AUFSICHTSBEHOERDE}}.</p>
 
-<h2>9. Keine automatisierte Entscheidungsfindung</h2>
+<h2>10. Keine automatisierte Entscheidungsfindung</h2>
 <p>Eine automatisierte Entscheidungsfindung einschliesslich Profiling nach Artikel 22 DSGVO findet nicht statt.</p>
 
-<h2>10. Aenderungen dieser Erklaerung</h2>
+<h2>11. Aenderungen dieser Erklaerung</h2>
 <p>Diese Erklaerung gilt in der hier veroeffentlichten Fassung. Aenderungen der Website oder der Rechtslage koennen eine Anpassung erforderlich machen. Stand dieser Fassung: {{BUILD_TIME}}.</p>
