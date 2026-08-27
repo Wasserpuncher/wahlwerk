@@ -1,11 +1,17 @@
 {
   "_doku": "Sitzzuteilungsregeln je Parlament. Der Generator zeigt eine Sitzverteilung NUR an, wenn verified true ist. Alles andere bleibt leer, statt geraten zu werden. Wer eine Zeile verifiziert, traegt Sitzzahl, Verfahren, Huerde, Rechtsgrundlage und Quelllink ein und setzt verified auf true. Bitte immer gegen das jeweils geltende Wahlgesetz pruefen, nicht gegen Wikipedia.",
-
-  "_verfahren_erlaubt": ["sainte-lague", "hare-niemeyer", "dhondt"],
-
-  "aggregateCategories": ["Sonstige", "Andere", "Sonstige Parteien", "Nichtwaehler"],
+  "_verfahren_erlaubt": [
+    "sainte-lague",
+    "hare-niemeyer",
+    "dhondt"
+  ],
+  "aggregateCategories": [
+    "Sonstige",
+    "Andere",
+    "Sonstige Parteien",
+    "Nichtwaehler"
+  ],
   "_hinweis_aggregateCategories": "Diese Bezeichnungen sind Sammelposten mehrerer Parteien und duerfen NIEMALS Sitze erhalten, auch nicht wenn ihr Wert die Sperrklausel erreicht. Ein Sammelposten von sechs Prozent bedeutet nicht, dass eine Partei mit sechs Prozent einzieht.",
-
   "parliaments": {
     "Bundestag": {
       "verified": true,
@@ -19,28 +25,148 @@
       "verifiziertVon": null
     },
     "Berlin": {
-      "verified": false,
-      "seats": null,
+      "verified": true,
+      "seats": 130,
       "method": "hare-niemeyer",
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Landeswahlgesetz Berlin",
-      "quelle": "",
-      "hinweis": "Verfahren Hare/Niemeyer und Fuenfprozenthuerde sind angesetzt, die Sitzzahl ist nicht verifiziert. Solange seats null ist, wird keine Sitzverteilung ausgegeben.",
+      "rechtsgrundlage": "Landeswahlgesetz Berlin (LWahlG), § 7 Abs. 2, § 17 Abs. 2, § 18, § 19",
+      "quelle": "https://www.berlin.de/wahlen/rechtsgrundlagen/landeswahlgesetz.pdf",
+      "hinweis": "Regelgroesse mindestens 130 Sitze, davon 78 Direktmandate. Zwei Abweichungen, die eine Umfragerechnung nicht abbilden kann: Die Sperrklausel bezieht sich im Wortlaut auf die ABGEGEBENEN, nicht die gueltigen Zweitstimmen (§ 18), die effektive Huerde liegt damit minimal ueber fuenf Prozent der gueltigen Stimmen. Und Parteien koennen statt einer Landesliste Bezirkslisten einreichen, die zwar landesweit verbunden sind, deren Unterverteilung auf die zwoelf Wahlkreisverbaende aber nochmals Rundungseffekte erzeugt (§ 17 Abs. 3). Nicht modelliert: Grundmandatsklausel ab einem Direktmandat (§ 18) und der unbegrenzte Ausgleich (§ 19).",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Baden-Württemberg": {
+      "verified": true,
+      "seats": 120,
+      "method": "sainte-lague",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landtagswahlgesetz Baden-Wuerttemberg (LWG BW), § 1 Abs. 1 und § 2",
+      "quelle": "https://www.landtag-bw.de/resource/blob/17344/abb12d35bc2e213a8b988194f54a053b/Landtagswahlgesetz.pdf",
+      "hinweis": "Regelgroesse mindestens 120 Sitze. Das Gesetz nennt das Verfahren nicht beim Namen: § 2 Abs. 3 teilt durch ungerade Zahlen ab eins, das ist Sainte-Lague in Hoechstzahldarstellung, nicht dHondt. Seit der Reform vom 26.04.2022 gilt ein Zweistimmensystem mit landesweiter Verteilung, erstmals angewandt bei der Wahl am 08.03.2026; eine landesweite Sonntagsfrage passt dazu besser als zum alten Recht. Nicht modelliert: Ueberhangmandate mit vollem Ausgleich, die den Landtag 2026 auf 157 Sitze vergroessert haben, und der Wegfall von Zweitstimmen jener Waehler, deren Erststimme an einen erfolgreichen Bewerber ohne Listenanspruch ging (§ 2 Abs. 2). Keine Grundmandatsklausel.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Bayern": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz Bayern (BayLWG), Art. 21 und Art. 42",
+      "quelle": "https://www.gesetze-bayern.de/Content/Document/BayLWG-42",
+      "hinweis": "BEWUSST NICHT FREIGESCHALTET, obwohl Regelgroesse 180 Sitze, Sainte-Lague seit 2022 und Fuenfprozenthuerde am 27.08.2026 am Gesetzeswortlaut geprueft wurden. Aus einer Sonntagsfrage laesst sich in Bayern keine seriose Sitzverteilung rechnen, und zwar aus fuenf voneinander unabhaengigen Gruenden. Erstens ist die gesetzliche Bemessungsgroesse die Gesamtstimmenzahl aus Erst- UND Zweitstimmen (Art. 42 Abs. 1 Nr. 5); eine Umfrage erhebt eine einzige Parteipraeferenz und bildet weder Stimmensplitting noch den Personenbonus der Stimmkreisbewerber ab. Zweitens wird nicht landesweit zugeteilt, sondern siebenmal getrennt nach Wahlkreisen mit festen Kontingenten (Art. 21 Abs. 2: Oberbayern 61, Niederbayern 18, Oberpfalz 16, Oberfranken 16, Mittelfranken 24, Unterfranken 19, Schwaben 26). Drittens bezieht sich die Huerde auf die landesweiten Gesamtstimmen. Viertens entstehen Ueberhang und Ausgleich auf Wahlkreisebene und haben den Landtag zuletzt von 180 auf 203 vergroessert. Fuenftens gibt es keine Grundmandatsklausel. Eine landesweite Rechnung waere eine Proporz-Illustration, keine Sitzverteilung. Deshalb bleibt der Abschnitt leer.",
       "verifiziertAm": null,
       "verifiziertVon": null
     },
-    "Baden-Württemberg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landtagswahlgesetz Baden-Wuerttemberg", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Bayern": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Bayern", "quelle": "", "hinweis": "In Bayern zaehlen Erst- und Zweitstimmen zusammen. Eine Sonntagsfrage bildet das nicht ab. Sitzverteilung hier nur mit ausdruecklichem methodischem Vorbehalt freischalten.", "verifiziertAm": null, "verifiziertVon": null },
-    "Brandenburg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Brandenburgisches Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Bremen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Bremisches Wahlgesetz", "quelle": "", "hinweis": "Bremen wertet Bremen und Bremerhaven getrennt aus. Sonderfall.", "verifiziertAm": null, "verifiziertVon": null },
-    "Hamburg": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Buergerschaftswahlgesetz Hamburg", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Hessen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landtagswahlgesetz Hessen", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Mecklenburg-Vorpommern": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landes- und Kommunalwahlgesetz M-V", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Niedersachsen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Niedersaechsisches Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Nordrhein-Westfalen (NRW)": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz NRW", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Rheinland-Pfalz": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Rheinland-Pfalz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Saarland": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Saarland", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Sachsen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Saechsisches Wahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
+    "Brandenburg": {
+      "verified": true,
+      "seats": 88,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Brandenburgisches Landeswahlgesetz (BbgLWahlG), § 1 Abs. 1 und § 3",
+      "quelle": "https://bravors.brandenburg.de/gesetze/bbglwahlg",
+      "hinweis": "Der Landtag hat die gesetzliche Regelgroesse 88 Sitze. Ueberhang- und Ausgleichsmandate koennen ihn auf hoechstens 110 vergroessern (§ 3 Abs. 7); ein Ausgleich unterbleibt bei bis zu zwei Ueberhangmandaten (§ 3 Abs. 11). Beides ist hier NICHT modelliert, weil es sich aus einer Zweitstimmenumfrage nicht ableiten laesst. Ebenfalls nicht modelliert: die Grundmandatsklausel ab einem Direktmandat (§ 3 Abs. 1) und die vollstaendige Befreiung sorbischer und wendischer Landeslisten von der Sperrklausel. Letztere wirkt nur, wenn eine solche Liste antritt; in den vorliegenden Umfragen kommt keine vor.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Bremen": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Bremisches Wahlgesetz",
+      "quelle": "",
+      "hinweis": "Bremen wertet Bremen und Bremerhaven getrennt aus. Sonderfall.",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Hamburg": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Buergerschaftswahlgesetz Hamburg",
+      "quelle": "",
+      "hinweis": "",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Hessen": {
+      "verified": true,
+      "seats": 110,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landtagswahlgesetz Hessen (LWG HE), § 1 Abs. 1 und § 10",
+      "quelle": "https://wahlen.hessen.de/sites/wahlen.hessen.de/files/2023-11/berechnung-sitzverteilung.pdf",
+      "hinweis": "Regelgroesse 110 Sitze. Das Gesetz beschreibt das Verfahren in § 10 Abs. 3, ohne es zu benennen; die amtliche Berechnung des Landeswahlleiters weist es als Hare/Niemeyer aus. Keine Grundmandatsklausel. Nicht modelliert: der ungedeckelte Ueberhang mit Vergroesserung bis zur Proportionalitaet, der den Landtag 2023 auf 133 Sitze brachte, und das vom Staatsgerichtshof aufgestellte Kriterium der geringsten Abweichung, nach dem unter mehreren tauglichen Gesamtgroessen zu waehlen ist. Beides braucht Erststimmendaten.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Mecklenburg-Vorpommern": {
+      "verified": true,
+      "seats": 71,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Verfassung M-V Art. 20 Abs. 2 (Sitzzahl), Landes- und Kommunalwahlgesetz M-V § 58 (Verfahren)",
+      "quelle": "https://www.laiv-mv.de/static/LAIV/Wahlen/Publikationen/Info-Brosch%C3%BCre%20IM/Landtagswahlen%20und%20Kommunalwahlen%20in%20M-V.pdf",
+      "hinweis": "Regelgroesse 71 Sitze; sie steht nicht im Wahlgesetz, sondern in der Landesverfassung. Es gibt KEINE Grundmandatsklausel. Nicht modelliert: Ausgleichsmandate duerfen das Doppelte der Ueberhangmandate nicht uebersteigen, und die tatsaechliche Gesamtsitzzahl ist stets ungerade, weil bei gerader Zahl ein Sitz hinzukommt (§ 58 Abs. 6).",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Niedersachsen": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Niedersaechsisches Landeswahlgesetz",
+      "quelle": "",
+      "hinweis": "",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Nordrhein-Westfalen (NRW)": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz NRW",
+      "quelle": "",
+      "hinweis": "",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Rheinland-Pfalz": {
+      "verified": true,
+      "seats": 101,
+      "method": "sainte-lague",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz Rheinland-Pfalz (LWahlG RP), § 26 Abs. 1 und § 29",
+      "quelle": "https://www.wahlen.rlp.de/fileadmin/wahlen.rlp.de/dokumente-wahlen/ltw/LW2026_Wahlsystem.pdf",
+      "hinweis": "Regelgroesse 101 Sitze. ACHTUNG BEI AELTEREN QUELLEN: Rheinland-Pfalz nutzt seit der Landtagswahl 2011 Sainte-Lague/Schepers, nicht mehr Hare/Niemeyer. Nicht modelliert: Ueberhangmandate mit vollem Ausgleich, die den Landtag 2026 erstmals seit 1991 auf 105 Sitze vergroessert haben, und die Bezirkslisten nach § 31, bei deren Unterverteilung zusaetzliche Ueberhangmandate ohne innerparteilichen Ausgleich entstehen koennen.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Saarland": {
+      "verified": true,
+      "seats": 51,
+      "method": "dhondt",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz Saarland (LWG SL), § 1 Abs. 1 und § 38",
+      "quelle": "https://www.landtag-saar.de/media/zbcbtpzo/211208_landtagswahlgesetz_din-a4.pdf",
+      "hinweis": "Feste Groesse 51 Sitze; eine Vergroesserung durch Ueberhang- oder Ausgleichsmandate sieht das Gesetz nicht vor. Das Saarland ist das letzte Land mit dHondt (§ 38 Abs. 2: Hoechstzahlverfahren dHondt, Teilung durch eins, zwei, drei). Es gibt keine Direktmandate im ueblichen Sinn: der Waehler hat eine Stimme, die zugleich fuer Kreis- und Landeswahlvorschlag gilt, und die drei Wahlkreise sind Mehrpersonenwahlkreise mit Listen. Damit ist die Oberverteilung aus einer Landesumfrage vollstaendig nachrechenbar. Keine Grundmandatsklausel. Zu beachten: dHondt bevorzugt bei nur 51 Sitzen groessere Parteien deutlich staerker als Sainte-Lague.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Sachsen": {
+      "verified": true,
+      "seats": 120,
+      "method": "sainte-lague",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Saechsisches Wahlgesetz (SaechsWahlG), § 1 Abs. 1 und § 6",
+      "quelle": "https://www.revosax.sachsen.de/vorschrift/20176-Saechsisches-Wahlgesetz",
+      "hinweis": "Regelgroesse 120 Sitze. ACHTUNG BEI AELTEREN QUELLEN: Sachsen hat mit der Fassung vom 29.08.2023 von dHondt auf Sainte-Lague/Schepers umgestellt; wer noch dHondt rechnet, arbeitet mit veraltetem Recht. Nicht modelliert: die Grundmandatsklausel ab ZWEI Direktmandaten (§ 6 Abs. 1) sowie Ueberhang- und Ausgleichsmandate, deren Zahl die der Ueberhangmandate nicht uebersteigen darf (§ 6 Abs. 6), der Proporz also bei starkem Ueberhang bewusst unvollstaendig bleibt.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
     "Sachsen-Anhalt": {
       "verified": true,
       "seats": 83,
@@ -52,11 +178,40 @@
       "verifiziertAm": "2026-08-16",
       "verifiziertVon": "Gegen die Darstellung des Wahlsystems bei der Landeswahlleitung Sachsen-Anhalt geprueft. Zusaetzlich gegen die unabhaengig gerechnete Sitzverteilung von dawum.de gegengerechnet, siehe Regressionstest in scripts/check.mjs."
     },
-    "Schleswig-Holstein": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein", "quelle": "", "hinweis": "Der SSW ist von der Sperrklausel befreit. Dieser Sonderfall ist nicht modelliert.", "verifiziertAm": null, "verifiziertVon": null },
-    "Thüringen": { "verified": false, "seats": null, "method": null, "thresholdPercent": 5, "rechtsgrundlage": "Thueringer Landeswahlgesetz", "quelle": "", "hinweis": "", "verifiziertAm": null, "verifiziertVon": null },
-    "Europaparlament": { "verified": false, "seats": null, "method": null, "thresholdPercent": 0, "rechtsgrundlage": "Europawahlgesetz", "quelle": "", "hinweis": "In Deutschland gilt bei Europawahlen derzeit keine nationale Sperrklausel im bisherigen Sinne. Vor Freischaltung pruefen.", "verifiziertAm": null, "verifiziertVon": null }
+    "Schleswig-Holstein": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein",
+      "quelle": "",
+      "hinweis": "Der SSW ist von der Sperrklausel befreit. Dieser Sonderfall ist nicht modelliert.",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    },
+    "Thüringen": {
+      "verified": true,
+      "seats": 88,
+      "method": "hare-niemeyer",
+      "thresholdPercent": 5,
+      "rechtsgrundlage": "Thueringer Landeswahlgesetz (ThuerLWG), § 1 Abs. 1 und § 5",
+      "quelle": "https://wahlen.thueringen.de/landtagswahlen/gesetze/Landeswahlgesetz.pdf",
+      "hinweis": "Regelgroesse 88 Sitze. Es gibt KEINE Grundmandatsklausel, die Fuenfprozenthuerde gilt uneingeschraenkt (§ 5 Abs. 1). Nicht modelliert: der unbegrenzte Ausgleich (§ 5 Abs. 6), die Mehrheitsklausel (§ 5 Abs. 4) und der Abzug der Landesstimmen jener Waehler, deren Wahlkreisstimme an einen erfolgreichen Bewerber ohne zugelassene Landesliste ging (§ 5 Abs. 2).",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
+    },
+    "Europäisches Parlament": {
+      "verified": false,
+      "seats": null,
+      "method": null,
+      "thresholdPercent": 0,
+      "rechtsgrundlage": "Europawahlgesetz",
+      "quelle": "",
+      "hinweis": "In Deutschland gilt bei Europawahlen derzeit keine nationale Sperrklausel im bisherigen Sinne. thresholdPercent steht deshalb auf 0. Vor einer Freischaltung der Sitzverteilung pruefen: die Sitze werden nicht national, sondern unionsweit verteilt. Schluessel am 27.08.2026 von 'Europaparlament' auf 'Europaeisches Parlament' berichtigt, weil er sonst nicht gefunden wurde und ein Vorgabewert von fuenf Prozent einsprang.",
+      "verifiziertAm": null,
+      "verifiziertVon": null
+    }
   },
-
   "partyColors": {
     "_doku": "Konventionelle Zuordnung fuer die Darstellung, keine offiziellen Parteifarben und keine Aussage ueber die Parteien. Fallback ist neutrales Grau.",
     "CDU/CSU": "#1B1B1B",

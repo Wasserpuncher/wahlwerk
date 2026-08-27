@@ -31,6 +31,20 @@ if (site.baseUrl.includes('example.invalid')) {
 
 // ---------------------------------------------------------------- Datenaufbau
 
+// Alter des Trend-Stichtags, gemessen am Bauzeitpunkt.
+//
+// Der Trend verankert sein Zeitfenster an der JUENGSTEN Umfrage des jeweiligen
+// Parlaments, nicht an heute. Das ist fuer die Rechnung richtig, erzeugt aber
+// eine Falle in der Darstellung: Zu einem Parlament, zu dem seit Jahren niemand
+// mehr fragt, entsteht trotzdem ein vollbesetzter Trend, und die Seite schreibt
+// "Trend" ueber Werte, die zwei Jahre alt sind. Das Europaparlament stand so mit
+// dem Stand vom 07.06.2024 auf der Seite. Ab hier wird das Alter ausgewiesen.
+const buildDay = buildTime.slice(0, 10);
+function stichtagAlterTage(anchorDate) {
+  if (!anchorDate) return null;
+  return Math.round((Date.parse(`${buildDay}T00:00:00Z`) - Date.parse(`${anchorDate}T00:00:00Z`)) / 86400000);
+}
+
 const byParliament = new Map();
 for (const s of data.surveys) {
   if (!byParliament.has(s.parliament)) byParliament.set(s.parliament, []);
@@ -169,7 +183,7 @@ function kpiBand(p) {
 }
 
 function electionHistory(p) {
-  const e = electionConfig.elections[p.name];
+  const e = electionConfig.elections[shortcutByName.get(p.name) ?? p.name];
   if (!e || !Array.isArray(e.history) || e.history.length < 2) return '';
 
   const pseudo = [...e.history]
@@ -188,7 +202,7 @@ function electionHistory(p) {
 
   return `<h2 id="historie">Alle Wahlergebnisse seit ${esc(e.history.at(-1).date.slice(0, 4))}</h2>
 <p class="lede">Amtliche Zweitstimmenanteile. Amtliche Werke sind nach Paragraf 5 UrhG gemeinfrei und duerfen dauerhaft archiviert und wiedergegeben werden.</p>
-${timeline(pseudo, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? 5, parties })}
+${timeline(pseudo, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? null, parties })}
 <div class="table-scroll"><table>
 <caption>Zweitstimmenanteile in Prozent, neueste Wahl zuerst</caption>
 <thead><tr><th class="left">Wahl</th>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}<th>Summe</th><th>Sitze</th><th class="left">Beleglage</th></tr></thead>
@@ -219,7 +233,7 @@ ${
 }
 
 function electionComparison(p) {
-  const e = electionConfig.elections[p.name];
+  const e = electionConfig.elections[shortcutByName.get(p.name) ?? p.name];
   if (!e || e.verified !== true || !p.trend || p.trend.insufficient) return '';
   return `<h2 id="vergleich">Vergleich mit der ${esc(e.label)}</h2>
 ${comparison(p.trend.values, e.results, {
@@ -243,7 +257,9 @@ function trendBlock(p) {
   const max = Math.max(...entries.map((e) => e[1]), 10);
   const scale = Math.ceil(max / 5) * 5;
   const iv = p.trend.intervals ?? {};
-  const threshold = p.cfg?.thresholdPercent ?? 5;
+  // Kein Vorgabewert. Ist die Huerde unbekannt, wird keine behauptet: ein
+  // eingesetztes "5" waere fuer das Europaparlament schlicht falsch.
+  const threshold = p.cfg?.thresholdPercent ?? null;
   const uncertain = entries.filter(
     ([party]) => party !== 'Sonstige' && iv[party] && iv[party].lower < threshold && iv[party].upper > threshold,
   );
@@ -264,7 +280,13 @@ ${
       )
     : ''
 }
-<p class="lede">Stichtag ${esc(deDate(p.trend.anchorDate))}. Summe der Werte ${num(p.trend.sum)}&thinsp;%. Abweichungen von 100 entstehen durch die Mittelung ueber Umfragen mit unterschiedlichem Parteienausweis und werden nicht wegnormiert.</p>
+<p class="lede">Stichtag ${esc(deDate(p.trend.anchorDate))}${(() => { const a = stichtagAlterTage(p.trend.anchorDate); return a === null ? '' : a <= 1 ? ', also von gestern oder heute' : `, das sind ${int(a)} Tage vor diesem Seitenstand`; })()}. Summe der Werte ${num(p.trend.sum)}&thinsp;%. Abweichungen von 100 entstehen durch die Mittelung ueber Umfragen mit unterschiedlichem Parteienausweis und werden nicht wegnormiert.</p>
+${(() => {
+  const a = stichtagAlterTage(p.trend.anchorDate);
+  const fenster = p.trend.parameters?.maxAgeDays ?? 45;
+  if (a === null || a <= fenster) return '';
+  return note('warn', 'Dieser Trend ist nicht aktuell', `<p>Die juengste Umfrage zu ${esc(p.name)} endete am ${esc(deDate(p.trend.anchorDate))} und ist damit <strong>${int(a)} Tage</strong> alt. Das Zeitfenster des Trends von ${int(fenster)} Tagen liegt vollstaendig in der Vergangenheit; die Werte beschreiben die Stimmung von damals, nicht die von heute. Sie stehen hier, weil sie belegt sind, nicht weil sie aktuell waeren.</p>`);
+})()}
 <details>
 <summary>Welche Umfragen in diesen Trend eingehen und mit welchem Gewicht</summary>
 <div class="table-scroll"><table>
@@ -306,6 +328,29 @@ function seatBlock(p) {
   const seatRows = Object.entries(dist.seats)
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
+
+// Der erklaerende Satz unter dem Szenarienstreifen behauptete frueher pauschal,
+// der Abstand zur Huerde sei "kleiner als die uebliche Fehlertoleranz". Das war
+// fuer Parteien, deren eigenes Konfidenzintervall die Huerde gar nicht beruehrt,
+// schlicht falsch und widersprach dem Fehlerbalken weiter oben auf derselben
+// Seite. Jetzt wird getrennt: gezeigt wird ein weiter Korridor, behauptet wird
+// Unentscheidbarkeit nur dort, wo das Intervall die Huerde tatsaechlich kreuzt.
+function schwellenSatz(p, dist, nearMiss, nearHit) {
+  const iv = p.trend.intervals ?? {};
+  const alle = [...nearMiss, ...nearHit];
+  const kreuzt = alle.filter((x) => iv[x] && iv[x].lower < dist.thresholdPercent && iv[x].upper > dist.thresholdPercent);
+  const daneben = alle.filter((x) => !kreuzt.includes(x));
+  const liste = (xs) => xs.map((x) => `${esc(x)} ${num(p.trend.values[x])}&thinsp;%`).join(', ');
+  const teile = [];
+  teile.push(`<p>Gezeigt werden Parteien, die im Trend hoechstens zwei Prozentpunkte von der Sperrklausel entfernt liegen: ${liste(alle)}.</p>`);
+  if (kreuzt.length > 0) {
+    teile.push(`<p>Bei ${liste(kreuzt)} ueberschneidet sich das 95-Prozent-Intervall mit der Huerde. Fuer diese Parteien ist aus den vorliegenden Umfragen <strong>nicht entscheidbar</strong>, auf welcher Seite sie landen.</p>`);
+  }
+  if (daneben.length > 0) {
+    teile.push(`<p>Bei ${liste(daneben)} liegt die Huerde ausserhalb des berechneten Intervalls. Das Szenario steht trotzdem hier, weil dieses Intervall die <strong>untere Schranke</strong> der Unsicherheit ist: Hauseffekte, Gewichtungsmodelle und Nonresponse sind darin nicht enthalten, und die mittlere Abweichung der Institute vom amtlichen Ergebnis liegt erfahrungsgemaess darueber.</p>`);
+  }
+  return teile.join('');
+}
 
   // Szenarien rund um die Sperrklausel.
   //
@@ -385,9 +430,9 @@ ${
 ${
   computed.length > 1
     ? `<h3>Was die Sperrklausel entscheidet</h3>
-<p class="lede">Dieselben Umfragewerte, unterschiedliche Sitzverteilung. Der Unterschied entsteht allein daraus, wie viele Stimmen an der Fuenfprozenthuerde verfallen und damit auf die verbleibenden Parteien umgelegt werden.</p>
+<p class="lede">Dieselben Umfragewerte, unterschiedliche Sitzverteilung. Der Unterschied entsteht allein daraus, wie viele Stimmen an der Sperrklausel von ${num(dist.thresholdPercent, 0)}&thinsp;Prozent verfallen und damit auf die verbleibenden Parteien umgelegt werden.</p>
 ${scenarioStrip(computed, { colors: COLORS, totalSeats: dist.totalSeats, majority: dist.majority })}
-${note('warn', 'Warum das kein Detail ist', `<p>Die betroffenen Parteien liegen im Trend bei ${nearMiss.map((x) => `${esc(x)} ${num(p.trend.values[x])}`).join(', ')} Prozent. Der Abstand zur Huerde ist kleiner als die uebliche Fehlertoleranz einer Umfrage. Aus einer Sonntagsfrage laesst sich deshalb nicht ablesen, welches dieser Szenarien eintritt.</p>`)}`
+${note('warn', 'Warum das kein Detail ist', schwellenSatz(p, dist, nearMiss, nearHit))}`
     : ''
 }`;
 }
@@ -522,7 +567,7 @@ for (const p of parliamentList) {
 <h1>Sonntagsfrage ${esc(p.name)}</h1>
 <p class="lede">${int(p.surveys.length)} Umfragen von ${int(institutesHere.length)} Instituten, aeltester Datensatz vom ${esc(deDate(p.surveys.at(-1).date))}, juengster vom ${esc(deDate(p.surveys[0].date))}.</p>
 ${kpiBand(p)}
-${timeline(p.surveys, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? 5 })}
+${timeline(p.surveys, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? null })}
 ${electionComparison(p)}
 ${belegstreifen(p.surveys)}
 <h2 id="trend">Gewichteter Trend</h2>
@@ -733,7 +778,7 @@ ${
   perParliament.length > 0
     ? `<h2>Trendwerte nach Parlament</h2>
 <div class="panel">${perParliament.map(({ p, value }) => bar(p.name, value, { [p.name]: COLORS[party] ?? COLORS.Sonstige }, Math.max(40, ...perParliament.map((x) => x.value)))).join('')}</div>
-<ul class="linklist">${perParliament.map(({ p, value }) => `<li><a href="/parlament/${p.slug}/">${esc(p.name)}</a><span class="meta">${num(value)}&thinsp;% im Trend, Stichtag ${esc(deDate(p.trend.anchorDate))}</span></li>`).join('')}</ul>`
+<ul class="linklist">${perParliament.map(({ p, value }) => `<li><a href="/parlament/${p.slug}/">${esc(p.name)}</a><span class="meta">${num(value)}&thinsp;% im Trend, Stichtag ${esc(deDate(p.trend.anchorDate))}${(() => { const a = stichtagAlterTage(p.trend.anchorDate); const f = p.trend.parameters?.maxAgeDays ?? 45; return a !== null && a > f ? ` (veraltet, ${int(a)} Tage)` : ''; })()}</span></li>`).join('')}</ul>`
     : '<p>Fuer diese Partei liegt derzeit in keinem Parlament ein ausreichend besetzter Trend vor.</p>'
 }
 <h2>Alle Umfragen mit ausgewiesenem Wert</h2>

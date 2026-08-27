@@ -166,7 +166,14 @@ export function detectTies(shares, seats, method) {
     const sorted = [...rests].sort((a, b) => b.rest - a.rest);
     const cutoff = sorted[open - 1].rest;
     const contenders = sorted.filter((r) => Math.abs(r.rest - cutoff) < 1e-9);
-    return contenders.length > 1 ? contenders.map((c) => c.k) : [];
+    // Ein geteilter Rest ist nur dann ein Gleichstand, wenn er auch umkaempft
+    // ist. Teilen sich drei Parteien denselben Rest und sind noch drei Sitze
+    // frei, bekommen alle drei einen; die Reihenfolge ist folgenlos. Gemeldet
+    // wird deshalb nur, wenn mehr Parteien auf dem Cutoff-Rest liegen als dort
+    // noch Sitze zu vergeben sind.
+    const strictlyAbove = sorted.filter((r) => r.rest > cutoff + 1e-9).length;
+    const seatsForContenders = open - strictlyAbove;
+    return contenders.length > seatsForContenders ? contenders.map((c) => c.k) : [];
   }
 
   // Bei Divisorverfahren entsteht der relevante Gleichstand in der Runde, in

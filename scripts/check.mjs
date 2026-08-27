@@ -412,12 +412,52 @@ for (const [key, cfg] of Object.entries(parliamentsCfg)) {
     continue;
   }
   const html = await readFile(datei, 'utf8');
+  const hatVerteilung = html.includes('Modellrechnung zur Sitzverteilung');
+  const nichtVerifiziert = html.includes('Keine Sitzverteilung ausgewiesen');
+  // Ein fehlender Abschnitt hat zwei voellig verschiedene Ursachen, und nur eine
+  // davon ist ein Fehler. Liegen zu wenige aktuelle Umfragen vor, gibt es gar
+  // keinen Trend, auf dem eine Sitzrechnung aufsetzen koennte - das ist gewollt.
+  // Steht dagegen "Keine Sitzverteilung ausgewiesen", wurde der verifizierte
+  // Config-Eintrag beim Bauen nicht gefunden. Das ist der Fehler vom 27.08.2026.
+  const keinTrend = html.includes('Zu wenige Umfragen fuer einen Trend');
   assert(
     `${key}: verifizierte Sitzzuteilung erscheint auf der Seite`,
-    html.includes('Modellrechnung zur Sitzverteilung') && !html.includes('Keine Sitzverteilung ausgewiesen'),
-    'Config-Schluessel wird beim Bauen nicht gefunden - siehe parliamentCfg() in build.mjs',
+    hatVerteilung || (keinTrend && !nichtVerifiziert),
+    nichtVerifiziert
+      ? 'Config-Schluessel wird beim Bauen nicht gefunden - siehe parliamentCfg() in build.mjs'
+      : 'weder Sitzverteilung noch die Begruendung "zu wenige Umfragen"',
   );
 }
+
+// Dasselbe Muster wie oben, zweite Konfigurationsdatei: config/elections.json ist
+// ebenfalls auf die Kuerzel geschluesselt. Bis zum 27.08.2026 wurde sie mit dem
+// langen Namen abgefragt, wodurch die gesamte Wahlhistorie stillschweigend fehlte.
+const electionsCfg = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8')).elections;
+for (const [key, eintrag] of Object.entries(electionsCfg)) {
+  const langname = nameByShortcut.get(key) ?? key;
+  const datei = path.join(OUT, 'parlament', slug(langname), 'index.html');
+  if (!existsSync(datei)) continue;
+  const html = await readFile(datei, 'utf8');
+  const wahlen = eintrag.history ?? eintrag;
+  assert(
+    `${key}: amtliche Wahlergebnisse erscheinen auf der Seite`,
+    !Array.isArray(wahlen) || wahlen.length === 0 || html.includes('Alle Wahlergebnisse seit'),
+    'Config-Schluessel wird beim Bauen nicht gefunden - siehe electionConfig-Lookup in build.mjs',
+  );
+}
+
+// Ein geteilter Rest ist nur dann ein Gleichstand, wenn er umkaempft ist.
+// Vorher meldete detectTies auch den folgenlosen Fall und die Seite schrieb
+// darueber "Die Zuordnung dieses einen Sitzes ist hier also willkuerlich".
+assert(
+  'detectTies meldet keinen folgenlosen Gleichstand',
+  eq(detectTies({ A: 10.75, B: 5.75, C: 3.5 }, 20, 'hare-niemeyer'), []),
+  JSON.stringify(detectTies({ A: 10.75, B: 5.75, C: 3.5 }, 20, 'hare-niemeyer')),
+);
+assert(
+  'detectTies meldet den echten Gleichstand weiterhin',
+  detectTies({ A: 25, B: 25, C: 25, D: 25 }, 6, 'hare-niemeyer').length === 4,
+);
 
 const robots = await readFile(path.join(OUT, 'robots.txt'), 'utf8');
 assert('robots.txt verweist auf die Sitemap', robots.includes('Sitemap:'));

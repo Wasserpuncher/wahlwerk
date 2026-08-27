@@ -90,7 +90,7 @@ export function hemicycle(seatMap, { colors, majority, totalSeats, rows = 5, wid
  * Die x-Achse nutzt das Veroeffentlichungsdatum, weil der Befragungszeitraum
  * nicht bei jeder Umfrage ausgewiesen ist.
  */
-export function timeline(surveys, { colors, width = 900, height = 380, threshold = 5, parties: only = null }) {
+export function timeline(surveys, { colors, width = 900, height = 380, threshold = null, parties: only = null }) {
   const pts = surveys
     .filter((s) => s.date)
     .map((s) => ({ t: Date.parse(`${s.date}T00:00:00Z`), r: s.results, institute: s.institute, date: s.date }))
@@ -156,8 +156,8 @@ export function timeline(surveys, { colors, width = 900, height = 380, threshold
 <svg viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="Verlauf der Umfragewerte von ${esc(deDate(pts[0].date))} bis ${esc(deDate(pts.at(-1).date))} fuer ${parties.join(', ')}.">
   ${yTicks.join('')}
   ${xTicks}
-  <line x1="${m.l}" y1="${Y(threshold).toFixed(1)}" x2="${m.l + iw}" y2="${Y(threshold).toFixed(1)}" class="threshold"/>
-  <text x="${m.l + 6}" y="${(Y(threshold) - 6).toFixed(1)}" class="lbl">Sperrklausel ${int(threshold)} Prozent</text>
+  ${threshold ? `<line x1="${m.l}" y1="${Y(threshold).toFixed(1)}" x2="${m.l + iw}" y2="${Y(threshold).toFixed(1)}" class="threshold"/>
+  <text x="${m.l + 6}" y="${(Y(threshold) - 6).toFixed(1)}" class="lbl">Sperrklausel ${int(threshold)} Prozent</text>` : ''}
   ${lines}
   <line x1="${m.l}" y1="${m.t + ih}" x2="${m.l + iw}" y2="${m.t + ih}" class="axis"/>
 </svg>
