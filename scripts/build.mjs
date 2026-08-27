@@ -244,13 +244,18 @@ ${comparison(p.trend.values, e.results, {
 ${e.hinweis ? note('method', 'Zur Einordnung', `<p>${esc(e.hinweis)}</p>`) : ''}`;
 }
 
-function trendBlock(p) {
+function trendBlock(p, { hatStreuung = false } = {}) {
   if (!p.trend) return '<p>Fuer dieses Parlament liegen keine datierten Umfragen vor.</p>';
   if (p.trend.insufficient) {
     return note(
       'warn',
       'Zu wenige Umfragen fuer einen Trend',
-      `<p>Im Fenster von ${site.trend.maxAgeDays} Tagen liegen nur ${int(p.trend.availableSurveys)} Umfragen vor, erforderlich sind ${int(p.trend.requiredSurveys)}. Es wird deshalb kein Mittelwert ausgewiesen. Die Einzelumfragen stehen unten.</p>`,
+      `<p>Im Fenster von ${site.trend.maxAgeDays} Tagen um die juengste Umfrage vom ${esc(deDate(p.trend.anchorDate))} liegt nur ${int(p.trend.availableSurveys)} ${p.trend.availableSurveys === 1 ? 'Umfrage' : 'Umfragen'} vor, erforderlich sind ${int(p.trend.requiredSurveys)}. Es wird deshalb kein Mittelwert ausgewiesen. Die Einzelumfragen stehen unten.</p>
+${
+  p.cfg?.verified === true && p.cfg.seats
+    ? `<p>Die Sitzzuteilung fuer ${esc(p.name)} <strong>ist</strong> verifiziert: ${int(p.cfg.seats)} Sitze, Verfahren ${esc(p.cfg.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : p.cfg.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(p.cfg.thresholdPercent, 0)}&thinsp;Prozent, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. Es fehlt also nicht die Regel, sondern die Datengrundlage. Sobald ${int(p.trend.requiredSurveys)} Umfragen innerhalb von ${site.trend.maxAgeDays} Tagen vorliegen, erscheint hier die Modellrechnung. Das ist typischerweise im Vorfeld der naechsten Landtagswahl der Fall.</p>`
+    : ''
+}`,
     );
   }
   const entries = Object.entries(p.trend.values).sort((a, b) => b[1] - a[1]);
@@ -268,7 +273,7 @@ ${entries.map(([party, value]) => bar(party, value, COLORS, scale, iv[party] ?? 
 </div>
 ${
   p.trend.kish
-    ? `<p class="lede">Fehlerbalken: 95-Prozent-Wilson-Intervall auf Basis eines effektiven Stichprobenumfangs von ${int(Math.round(p.trend.kish.effectiveSampleSize))}, berechnet nach Kish aus ${num(p.trend.kish.effectiveSurveys, 2)} effektiven Umfragen bei mittlerer Fallzahl ${int(Math.round(p.trend.kish.meanSampleSize))}. Designeffekt ${num(p.trend.designEffect, 2)}. Das ist die <strong>untere Schranke</strong> der Unsicherheit. Gewichtungsmodelle, Nonresponse und Hauseffekte sind darin nicht enthalten.</p>`
+    ? `<p class="lede">Fehlerbalken: 95-Prozent-Wilson-Intervall auf Basis eines effektiven Stichprobenumfangs von ${int(Math.round(p.trend.kish.effectiveSampleSize))}, berechnet nach Kish aus ${num(p.trend.kish.effectiveSurveys, 2)} effektiven Umfragen bei mittlerer Fallzahl ${int(Math.round(p.trend.kish.meanSampleSize))}. Designeffekt ${num(p.trend.designEffect, 2)}. Bei annaehernd gleichen Gewichten entspricht diese Zahl fast der Summe der Befragten: gerechnet wird so, als waeren alle Befragten eine einzige Zufallsstichprobe. Das ist die <strong>untere Schranke</strong> der Unsicherheit. Die Abweichung zwischen den Instituten, Gewichtungsmodelle, Nonresponse und Hauseffekte sind darin nicht enthalten.${hatStreuung ? ' Wie weit die Institute tatsaechlich auseinanderliegen, steht unter <a href="#streuung">Streuung zwischen den Instituten</a>.' : ''}</p>`
     : ''
 }
 ${
@@ -406,7 +411,7 @@ function schwellenSatz(p, dist, nearMiss, nearHit) {
 ${note(
   'method',
   'Modellrechnung, keine Prognose',
-  `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${dist.removedAggregates.length > 0 ? `Nicht beruecksichtigt, weil Sammelposten mehrerer Parteien: ${esc(dist.removedAggregates.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
+  `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${dist.exemptedParties?.length > 0 ? `<strong>Von der Sperrklausel ausgenommen und deshalb trotz eines Werts unter ${num(dist.thresholdPercent, 0)}&thinsp;Prozent beruecksichtigt: ${esc(dist.exemptedParties.join(', '))}.</strong>` : ''} ${dist.removedAggregates.length > 0 ? `Nicht beruecksichtigt, weil Sammelposten mehrerer Parteien: ${esc(dist.removedAggregates.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
 )}
 ${
   dist.ties.length > 1
@@ -571,7 +576,7 @@ ${timeline(p.surveys, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? nu
 ${electionComparison(p)}
 ${belegstreifen(p.surveys)}
 <h2 id="trend">Gewichteter Trend</h2>
-${trendBlock(p)}
+${trendBlock(p, { hatStreuung: Object.keys(spread).length > 0 })}
 ${methodNote()}
 ${
   Object.keys(spread).length > 0

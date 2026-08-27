@@ -73,22 +73,22 @@
       "seats": null,
       "method": null,
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Bremisches Wahlgesetz",
-      "quelle": "",
-      "hinweis": "Bremen wertet Bremen und Bremerhaven getrennt aus. Sonderfall.",
+      "rechtsgrundlage": "Bremisches Wahlgesetz (BremWahlG), § 5 Abs. 1 und § 7",
+      "quelle": "https://www.transparenz.bremen.de/metainformationen/bremisches-wahlgesetz-bremwahlg-in-der-fassung-vom-23-mai-1990-70735",
+      "hinweis": "BEWUSST NICHT FREIGESCHALTET, obwohl 87 Sitze, Sainte-Lague und fuenf Prozent am 27.08.2026 am Gesetzeswortlaut geprueft wurden. Bremen kennt kein landesweites Zuteilungsverfahren, auf das eine Landesprozentzahl anwendbar waere: § 7 Abs. 4 rechnet ausschliesslich im Wahlbereich, es gibt zwei vollstaendig getrennte Rechnungen (72 Sitze aus Bremer, 15 aus Bremerhavener Stimmen), und die Fuenfprozenthuerde gilt je Wahlbereich getrennt (§ 7 Abs. 7). Was das praktisch heisst: Eine Partei kann mit 2,4 Prozent landesweit in die Buergerschaft einziehen, weil sie allein in Bremerhaven ueber der Huerde liegt, und eine andere kann mit ueber fuenf Prozent landesweit leer ausgehen. Aus einer einzigen Landeszahl ist das mathematisch nicht ableitbar. Deshalb bleibt der Abschnitt leer.",
       "verifiziertAm": null,
       "verifiziertVon": null
     },
     "Hamburg": {
-      "verified": false,
-      "seats": null,
-      "method": null,
+      "verified": true,
+      "seats": 121,
+      "method": "sainte-lague",
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Buergerschaftswahlgesetz Hamburg",
-      "quelle": "",
-      "hinweis": "",
-      "verifiziertAm": null,
-      "verifiziertVon": null
+      "rechtsgrundlage": "Gesetz ueber die Wahl zur Hamburgischen Buergerschaft (BueWG), § 2 und § 5",
+      "quelle": "https://www.statistik-nord.de/fileadmin/Dokumente/B%C3%BCWa2025_Berechnung_und_Zuteilung_der_Mandate.pdf",
+      "hinweis": "Regelgroesse 121 Sitze. Entgegen dem ersten Eindruck rechenbar: § 5 Abs. 4 verteilt alle 121 Sitze allein nach den Landesstimmen; Kumulieren und Panaschieren entscheiden nur darueber, WELCHE Person einen Sitz bekommt, nicht wie viele Sitze eine Partei erhaelt. Die Rechnung wurde gegen das amtliche Ergebnis der Buergerschaftswahl vom 02.03.2025 gegengeprueft. Nicht modelliert: die 71 Wahlkreissitze aus 17 getrennten Rechnungen ohne Sperrklausel mit faktischen Huerden von etwa elf bis siebzehn Prozent, daraus entstehender Ueberhang (2020: 123 Sitze), sowie Wahlkreissitze von Parteien unter fuenf Prozent, die zu den 121 hinzukommen. Jeder Waehler hat zehn Stimmen; eine Sonntagsfrage bildet die Gesamtstimmen nur naeherungsweise ab.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
     },
     "Hessen": {
       "verified": true,
@@ -113,26 +113,26 @@
       "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
     },
     "Niedersachsen": {
-      "verified": false,
-      "seats": null,
-      "method": null,
+      "verified": true,
+      "seats": 135,
+      "method": "sainte-lague",
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Niedersaechsisches Landeswahlgesetz",
-      "quelle": "",
-      "hinweis": "",
-      "verifiziertAm": null,
-      "verifiziertVon": null
+      "rechtsgrundlage": "Niedersaechsisches Landeswahlgesetz (NLWG), § 1 Abs. 1 und § 33",
+      "quelle": "https://www.verkuendung-niedersachsen.de/api/ndsgvbl/2026/16/0/nds-gvbl-2026-16.pdf",
+      "hinweis": "Regelgroesse mindestens 135 Sitze, davon 90 Direktmandate. ACHTUNG BEI AELTEREN QUELLEN: Niedersachsen hat mit dem Gesetz vom 03.03.2026, in Kraft seit 07.03.2026, von dHondt auf Sainte-Lague/Schepers umgestellt und die Wahlkreise von 87 auf 90 erhoeht; das gilt erstmals fuer die Wahl am 26.09.2027. Wer hier noch dHondt rechnet, benachteiligt kleine Parteien systematisch. Nicht modelliert: Mehrsitze mit Ausgleich um die doppelte Zahl der Mehrsitze, die den Landtag 2022 auf 146 Sitze brachten. Keine Grundmandatsklausel.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
     },
     "Nordrhein-Westfalen (NRW)": {
-      "verified": false,
-      "seats": null,
-      "method": null,
+      "verified": true,
+      "seats": 181,
+      "method": "sainte-lague",
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Landeswahlgesetz NRW",
-      "quelle": "",
-      "hinweis": "",
-      "verifiziertAm": null,
-      "verifiziertVon": null
+      "rechtsgrundlage": "Landeswahlgesetz Nordrhein-Westfalen, § 14 Abs. 2 und § 33",
+      "quelle": "https://recht.nrw.de/lrgv/gesetz/19022026-gesetz-ueber-die-wahl-zum-landtag-des-landes-nordrhein-westfalen/",
+      "hinweis": "Ausgangszahl 181 Sitze (§ 14 Abs. 2). Nicht modelliert: Ueberhang mit Ausgleich, der den Landtag 2022 auf 195 Sitze brachte, und die zwingend ungerade Gesamtzahl (§ 33 Abs. 5). Ebenfalls nicht modelliert: die bereinigte Zweitstimmenzahl nach § 33 Abs. 2, bei der Zweitstimmen von Waehlern abgezogen werden, deren Erststimme an erfolgreiche Einzelbewerber oder Bewerber ohne zugelassene Landesliste ging; die Ausgangszahl kann dadurch unter 181 sinken. Keine Grundmandatsklausel.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
     },
     "Rheinland-Pfalz": {
       "verified": true,
@@ -179,15 +179,18 @@
       "verifiziertVon": "Gegen die Darstellung des Wahlsystems bei der Landeswahlleitung Sachsen-Anhalt geprueft. Zusaetzlich gegen die unabhaengig gerechnete Sitzverteilung von dawum.de gegengerechnet, siehe Regressionstest in scripts/check.mjs."
     },
     "Schleswig-Holstein": {
-      "verified": false,
-      "seats": null,
-      "method": null,
+      "verified": true,
+      "seats": 69,
+      "method": "sainte-lague",
       "thresholdPercent": 5,
-      "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein",
-      "quelle": "",
-      "hinweis": "Der SSW ist von der Sperrklausel befreit. Dieser Sonderfall ist nicht modelliert.",
-      "verifiziertAm": null,
-      "verifiziertVon": null
+      "exemptFromThreshold": [
+        "SSW"
+      ],
+      "rechtsgrundlage": "Landeswahlgesetz Schleswig-Holstein (LWahlG), § 1 Abs. 1 und § 3",
+      "quelle": "https://www.schleswig-holstein.de/DE/landesregierung/themen/demokratie-gesellschaft/wahlen/Wahlen-in-SH/Landtagswahl/documents/landtagswahl_rechtsgrundlagen_fh",
+      "hinweis": "Regelgroesse 69 Sitze, davon 35 Direktmandate. Der SSW ist als Partei der daenischen Minderheit von der Sperrklausel ausgenommen (§ 3 Abs. 1 Satz 2); das ist hier ueber exemptFromThreshold abgebildet und wird auf der Seite ausgewiesen. Nicht modelliert: die Grundmandatsklausel ab einem einzigen Direktmandat (§ 3 Abs. 1 Satz 1), Mehrsitze mit verfassungsrechtlich zwingendem Ausgleich (Art. 16 Abs. 2 Satz 2 LV), die stets ungerade Gesamtzahl und der Vorabzug von Wahlkreissitzen nach § 3 Abs. 2. Die Ist-Groesse lag 2009 bei 95 Sitzen.",
+      "verifiziertAm": "2026-08-27",
+      "verifiziertVon": "Gegen den Gesetzeswortlaut geprueft, zusaetzlich gegen die Darstellung der jeweiligen Landeswahlleitung. Sitzzahl und Verfahren stammen aus dem Gesetzestext selbst, nicht aus einer Zusammenfassung."
     },
     "Thüringen": {
       "verified": true,

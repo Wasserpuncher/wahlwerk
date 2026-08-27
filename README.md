@@ -21,11 +21,15 @@ Version 0.1. Was funktioniert:
 - Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
 - Sitemap-Index mit automatischer Aufteilung, robots.txt, RSS-Feed, JSON- und CSV-Export
 - JSON-LD je Seite: `Dataset`, `BreadcrumbList`, `CollectionPage`, `WebSite`
-- 96 Selbsttests über Rechenverfahren und erzeugtes HTML
+- 117 Selbsttests über Rechenverfahren und erzeugtes HTML
 
 Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind erst angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sechs Landtagswahlen, davon eine nach dem Zwei-Quellen-Kriterium verifiziert. Eine belegbare Institutsabweichung gibt es deshalb noch nicht.
 
-Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt. Die übrigen 15 Landtage liegen mit 1268 Umfragen in den Daten, ihre Sitzzuteilungsregeln sind aber noch nicht verifiziert; solange bleibt der Abschnitt dort leer statt geraten. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
+Verifizierte Sitzzuteilungen: **Bundestag, Berlin, Brandenburg, Sachsen, Sachsen-Anhalt, Thüringen, Mecklenburg-Vorpommern, Baden-Württemberg, Hessen, Rheinland-Pfalz, Saarland, Nordrhein-Westfalen, Niedersachsen, Schleswig-Holstein und Hamburg** — je Eintrag mit Sitzzahl, Verfahren, Sperrklausel, Paragrafenstelle, Quelle und Prüfdatum, abgelesen am Gesetzeswortlaut.
+
+Zwei Parlamente bleiben **bewusst gesperrt**, obwohl ihre Regeln geprüft sind. In **Bayern** zählen Erst- und Zweitstimmen zusammen, zugeteilt wird siebenmal getrennt nach Wahlkreisen mit festen Kontingenten, und Überhang entsteht auf Wahlkreisebene. In **Bremen** gibt es überhaupt kein landesweites Zuteilungsverfahren: Bremen und Bremerhaven werden getrennt gerechnet, mit je eigener Sperrklausel — eine Partei kann mit 2,4 Prozent landesweit einziehen und mit über 5 Prozent leer ausgehen. Aus einer landesweiten Sonntagsfrage ist beides nicht ableitbar. Die Begründung steht auf der jeweiligen Seite, statt dass der Abschnitt kommentarlos leer bleibt.
+
+Eine verifizierte Regel heißt nicht, dass überall eine Sitzverteilung erscheint. Der Trend verlangt drei Umfragen innerhalb von 45 Tagen; zu Ländern ohne bevorstehende Wahl wird seltener gefragt. Derzeit zeigen vier Parlamente eine Modellrechnung, die übrigen sagen auf ihrer Seite, dass die Regel steht und nur die Datengrundlage fehlt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
 
 ## Schnellstart
 

@@ -459,6 +459,34 @@ assert(
   detectTies({ A: 25, B: 25, C: 25, D: 25 }, 6, 'hare-niemeyer').length === 4,
 );
 
+// Interne Sprungmarken muessen ein Ziel haben. Ein Link auf "#streuung", der
+// auf einer Seite ohne diesen Abschnitt steht, fuehrt den Leser ins Leere und
+// faellt sonst niemandem auf, weil er keinen Fehler erzeugt.
+const tote = [];
+for (const datei of htmlFiles) {
+  const html = await readFile(datei, 'utf8');
+  const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+  for (const m of html.matchAll(/href="#([^"]+)"/g)) {
+    if (!ids.has(m[1])) tote.push(`${path.relative(OUT, datei)} -> #${m[1]}`);
+  }
+}
+assert('kein interner Sprunglink ohne Ziel', tote.length === 0, `${tote.length} Stueck, z.B. ${tote.slice(0, 3).join(' | ')}`);
+
+// Sperrklausel-Ausnahme. In Schleswig-Holstein gilt die Fuenfprozenthuerde nach
+// § 3 Abs. 1 Satz 2 LWahlG nicht fuer Parteien der daenischen Minderheit. Ohne
+// diese Ausnahme wirft der Rechner den SSW bei jedem Wert unter fuenf Prozent
+// heraus und liefert eine Sitzverteilung, die es nach dem Gesetz nicht gibt.
+{
+  const shCfg = { verified: true, seats: 69, method: 'sainte-lague', thresholdPercent: 5, exemptFromThreshold: ['SSW'] };
+  const werte = { CDU: 30, SPD: 20, Grüne: 18, AfD: 15, Linke: 8, FDP: 5, SSW: 4 };
+  const mitAusnahme = distribute(werte, shCfg, {});
+  const ohneAusnahme = distribute(werte, { ...shCfg, exemptFromThreshold: [] }, {});
+  assert('SSW bleibt trotz vier Prozent im Landtag', (mitAusnahme.seats.SSW ?? 0) > 0, JSON.stringify(mitAusnahme.seats));
+  assert('SSW wird als Ausnahme ausgewiesen', eq(mitAusnahme.exemptedParties, ['SSW']));
+  assert('ohne Ausnahme faellt der SSW heraus', (ohneAusnahme.seats.SSW ?? 0) === 0 && ohneAusnahme.excludedParties.includes('SSW'));
+  assert('die Ausnahme aendert die Gesamtsitzzahl nicht', Object.values(mitAusnahme.seats).reduce((a, b) => a + b, 0) === 69);
+}
+
 const robots = await readFile(path.join(OUT, 'robots.txt'), 'utf8');
 assert('robots.txt verweist auf die Sitemap', robots.includes('Sitemap:'));
 assert('robots.txt sperrt nichts Wesentliches', !/Disallow:\s*\/\s*$/m.test(robots));

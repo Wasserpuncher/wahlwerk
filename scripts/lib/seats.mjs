@@ -95,8 +95,16 @@ export function distribute(shares, parliamentConfig, options = {}) {
   const aggregates = new Set((options.aggregateCategories ?? ['Sonstige']).map((s) => s.toLowerCase()));
   const threshold = Number(thresholdPercent) || 0;
 
+  // Von der Sperrklausel ausgenommene Parteien. Kein Sonderwunsch, sondern
+  // geltendes Recht: In Schleswig-Holstein gilt die Fuenfprozenthuerde nach
+  // § 3 Abs. 1 Satz 2 LWahlG ausdruecklich nicht fuer Parteien der daenischen
+  // Minderheit. Wer den SSW trotzdem an der Huerde herauswirft, rechnet eine
+  // Sitzverteilung, die es nach dem Gesetz nicht geben kann.
+  const exempt = new Set((parliamentConfig.exemptFromThreshold ?? []).map((x) => x.toLowerCase()));
+
   const eligible = {};
   const excluded = [];
+  const exempted = [];
   const removedAggregates = [];
 
   for (const [party, value] of Object.entries(shares)) {
@@ -110,8 +118,14 @@ export function distribute(shares, parliamentConfig, options = {}) {
     // Die Sperrklausel lautet in den Wahlgesetzen "mindestens 5 vom Hundert".
     // Der Vergleich ist deshalb bewusst >= und nicht >. Bei exakt 5,0 Prozent
     // ist eine Partei beteiligt.
-    if (threshold === 0 || value >= threshold) eligible[party] = value;
-    else excluded.push(party);
+    if (threshold === 0 || value >= threshold) {
+      eligible[party] = value;
+    } else if (exempt.has(party.toLowerCase())) {
+      eligible[party] = value;
+      exempted.push(party);
+    } else {
+      excluded.push(party);
+    }
   }
 
   if (Object.keys(eligible).length === 0) return null;
@@ -140,6 +154,7 @@ export function distribute(shares, parliamentConfig, options = {}) {
     method,
     thresholdPercent: threshold,
     excludedParties: excluded,
+    exemptedParties: exempted,
     removedAggregates,
     ties: detectTies(eligible, seats, method),
   };

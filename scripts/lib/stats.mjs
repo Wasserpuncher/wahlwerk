@@ -97,6 +97,17 @@ export function seDifferenceSameSample(p1Percent, p2Percent, n, { designEffect =
  * Bei gleichen Gewichten ergibt das die Anzahl der Umfragen, bei stark
  * ungleichen Gewichten weniger. Multipliziert mit der mittleren Fallzahl
  * liefert es den effektiven Umfang der Zusammenfassung.
+ *
+ * WAS DIESE ZAHL NICHT LEISTET, ausdruecklich festgehalten am 27.08.2026:
+ * Bei GLEICHEN Gewichten ist das Ergebnis exakt die Summe der Fallzahlen, denn
+ * (k*w)^2 / (k*w^2) * (w*Sn)/(k*w) = Sn. Der Abschlag entsteht allein durch
+ * ungleiche Gewichte, nicht dadurch, dass die Werte aus verschiedenen
+ * Erhebungen stammen. Die Varianz ZWISCHEN den Instituten geht also nicht ein:
+ * gerechnet wird so, als waeren alle Befragten eine einzige Zufallsstichprobe.
+ * Das daraus abgeleitete Intervall ist deshalb eine untere Schranke und darf
+ * nie als die tatsaechliche Unsicherheit einer Wahlumfrage ausgegeben werden.
+ * Wer das aendern will, braucht einen belegten Designeffekt; siehe den Hinweis
+ * zu trend.designEffect in config/site.json und docs/ROADMAP.md.
  */
 export function kishEffectiveSize(weights, sampleSizes) {
   const sum = weights.reduce((a, b) => a + b, 0);
