@@ -37,6 +37,19 @@ for (const s of data.surveys) {
   byParliament.get(s.parliament).push(s);
 }
 
+// Die Umfragedatenbank fuehrt je Parlament einen langen Namen ("Landtag von
+// Sachsen-Anhalt") und ein Kuerzel ("Sachsen-Anhalt"). config/parliaments.json
+// ist auf die Kuerzel geschluesselt, byParliament dagegen auf den langen Namen,
+// weil daraus Ueberschrift und Slug entstehen. Ohne diese Uebersetzung trifft
+// nur der Bundestag zu, weil dort Name und Kuerzel zufaellig gleich sind. Alle
+// 16 Laender fielen still in den Zweig "nicht verifiziert" und zeigten trotz
+// verifizierter Regel keine Sitzverteilung.
+const shortcutByName = new Map((data.parliaments ?? []).map((p) => [p.name, p.shortcut]));
+const parliamentCfg = (name) =>
+  parliamentConfig.parliaments[shortcutByName.get(name) ?? name] ??
+  parliamentConfig.parliaments[name] ??
+  null;
+
 const byInstitute = new Map();
 for (const s of data.surveys) {
   const key = s.institute ?? 'Institut nicht angegeben';
@@ -54,7 +67,7 @@ for (const s of data.surveys) {
 
 const parliamentList = [...byParliament.entries()]
   .map(([name, surveys]) => {
-    const cfg = parliamentConfig.parliaments[name] ?? null;
+    const cfg = parliamentCfg(name);
     const trend = computeTrend(surveys, site.trend);
     return { name, slug: slug(name), surveys, cfg, trend, latest: surveys[0] };
   })
@@ -294,17 +307,41 @@ function seatBlock(p) {
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
 
-  // Szenarien: was passiert, wenn knapp gescheiterte Parteien die Huerde doch nehmen.
-  const nearMiss = Object.entries(p.trend.values)
-    .filter(([party, v]) => party !== 'Sonstige' && v < dist.thresholdPercent && v >= dist.thresholdPercent - 2)
+  // Szenarien rund um die Sperrklausel.
+  //
+  // Die Huerde wirkt in BEIDE Richtungen, und beide Richtungen sind gleich
+  // folgenreich. Bis zum 27.08.2026 rechnete dieser Abschnitt nur den Fall
+  // "knapp gescheiterte Partei nimmt die Huerde doch". Der umgekehrte Fall,
+  // eine knapp eingezogene Partei verfehlt sie, fehlte vollstaendig, obwohl er
+  // die Sitzverteilung staerker veraendert: die Stimmen der ausgeschiedenen
+  // Partei werden auf die verbleibenden umgelegt, was vor allem der staerksten
+  // Kraft zugutekommt. In Sachsen-Anhalt entschied genau dieser Fall darueber,
+  // ob die staerkste Partei die absolute Mehrheit allein erreicht. Ein Modell,
+  // das nur eine Richtung zeigt, stellt die Lage schief dar.
+  const band = 2;
+  const kandidaten = Object.entries(p.trend.values).filter(([party]) => party !== 'Sonstige');
+
+  // knapp darunter: koennten einziehen
+  const nearMiss = kandidaten
+    .filter(([, v]) => v < dist.thresholdPercent && v >= dist.thresholdPercent - band)
     .sort((a, b) => b[1] - a[1])
     .map(([party]) => party);
 
-  const scenarios = [{ label: 'Basis', extra: [], note: 'Nur Parteien ueber der Sperrklausel.' }];
+  // knapp darueber: koennten herausfallen
+  const nearHit = kandidaten
+    .filter(([, v]) => v >= dist.thresholdPercent && v <= dist.thresholdPercent + band)
+    .sort((a, b) => a[1] - b[1])
+    .map(([party]) => party);
+
+  const scenarios = [{ label: 'Basis', extra: [], drop: [], note: 'Nur Parteien ueber der Sperrklausel.' }];
   for (const party of nearMiss) {
-    scenarios.push({ label: `${party} zieht ein`, extra: [party], note: `${party} liegt im Trend bei ${num(p.trend.values[party])} Prozent und damit innerhalb der Fehlertoleranz zur Huerde.` });
+    scenarios.push({ label: `${party} zieht ein`, extra: [party], drop: [], note: `${party} liegt im Trend bei ${num(p.trend.values[party])} Prozent und damit innerhalb der Fehlertoleranz zur Huerde.` });
   }
-  if (nearMiss.length > 1) scenarios.push({ label: 'beide ziehen ein', extra: nearMiss, note: `${nearMiss.join(' und ')} nehmen die Huerde gemeinsam.` });
+  if (nearMiss.length > 1) scenarios.push({ label: 'beide ziehen ein', extra: nearMiss, drop: [], note: `${nearMiss.join(' und ')} nehmen die Huerde gemeinsam.` });
+  for (const party of nearHit) {
+    scenarios.push({ label: `${party} verfehlt die Huerde`, extra: [], drop: [party], note: `${party} liegt im Trend bei ${num(p.trend.values[party])} Prozent und damit ebenfalls innerhalb der Fehlertoleranz zur Huerde, nur von der anderen Seite. Faellt die Partei heraus, werden ihre Stimmen auf die verbleibenden umgelegt.` });
+  }
+  if (nearHit.length > 1) scenarios.push({ label: 'beide verfehlen die Huerde', extra: [], drop: nearHit, note: `${nearHit.join(' und ')} scheitern gemeinsam an der Huerde.` });
 
   const computed = scenarios
     .map((sc) => {
@@ -312,6 +349,7 @@ function seatBlock(p) {
       const eligible = {};
       for (const [party, v] of Object.entries(p.trend.values)) {
         if (party === 'Sonstige') continue;
+        if ((sc.drop ?? []).includes(party)) continue;
         if (v >= dist.thresholdPercent || sc.extra.includes(party)) eligible[party] = v;
       }
       const d = distribute(eligible, forced, { aggregateCategories: parliamentConfig.aggregateCategories });

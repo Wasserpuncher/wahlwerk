@@ -388,6 +388,37 @@ for (const name of chunkNames) {
 assert('jede Sitemap-URL hat eine Datei', missingTargets.length === 0, missingTargets.slice(0, 5).join(', '));
 assert('Sitemap deckt alle HTML-Seiten ab (ohne 404)', sitemapUrls === htmlFiles.length - 1, `${sitemapUrls} URLs, ${htmlFiles.length - 1} Seiten`);
 
+// --------------------------------- Verifizierte Regeln muessen auch ankommen
+//
+// Hintergrund: config/parliaments.json ist auf die Kuerzel der Umfragedatenbank
+// geschluesselt ("Sachsen-Anhalt"), die Seiten entstehen aber unter dem langen
+// Namen ("Landtag von Sachsen-Anhalt"). Passte die Uebersetzung nicht, fiel ein
+// verifiziertes Parlament still in den Zweig "nicht verifiziert": kein Fehler,
+// kein roter Test, nur eine fehlende Sitzverteilung. Genau das war bis zum
+// 27.08.2026 der Fall und betraf alle 16 Laender. Diese Pruefung schliesst das
+// aus, indem sie fuer jeden verifizierten Eintrag verlangt, dass die erzeugte
+// Seite die Modellrechnung wirklich enthaelt.
+const parliamentsCfg = JSON.parse(await readFile(path.join(ROOT, 'config', 'parliaments.json'), 'utf8')).parliaments;
+const surveyData = JSON.parse(await readFile(path.join(ROOT, 'data', 'surveys.json'), 'utf8'));
+const nameByShortcut = new Map((surveyData.parliaments ?? []).map((p) => [p.shortcut, p.name]));
+
+for (const [key, cfg] of Object.entries(parliamentsCfg)) {
+  if (cfg?.verified !== true) continue;
+  const langname = nameByShortcut.get(key) ?? key;
+  const datei = path.join(OUT, 'parlament', slug(langname), 'index.html');
+  if (!existsSync(datei)) {
+    // Kein Fehler: zu diesem Parlament liegt schlicht keine Umfrage vor.
+    assert(`${key}: verifiziert, aber keine Seite (keine Umfragen)`, true);
+    continue;
+  }
+  const html = await readFile(datei, 'utf8');
+  assert(
+    `${key}: verifizierte Sitzzuteilung erscheint auf der Seite`,
+    html.includes('Modellrechnung zur Sitzverteilung') && !html.includes('Keine Sitzverteilung ausgewiesen'),
+    'Config-Schluessel wird beim Bauen nicht gefunden - siehe parliamentCfg() in build.mjs',
+  );
+}
+
 const robots = await readFile(path.join(OUT, 'robots.txt'), 'utf8');
 assert('robots.txt verweist auf die Sitemap', robots.includes('Sitemap:'));
 assert('robots.txt sperrt nichts Wesentliches', !/Disallow:\s*\/\s*$/m.test(robots));

@@ -16,14 +16,16 @@ Version 0.1. Was funktioniert:
 - Streuungsanalyse zwischen den Instituten
 - Sitzverteilung nach Sainte-Laguë, Hare/Niemeyer und d'Hondt, gegen von Hand nachgerechnete Beispiele getestet
 - Koalitionsrechner mit minimalen Mehrheiten, rein arithmetisch
-- Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, Impressum, 404
+- Szenarien zur Sperrklausel in beide Richtungen: knapp gescheiterte Parteien ziehen doch ein, knapp eingezogene fallen doch heraus
+- fünf serverseitig gerenderte SVG-Diagramme je Parlamentsseite, ohne JavaScript und ohne Zeichenbibliothek
+- Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
 - Sitemap-Index mit automatischer Aufteilung, robots.txt, RSS-Feed, JSON- und CSV-Export
 - JSON-LD je Seite: `Dataset`, `BreadcrumbList`, `CollectionPage`, `WebSite`
-- 33 Selbsttests über Rechenverfahren und erzeugtes HTML
+- 96 Selbsttests über Rechenverfahren und erzeugtes HTML
 
-Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Insbesondere sind die amtlichen Wahlergebnisse noch nicht angebunden, weshalb es noch keine belegbare Institutsabweichung gibt.
+Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind erst angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sechs Landtagswahlen, davon eine nach dem Zwei-Quellen-Kriterium verifiziert. Eine belegbare Institutsabweichung gibt es deshalb noch nicht.
 
-Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
+Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt. Die übrigen 15 Landtage liegen mit 1268 Umfragen in den Daten, ihre Sitzzuteilungsregeln sind aber noch nicht verifiziert; solange bleibt der Abschnitt dort leer statt geraten. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
 
 ## Schnellstart
 

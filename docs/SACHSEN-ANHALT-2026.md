@@ -1,6 +1,8 @@
 # Sachsen-Anhalt, Landtagswahl am 6. September 2026
 
-Stand dieses Dokuments: 16. August 2026. Alle Zahlen mit Quelle. Was hier nicht belegt ist, steht nicht drin.
+Stand dieses Dokuments: **27. August 2026**, zehn Tage vor der Wahl. Alle Zahlen mit Quelle. Was hier nicht belegt ist, steht nicht drin.
+
+Dieses Dokument ist eine datierte Momentaufnahme und veraltet zwangslaeufig. Massgeblich ist immer die erzeugte Seite, die bei jedem Build neu rechnet. Die Fassung vom 16. August war zum Schluss elf Tage alt und in der Aussage falsch geworden; was sich geaendert hat, steht unten unter "Was sich seit dem 16. August geaendert hat".
 
 ## Rechtsrahmen, verifiziert
 
@@ -17,7 +19,9 @@ Stand dieses Dokuments: 16. August 2026. Alle Zahlen mit Quelle. Was hier nicht 
 
 Quelle für die Systemangaben: <https://wahlen.sachsen-anhalt.de/zu-den-wahlen/allgemeine-informationen-zur-landtagswahl/wahlsystem>
 
-Damit ist Sachsen-Anhalt in `config/parliaments.json` auf `verified: true` gesetzt und die Sitzrechnung im Generator freigeschaltet.
+Damit ist Sachsen-Anhalt in `config/parliaments.json` auf `verified: true` gesetzt.
+
+**Nachtrag vom 27.08.2026.** Freigeschaltet war die Sitzrechnung damit trotzdem nicht. `config/parliaments.json` ist auf die Kuerzel der Umfragedatenbank geschluesselt ("Sachsen-Anhalt"), die Seiten entstehen aber unter dem langen Namen ("Landtag von Sachsen-Anhalt"). Der Lookup lief ins Leere, fiel still in den Zweig "nicht verifiziert" und liess den gesamten Abschnitt weg. Betroffen waren alle 16 Laender; nur der Bundestag funktionierte, weil dort Name und Kuerzel zufaellig gleich sind. Kein Selbsttest wurde davon rot. Behoben am 27.08.2026, seitdem prueft `npm run check` fuer jeden verifizierten Eintrag, dass die Modellrechnung auf der erzeugten Seite auch wirklich steht.
 
 ## Die entscheidende Einschränkung
 
@@ -27,78 +31,108 @@ Jede Sitzrechnung auf Umfragebasis, auch die hier, unterstellt also 83 Sitze und
 
 Zweiter, im Modell ebenfalls nicht abgebildeter Fall: Wahlkreissitze von Bewerbern ohne zugelassene Landesliste oder von Parteien unterhalb der Sperrklausel werden nach dem Gesetz von den 83 Sitzen abgezogen, bevor verteilt wird.
 
-## Datenlage: drei Umfragen im Trendfenster
+## Datenlage: vier Institute im Trendfenster
 
-Veröffentlicht zwischen dem 30. Juli und dem 12. August 2026, zusammen 4753 Befragte.
+Bezugstag des Trends ist das juengste Feldzeitende, der 25. August 2026. Der Trend nutzt je Institut nur die **juengste** Erhebung, gewichtet mit einer Halbwertszeit von 14 Tagen und der Wurzel der Fallzahl. Das Gewicht steht in der letzten Spalte, damit die Rechnung von Hand nachvollziehbar bleibt.
 
-| Institut | Feldzeit | Veröffentlicht | AfD | CDU | Linke | SPD | Grüne | BSW | FDP | Sonstige |
-|---|---|---|---|---|---|---|---|---|---|---|
-| pollytix | 3. bis 8.8. | 12.8.2026 | 43,0 | 23,0 | 13,0 | 7,0 | 5,0 | 4,0 | 2,0 | 3,0 |
-| INSA | 31.7. bis 6.8. | 10.8.2026 | 42,0 | 22,0 | 13,0 | 6,0 | 4,0 | 5,0 | 4,0 | 4,0 |
-| Infratest dimap | 23. bis 28.7. | 30.7.2026 | 41,0 | 24,0 | 13,0 | 7,0 | 5,0 | 4,0 | n.a. | 6,0 |
-| **Trend 12.8.** | | | **42,1** | **22,9** | **13,0** | **6,6** | **4,6** | **4,4** | **2,9** | **3,5** |
+| Institut | Auftraggeber | Feldzeit | Veröffentlicht | n | AfD | CDU | Linke | SPD | Grüne | BSW | FDP | Sonstige | Gewicht |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Infratest dimap | ARD | 24.08.2026 bis 25.08.2026 | 26.08.2026 | 1511 | 42,0 | 22,0 | 11,0 | 8,0 | 6,0 | 4,0 | 3,0 | 4,0 | 1,23 |
+| Civey | WELT | 06.08.2026 bis 20.08.2026 | 25.08.2026 | 1500 | 43,0 | 21,0 | 12,0 | 7,0 | 5,0 | 4,0 | 4,0 | 4,0 | 0,96 |
+| pollytix | Campact | 03.08.2026 bis 08.08.2026 | 12.08.2026 | 2604 | 43,0 | 23,0 | 13,0 | 7,0 | 5,0 | 4,0 | 2,0 | 3,0 | 0,70 |
+| INSA | BILD | 31.07.2026 bis 06.08.2026 | 10.08.2026 | 1000 | 42,0 | 22,0 | 13,0 | 6,0 | 4,0 | 5,0 | 4,0 | 4,0 | 0,39 |
+| **Trend 25.08.** | | | | **6615** | **42,5** | **21,9** | **12,0** | **7,3** | **5,3** | **4,1** | **3,2** | **3,8** | |
 
-Quelle: dawum.de, Wahltrend Sachsen-Anhalt vom 12.8.2026, ODbL. Der Auftraggeber der pollytix-Erhebung ist Campact, jener der INSA-Erhebung BILD, jener der Infratest-dimap-Erhebung sind MDR, WDR, Mitteldeutsche Zeitung und Volksstimme.
+Quelle: dawum.de, ODbL. Zum Vergleich das amtliche Ergebnis vom 6. Juni 2021: CDU 37,1, AfD 20,8, Linke 11,0, SPD 8,4, FDP 6,4, Gruene 5,9.
 
-Zum Vergleich das amtliche Ergebnis vom 6. Juni 2021: CDU 37,1, AfD 20,8, Linke 11,0, SPD 8,4, FDP 6,4, Grüne 5,9.
+### Was sich seit dem 16. August geaendert hat
 
-**Streuung.** AfD 41,0 bis 43,0. CDU 22,0 bis 24,0. Linke bei allen drei exakt 13,0. Grüne 4,0 bis 5,0. BSW 4,0 bis 5,0. Die Spanne bei Grünen und BSW ist genau die Spanne, die über den Einzug entscheidet.
+Die vorige Fassung stuetzte sich auf drei Umfragen mit 4753 Befragten und fuehrte die Gruenen bei 4,6 Prozent, also unter der Huerde. Seither sind zwei Erhebungen dazugekommen, Civey vom 25. und Infratest dimap vom 26. August, zusammen 3011 weitere Befragte. Drei Aussagen der alten Fassung stimmen damit nicht mehr:
 
-**Warum das mehr als eine Fußnote ist.** Bei der Landtagswahl 2021 lag die mittlere Abweichung der Institute vom amtlichen Ergebnis in Sachsen-Anhalt bei 2,86 Prozentpunkten, im Einzelfall bei bis zu 10,1 Prozentpunkten. Der Abstand zwischen 4,6 und 5,0 Prozent ist kleiner als die typische Fehlertoleranz. Aus einer Umfrage lässt sich deshalb nicht ablesen, ob Grüne oder BSW im Landtag sitzen werden.
+- Die Gruenen liegen im Trend jetzt bei 5,3 statt 4,6 Prozent, im juengsten Einzelwert sogar bei 6,0. Sie stehen damit **ueber** der Huerde statt darunter.
+- Die Linke faellt von 13,0 auf 12,0. Der Satz "bei allen drei exakt 13,0" ist ueberholt, die Spanne betraegt jetzt 11,0 bis 13,0.
+- Die SPD steigt von 6,6 auf 7,3.
 
-## Vier Szenarien, gerechnet mit dem Projektcode
+Wer die alte Tabelle heute zitiert, zitiert einen ueberholten Stand.
 
-Alle Rechnungen: Hare/Niemeyer, 83 Sitze, Mehrheit ab 42. Reproduzierbar über `scripts/lib/seats.mjs` und `scripts/lib/coalitions.mjs`. Aufgeführt sind nur minimale Mehrheiten, also solche, aus denen kein Partner entfernt werden kann.
+### Streuung im Trendfenster
 
-### A. Basis: nur AfD, CDU, Linke, SPD über der Hürde
+| Partei | Spanne der vier Institute |
+|---|---|
+| AfD | 42,0 bis 43,0 |
+| CDU | 21,0 bis 23,0 |
+| Linke | 11,0 bis 13,0 |
+| SPD | 6,0 bis 8,0 |
+| Gruene | 4,0 bis 6,0 |
+| BSW | 4,0 bis 5,0 |
+| FDP | 2,0 bis 4,0 |
 
-AfD 41, CDU 22, Linke 13, SPD 7
+### Die einzige Zahl, auf die es ankommt: fuenf Prozent
 
-| Kombination | Sitze | über der Mehrheit |
-|---|---|---|
-| AfD + CDU | 63 | 21 |
-| AfD + Linke | 54 | 12 |
-| AfD + SPD | 48 | 6 |
-| CDU + Linke + SPD | 42 | 0 |
+Der gewichtete Trend allein sagt wenig. Entscheidend ist, wie sicher er ist. Das 95-Prozent-Intervall, gerechnet ueber die effektive Fallzahl nach Kish (5870):
 
-Diese Verteilung stimmt exakt mit der unabhängig gerechneten Veröffentlichung von dawum.de überein. Der Abgleich läuft als Regressionstest in `npm run check` mit.
+| Partei | Trend | 95-Prozent-Intervall | Huerde entschieden? |
+|---|---:|---|---|
+| Gruene | 5,3 | 4,71 bis 5,86 | **nein**, das Intervall liegt auf beiden Seiten der Huerde |
+| BSW | 4,1 | 3,64 bis 4,66 | darunter, aber innerhalb der ueblichen Institutsabweichung |
+| FDP | 3,2 | 2,78 bis 3,68 | klar darunter |
 
-Bemerkenswert ist die letzte Zeile: Ohne die AfD bleibt in diesem Szenario genau eine Mehrheit, und die hat null Sitze Reserve. Ein einziger abweichender Sitz kippt sie.
+Diese Intervalle unterstellen eine reine Zufallsstichprobe, der Designeffekt steht in `config/site.json` auf 1,0. Reale Wahlumfragen liegen darueber, die wahre Unsicherheit ist also **groesser** als hier ausgewiesen. Bei der Landtagswahl 2021 lag die mittlere Abweichung der Institute vom amtlichen Ergebnis in Sachsen-Anhalt bei 2,86 Prozentpunkten, im Einzelfall bei bis zu 10,1. Beide Werte sind ein Vielfaches des Abstands, um den es hier geht.
 
-### B. Grüne schaffen die Hürde
+## Sitzverteilung nach dem Stand vom 25. August
 
-AfD 39, CDU 22, Linke 12, SPD 6, Grüne 4
+Hare/Niemeyer, 83 Sitze, Sperrklausel 5 Prozent, Mehrheit ab 42. An der Huerde scheitern im Modell FDP und BSW, der Sammelposten "Sonstige" wird vor der Zuteilung entfernt.
 
-Minimale Mehrheiten: AfD + CDU (61), AfD + Linke (51), AfD + SPD (45), AfD + Grüne (43), CDU + Linke + SPD + Grüne (44).
+| Partei | Sitze |
+|---|---:|
+| AfD | 40 |
+| CDU | 20 |
+| Linke | 11 |
+| SPD | 7 |
+| Gruene | 5 |
+| **Summe** | **83** |
 
-### C. BSW schafft die Hürde
+Minimale Mehrheiten, also solche, aus denen kein Partner entfernt werden kann:
 
-AfD 39, CDU 22, Linke 12, SPD 6, BSW 4
+| Kombination | Sitze | Reserve ueber der Mehrheit |
+|---|---:|---:|
+| AfD + CDU | 60 | 18 |
+| AfD + Linke | 51 | 9 |
+| AfD + SPD | 47 | 5 |
+| AfD + Gruene | 45 | 3 |
+| CDU + Linke + SPD + Gruene | 43 | 1 |
 
-Minimale Mehrheiten: AfD + CDU (61), AfD + Linke (51), AfD + SPD (45), AfD + BSW (43), CDU + Linke + SPD + BSW (44).
+Es gibt genau **eine** Mehrheit ohne die AfD, und sie hat einen Sitz Reserve.
 
-### D. Grüne und BSW schaffen die Hürde
+## Warum 0,4 Prozentpunkte ueber alles entscheiden
 
-AfD 37, CDU 20, Linke 12, SPD 6, Grüne 4, BSW 4
+Alle folgenden Rechnungen entstehen mit demselben Code, `scripts/lib/seats.mjs` und `scripts/lib/coalitions.mjs`. Veraendert wird jeweils nur, wer die Huerde nimmt. Die AfD behaelt in allen Faellen ihre 42,5 Prozent.
 
-Minimale Mehrheiten: AfD + CDU (57), AfD + Linke (49), AfD + SPD (43), AfD + Grüne + BSW (45), CDU + Linke + SPD + BSW (42), CDU + Linke + SPD + Grüne (42).
+| Szenario | AfD | CDU | Linke | SPD | Gruene | BSW | Mehrheit ohne AfD |
+|---|---:|---:|---:|---:|---:|---:|---|
+| A: Trend von heute, Gruene 5,3 | 40 | 20 | 11 | 7 | 5 | - | CDU+Linke+SPD+Gruene, 43 Sitze |
+| B: Gruene bei 4,9 | **42** | 22 | 12 | 7 | - | - | **keine** |
+| C: zusaetzlich BSW bei 5,1 | 38 | 19 | 11 | 6 | 5 | 4 | **keine** |
+| D: weder Gruene noch BSW | **42** | 22 | 12 | 7 | - | - | **keine** |
 
-### Was der Vergleich zeigt
+Das ist der Kern der Lage. Sinken die Gruenen von 5,3 auf 4,9, also um weniger als einen halben Prozentpunkt und damit weit innerhalb der Messunsicherheit, dann erreicht die AfD im Modell **42 von 83 Sitzen und damit die absolute Mehrheit allein**, ohne dass sich ihr Stimmenanteil um eine einzige Stimme veraendert haette. Grund ist ausschliesslich, dass an der Sperrklausel mehr Stimmen verfallen und auf die verbliebenen Parteien umgelegt werden.
 
-Der Sitzanteil der AfD schwankt zwischen den Szenarien um vier Sitze, ohne dass sich ihr Stimmenanteil ändert. Grund ist allein, wie viele Stimmen an der Sperrklausel verfallen. Genau deshalb ist die Frage, ob Grüne und BSW über fünf Prozent kommen, für die Mehrheitsverhältnisse wichtiger als die Frage, ob die AfD bei 41 oder 43 Prozent landet.
+In Szenario C gilt dasselbe in die andere Richtung: Kommt das BSW dazu, faellt die AfD auf 38 Sitze. Auch dann bleibt aber keine Mehrheit ohne sie uebrig, weil CDU, Linke, SPD und Gruene zusammen nur 41 Sitze haetten.
 
-Konstant über alle vier Szenarien: Eine Mehrheit ohne die AfD erfordert mindestens CDU, Linke und SPD gemeinsam, und sie liegt in drei von vier Szenarien bei null bis zwei Sitzen Reserve.
+**Was daraus nicht folgt.** Keines dieser vier Szenarien ist eine Prognose. Sie zeigen die Empfindlichkeit der Sitzrechnung gegenueber der Sperrklausel, nicht den wahrscheinlichen Ausgang. Aus einer Umfrage laesst sich nicht ablesen, ob die Gruenen bei 4,9 oder bei 5,3 Prozent landen. Genau deshalb steht diese Frage hier vorne und nicht die Frage, ob die AfD 42 oder 43 Prozent erreicht.
+
+**Und der Vorbehalt aus dem Abschnitt oben gilt weiter.** Alle Zahlen unterstellen 83 Sitze ohne Ueberhang- und Ausgleichsmandate. Bei einer Partei, die nach diesen Umfragen einen Grossteil der 41 Wahlkreise direkt gewinnen duerfte, ist das die kritische Annahme, und sie wirkt gerade in Szenario B und D auf die entscheidende Zahl. In der laufenden 8. Wahlperiode fuehrten Ueberhang und Ausgleich zu 97 statt 83 Sitzen.
 
 ## Was hier bewusst fehlt
 
-- **Eine Prognose.** Die Zahlen sind Momentaufnahmen der Stimmung im Feldzeitraum, teils drei Wochen vor dem Wahltag.
+- **Eine Prognose.** Die Zahlen sind Momentaufnahmen der Stimmung im Feldzeitraum. Die aelteste hier verwendete Erhebung endete am 6. August, also einen Monat vor dem Wahltag.
 - **Eine Bewertung der Koalitionen.** Die Liste ist Arithmetik. Ob eine Kombination politisch in Betracht kommt, sagt sie nicht.
 - **Ergebnisse auf Wahlkreisebene.** Dafür braucht es die Daten der Landeswahlleitung, die im Projekt noch nicht angebunden sind.
 - **Die Ministerpräsidentenwahl.** Die Landesverfassung regelt eigene Mehrheitserfordernisse in mehreren Wahlgängen. Das ist nicht modelliert.
 
 ## Grafische Umsetzung im Generator
 
-Seit Version 0.2 erzeugt der Build für jede Parlamentsseite fünf Diagramme, alle als statisches SVG ohne JavaScript und ohne Zeichenbibliothek:
+Der Build erzeugt für jede Parlamentsseite fünf Diagramme, alle als statisches SVG ohne JavaScript und ohne Zeichenbibliothek:
 
 1. **Kennzahlenband** mit Umfragezahl, jüngstem Feldende, Vorsprung im Trend und Gesamtzahl der Befragten.
 2. **Verlaufsdiagramm** aller Umfragen mit eingezeichneter Sperrklausel. Fehlende Werte erzeugen Lücken statt Nulllinien.
@@ -106,6 +140,8 @@ Seit Version 0.2 erzeugt der Build für jede Parlamentsseite fünf Diagramme, al
 4. **Sitzbogen**, ein Punkt je Sitz, mit Mehrheitslinie.
 5. **Koalitionsbalken** und **Szenariovergleich** zur Sperrklausel.
 
-Der Szenariovergleich entsteht automatisch: Der Build sucht Parteien, die im Trend weniger als zwei Prozentpunkte unter der Sperrklausel liegen, und rechnet für jede davon eine eigene Sitzverteilung. In Sachsen-Anhalt trifft das auf Grüne und BSW zu, weshalb dort vier Szenarien erscheinen.
+Der Szenariovergleich entsteht automatisch und rechnet die Sperrklausel in **beide** Richtungen: Der Build sucht Parteien, die im Trend hoechstens zwei Prozentpunkte **unter** der Huerde liegen und deshalb einziehen koennten, und ebenso Parteien, die hoechstens zwei Prozentpunkte **ueber** der Huerde liegen und deshalb herausfallen koennten. Fuer jede davon entsteht eine eigene Sitzverteilung.
+
+Bis zum 27.08.2026 kannte der Build nur die erste Richtung. Damit fehlte in Sachsen-Anhalt ausgerechnet das folgenreichste Szenario, naemlich das Herausfallen der Gruenen. Nach dem Stand vom 25.08. erscheinen dort fuenf Szenarien: Basis, BSW zieht ein, FDP zieht ein, beide ziehen ein, Gruene verfehlt die Huerde.
 
 Alle Diagramme tragen `title`-Elemente für Screenreader, laufen im hellen und dunklen Modus und funktionieren im Ausdruck.
