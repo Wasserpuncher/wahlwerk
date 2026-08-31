@@ -2,6 +2,10 @@
   "_doku": "Amtliche Wahlergebnisse. Amtliche Werke nach Paragraf 5 UrhG und damit gemeinfrei. Ein Ergebnis wird auf der Seite nur dargestellt, wenn verified true ist. Das erfordert Uebereinstimmung von mindestens zwei unabhaengigen Quellen oder die direkte Bestaetigung durch die Landeswahlleitung. Ungepruefte Eintraege bleiben im Bestand, werden aber nicht ausgegeben.",
   "_pruefung": "scripts/check.mjs prueft fuer jeden Eintrag, ob die Summe der Anteile im Bereich von 100 Prozent liegt. Eine grob abweichende Summe deutet auf einen Tippfehler oder eine fehlende Partei hin.",
   "_fehlend": "Die Landtagswahlen 1990 und 1994 fehlen noch. Sie sind beim Statistischen Landesamt Sachsen-Anhalt unter wahlergebnisse.sachsen-anhalt.de dokumentiert und muessen von dort uebernommen werden. Sie werden hier bewusst nicht aus dem Gedaechtnis ergaenzt.",
+  "_doku_parteiAliasse": "Zuordnung der Parteinamen im amtlichen Ergebnis zu den Namen im Umfragebestand. Nur noetig, wo beide Quellen dieselbe Partei verschieden schreiben. Ohne diese Zuordnung faellt die Partei aus der Nachkontrolle heraus, und der mittlere Fehler faellt zu guenstig aus. scripts/lib/nachkontrolle.mjs zaehlt jede nicht zuordenbare Partei und weist sie auf der Seite aus, statt sie stillschweigend zu ueberspringen. Jeder Eintrag hier ist eine Behauptung ueber Identitaet und muss stimmen: FW im amtlichen Ergebnis Sachsen-Anhalts sind die Freien Waehler, die der Umfragebestand als \"Freie Wähler\" fuehrt.",
+  "parteiAliasse": {
+    "FW": "Freie Wähler"
+  },
   "elections": {
     "Sachsen-Anhalt": {
       "verified": true,

@@ -70,11 +70,12 @@ ${jsonLd(ld.length === 1 ? ld[0] : ld)}
       <span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(site.tagline)}</span></span>
     </a>
     <nav aria-label="Hauptnavigation">
+      <a href="/wahlen/">Wahlen</a>
       <a href="/parlamente/">Parlamente</a>
       <a href="/parteien/">Parteien</a>
       <a href="/institute/">Institute</a>
+      <a href="/chronik/">Chronik</a>
       <a href="/methodik/">Methodik</a>
-      <a href="/quellen/">Quellen</a>
       <a href="/daten/">Daten</a>
     </nav>
   </div>
@@ -110,6 +111,8 @@ function footer(site) {
       ${legal.join('')}
       <a href="/methodik/">Methodik</a>
       <a href="/quellen/">Quellenverzeichnis</a>
+      <a href="/auftraggeber/">Auftraggeber</a>
+      <a href="/methoden/">Erhebungsmethoden</a>
       <a href="/daten/">Datenexport</a>
       <a href="/feed.xml">RSS</a>
     </nav>
@@ -171,7 +174,17 @@ export function belegstreifen(surveys, { width = 900, height = 64 } = {}) {
 </figure>`;
 }
 
-/** Hinweiskasten. Wird fuer methodische Vorbehalte verwendet, nicht fuer Deko. */
-export function note(kind, title, html) {
-  return `<aside class="note note-${esc(kind)}"><h3>${esc(title)}</h3>${html}</aside>`;
+/**
+ * Hinweiskasten. Wird fuer methodische Vorbehalte verwendet, nicht fuer Deko.
+ *
+ * Die Ueberschriftenebene ist einstellbar, weil sie sonst die Gliederung der
+ * Seite bricht: Steht ein solcher Kasten unmittelbar unter der h1 und noch vor
+ * der ersten h2, folgt auf Ebene 1 eine Ebene 3. Wer mit einer Sprachausgabe
+ * durch die Ueberschriften springt, findet dann eine Ebene, die es nicht gibt.
+ * Voreinstellung bleibt 3, damit ein Kasten INNERHALB eines Abschnitts richtig
+ * einsortiert bleibt; vor dem ersten Abschnitt wird 2 uebergeben.
+ */
+export function note(kind, title, html, { level = 3 } = {}) {
+  const h = level === 2 ? 'h2' : 'h3';
+  return `<aside class="note note-${esc(kind)}"><${h}>${esc(title)}</${h}>${html}</aside>`;
 }

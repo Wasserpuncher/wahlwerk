@@ -8,7 +8,7 @@ Kein JavaScript im Frontend. Keine Cookies. Keine externen Requests. Keine Fremd
 
 ## Stand
 
-Version 0.1. Was funktioniert:
+Version 0.2. Was funktioniert:
 
 - Abruf der Umfragedatenbank von dawum.de mit Aktualitätsprüfung über `last_update.txt`
 - defensive Normalisierung mit protokollierten Datensatzfehlern statt stiller Ersatzwerte
@@ -18,10 +18,18 @@ Version 0.1. Was funktioniert:
 - Koalitionsrechner mit minimalen Mehrheiten, rein arithmetisch
 - Szenarien zur Sperrklausel in beide Richtungen: knapp gescheiterte Parteien ziehen doch ein, knapp eingezogene fallen doch heraus
 - fünf serverseitig gerenderte SVG-Diagramme je Parlamentsseite, ohne JavaScript und ohne Zeichenbibliothek
-- Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
+- **Wahlkalender und Wahlseiten**: alle künftigen Wahltermine aus der amtlichen Übersicht der Bundeswahlleiterin, je datiertem Termin mit Umfragen eine eigene Seite mit Countdown, Trend, Sitzmodell und Nachkontrolle
+- **Nachkontrolle**: der Umfragestand kurz vor einer Wahl gegen das amtliche Ergebnis, mit demselben Verfahren und denselben Parametern gerechnet wie überall sonst. Für Sachsen-Anhalt 2021: mittlerer absoluter Fehler 2,32 Prozentpunkte, größte Abweichung −8,5 Punkte bei der CDU, nur vier von acht Parteien im 95-Prozent-Intervall
+- **Chronik**: der vollständige Bestand nach Jahr und Monat, damit jede einzelne Umfrage erreichbar ist und nicht nur die jüngsten 200 je Tabelle
+- **Auftraggeber und Erhebungsmethoden** als eigene Achsen, bisher standen beide nur in den Tabellen
+- Seitentypen: Start, Wahlkalender, Wahl, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Auftraggeberübersicht, Auftraggeber, Methodenübersicht, Methode, Chronik, Jahr, Monat, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
 - Sitemap-Index mit automatischer Aufteilung, robots.txt, RSS-Feed, JSON- und CSV-Export
 - JSON-LD je Seite: `Dataset`, `BreadcrumbList`, `CollectionPage`, `WebSite`
-- 117 Selbsttests über Rechenverfahren und erzeugtes HTML
+- 174 Selbsttests über Rechenverfahren und erzeugtes HTML. Neu darunter:
+  - **Erreichbarkeit statt Existenz**: ein Durchlauf von der Startseite aus, Link für Link. Der Bau bricht ab, sobald eine einzige Seite nicht mehr erreichbar ist. Das ist bewusst schärfer als „irgendwo verlinkt“ — eine Seite, die nur von einer selbst unerreichbaren Seite verlinkt ist, wäre unter dem schwächeren Kriterium unauffällig und trotzdem nicht zu finden.
+  - **Wahltag-Probe**: die Seite wird zweimal zusätzlich gebaut, mit künstlich gesetztem Bauzeitpunkt auf den Wahltag und den Tag danach. Damit laufen die beiden Zustände, die im Echtbetrieb genau einmal vorkommen, vorher mindestens einmal — statt erstmals am Wahlabend.
+  - **Gliederung**: keine übersprungene Überschriftenebene, keine doppelt vergebene `id`, auf keiner der 4381 Seiten.
+  - Der Wächter gegen externe Ressourcen prüft jetzt jedes einbindende Element statt nur des ersten Treffers. Vorher blieb er am Canonical-Link hängen und konnte gar nicht auslösen.
 
 Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind erst angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sechs Landtagswahlen, davon eine nach dem Zwei-Quellen-Kriterium verifiziert. Eine belegbare Institutsabweichung gibt es deshalb noch nicht.
 
@@ -96,10 +104,11 @@ Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entschei
 ## Struktur
 
 ```
-config/          Site- und Parlamentskonfiguration
+config/          Site, Parlamente, amtliche Ergebnisse, Wahltermine, Wahlleitungen
 content/         Inhaltsseiten als HTML mit Platzhaltern
 scripts/         Abruf, Build, Tests, Vorschauserver
-scripts/lib/     Rechenkern: dawum, trend, seats, coalitions, render, util
+scripts/lib/     Rechenkern: dawum, trend, seats, coalitions, charts, stats,
+                 archive, wahltermine, nachkontrolle, render, util
 src/styles/      Stylesheet
 fixtures/        synthetische Testdaten
 data/            erzeugt, nicht versioniert
@@ -109,4 +118,4 @@ docs/            Rechtliches, Testfälle, Roadmap
 
 ## Grundregel des Projekts
 
-Lieber keine Zahl als eine erfundene. Wo eine Angabe nicht verifiziert ist, bleibt der Abschnitt leer und sagt warum. Das gilt insbesondere für Sitzverteilungen: In `config/parliaments.json` ist bisher nur der Bundestag als verifiziert markiert. Alle anderen Parlamente zeigen keine Sitzrechnung, bis jemand die Sitzzahl und das Zuteilungsverfahren gegen das jeweilige Wahlgesetz geprüft und die Quelle eingetragen hat.
+Lieber keine Zahl als eine erfundene. Wo eine Angabe nicht verifiziert ist, bleibt der Abschnitt leer und sagt warum. Das gilt insbesondere für Sitzverteilungen: In `config/parliaments.json` sind 15 Parlamente als verifiziert markiert, zwei sind trotz geprüfter Regel bewusst gesperrt (Bayern, Bremen). Ein Parlament ohne geprüfte Rechtsgrundlage zeigt keine Sitzrechnung, bis jemand Sitzzahl und Zuteilungsverfahren gegen das jeweilige Wahlgesetz geprüft und die Quelle eingetragen hat. Dasselbe gilt für amtliche Wahlergebnisse: ohne verifiziertes Ergebnis bleibt die Nachkontrolle leer und sagt warum, statt gegen eine ungeprüfte Zahl zu vergleichen.

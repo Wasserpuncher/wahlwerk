@@ -1,0 +1,236 @@
+{
+  "_doku": "Kuenftige Wahltermine in Deutschland, uebernommen aus der amtlichen Uebersicht der Bundeswahlleiterin. Nichts in dieser Datei ist geschaetzt oder aus dem Gedaechtnis ergaenzt. Ein Termin erscheint auf der Seite nur mit dem Datum, das die Quelle nennt.",
+  "_quelle": "https://www.bundeswahlleiterin.de/service/wahltermine.html",
+  "_abgerufen": "2026-08-31",
+  "_vorbehaltDerQuelle": "Die Übersicht enthält den genauen Wahltermin erst, nachdem er offiziell bekanntgegeben wurde. Dies trifft auch bei einer etwaigen Neuwahl zu. Angaben zu Landtags- und Kommunalwahlen ohne Gewähr.",
+  "_hinweis_zeitraum": "Wo die Quelle nur eine Jahreszeit nennt (Fruehjahr, Herbst), steht datum auf null und zeitraum traegt die Angabe der Quelle. Es wird KEIN Datum erfunden. Die Seite gibt solche Termine ohne Countdown und ohne Tagesangabe aus.",
+  "_hinweis_parlament": "parlament ist das Kuerzel des Parlaments in config/parliaments.json. Kommunalwahlen haben kein Parlament im Umfragebestand und tragen bewusst null; zu ihnen gibt es keine Sonntagsfrage und deshalb auch keine Verknuepfung.",
+  "_pflege": "Vor jeder Wahl gegen die Quelle pruefen. Aendert die Bundeswahlleiterin einen Termin, ist diese Datei nachzuziehen. scripts/check.mjs prueft Formatierung und Verknuepfung, aber NICHT die Richtigkeit des Datums; das kann nur der Abgleich mit der Quelle.",
+  "termine": [
+    {
+      "land": "Sachsen-Anhalt",
+      "art": "Landtagswahl",
+      "jahr": 2026,
+      "datum": "2026-09-06",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Sachsen-Anhalt"
+    },
+    {
+      "land": "Niedersachsen",
+      "art": "Kommunalwahl",
+      "jahr": 2026,
+      "datum": "2026-09-13",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Berlin",
+      "art": "Wahl zum Abgeordnetenhaus",
+      "jahr": 2026,
+      "datum": "2026-09-20",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Berlin"
+    },
+    {
+      "land": "Mecklenburg-Vorpommern",
+      "art": "Landtagswahl",
+      "jahr": 2026,
+      "datum": "2026-09-20",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Mecklenburg-Vorpommern"
+    },
+    {
+      "land": "Schleswig-Holstein",
+      "art": "Landtagswahl",
+      "jahr": 2027,
+      "datum": "2027-04-18",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Schleswig-Holstein"
+    },
+    {
+      "land": "Saarland",
+      "art": "Landtagswahl",
+      "jahr": 2027,
+      "datum": "2027-04-18",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Saarland"
+    },
+    {
+      "land": "Nordrhein-Westfalen",
+      "art": "Landtagswahl",
+      "jahr": 2027,
+      "datum": "2027-04-25",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Nordrhein-Westfalen (NRW)"
+    },
+    {
+      "land": "Bremen",
+      "art": "Bürgerschaftswahl",
+      "jahr": 2027,
+      "datum": "2027-05-30",
+      "zeitraum": null,
+      "turnus": "4 Jahre",
+      "parlament": "Bremen"
+    },
+    {
+      "land": "Niedersachsen",
+      "art": "Landtagswahl",
+      "jahr": 2027,
+      "datum": "2027-09-26",
+      "zeitraum": null,
+      "turnus": "5 Jahre",
+      "parlament": "Niedersachsen"
+    },
+    {
+      "land": "Schleswig-Holstein",
+      "art": "Kommunalwahl",
+      "jahr": 2028,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Bayern",
+      "art": "Landtagswahl",
+      "jahr": 2028,
+      "datum": null,
+      "zeitraum": "Herbst",
+      "turnus": "5 Jahre",
+      "parlament": "Bayern"
+    },
+    {
+      "land": "Hessen",
+      "art": "Landtagswahl",
+      "jahr": 2028,
+      "datum": null,
+      "zeitraum": "Herbst",
+      "turnus": "5 Jahre",
+      "parlament": "Hessen"
+    },
+    {
+      "land": "alle",
+      "art": "Wahl zum Europäischen Parlament",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": "Europäisches Parlament"
+    },
+    {
+      "land": "alle",
+      "art": "Bundestagswahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "4 Jahre",
+      "parlament": "Bundestag"
+    },
+    {
+      "land": "Baden-Württemberg",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Brandenburg",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Mecklenburg-Vorpommern",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Rheinland-Pfalz",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Saarland",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Sachsen",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Sachsen-Anhalt",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Thüringen",
+      "art": "Kommunalwahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Frühjahr",
+      "turnus": "5 Jahre",
+      "parlament": null
+    },
+    {
+      "land": "Brandenburg",
+      "art": "Landtagswahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Herbst",
+      "turnus": "5 Jahre",
+      "parlament": "Brandenburg"
+    },
+    {
+      "land": "Sachsen",
+      "art": "Landtagswahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Herbst",
+      "turnus": "5 Jahre",
+      "parlament": "Sachsen"
+    },
+    {
+      "land": "Thüringen",
+      "art": "Landtagswahl",
+      "jahr": 2029,
+      "datum": null,
+      "zeitraum": "Herbst",
+      "turnus": "5 Jahre",
+      "parlament": "Thüringen"
+    }
+  ]
+}

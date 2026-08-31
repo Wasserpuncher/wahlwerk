@@ -10,7 +10,14 @@
 # externen Cron, der den Hook aufruft. Siehe README.
 
 [build]
-  command = "npm run fetch && npm run build && npm run check"
+  command = "npm run fetch && npm run build && WAHLWERK_SCHNELLPRUEFUNG=1 npm run check"
+  # WAHLWERK_SCHNELLPRUEFUNG laesst die Wahltag-Probe aus scripts/check.mjs aus.
+  # Sie baut die Seite zweimal zusaetzlich, um das Verhalten AM Wahltag und am
+  # Tag danach vorab zu pruefen. Ihr Ergebnis haengt nur vom Generator und von
+  # config/wahltermine.json ab, nicht von den abgerufenen Umfragen - beim
+  # taeglichen Datenabgleich kann es sich also nicht geaendert haben. Bei jedem
+  # Push laeuft sie vollstaendig in .github/workflows/test.yml. Alle uebrigen
+  # Pruefungen laufen hier unveraendert; ein Fehlschlag bricht den Deploy ab.
   publish = "dist"
 
 [build.environment]

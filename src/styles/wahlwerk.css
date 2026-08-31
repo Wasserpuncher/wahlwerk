@@ -254,3 +254,44 @@ tbody tr:hover { background: var(--accent-soft); }
   background: var(--ink);
   opacity: 0.16;
 }
+
+/* Wahlband: der Zeitbezug einer Wahlseite.
+   Bewusst als Fliesstext mit Linie und nicht als Kachel: die Angabe ist nur
+   so gut wie der letzte Seitenbau, und ein grosser bunter Countdown wuerde
+   eine Aktualitaet vortaeuschen, die eine statische Seite nicht hat. Alle
+   Farben stammen aus dem bestehenden Variablensatz, damit der Dunkelmodus
+   ohne eigene Regel mitlaeuft. */
+.wahlband {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.7rem 1rem;
+  margin: 1.25rem 0;
+  font-family: var(--font-num);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.wahlband strong { font-size: 1.05rem; }
+.wahlband-heute {
+  border-left-color: var(--warn-rule);
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+}
+.wahlband-vor { /* Regelfall: Wahl steht bevor. Eigene Klasse, damit die
+                   Auszeichnung im Markup benannt ist und nicht stillschweigend
+                   vom Grundstil lebt. */ }
+.wahlband-nach { border-left-color: var(--rule-strong); background: var(--card); color: var(--muted); }
+/* Abstaende der Absaetze im Band. Standen vorher als style-Attribut im
+   erzeugten HTML; eine reine Darstellungsangabe ohne datenabhaengigen Anteil
+   gehoert ins Stylesheet, sonst waechst sie mit jeder neuen Stelle mit. */
+.wahlband > p { margin: 0 0 0.4rem; }
+.wahlband > p:last-child { margin: 0.4rem 0 0; }
+.wahlband .linklist { margin: 0.4rem 0; }
+.wahlband-gross { font-size: 1rem; }
+
+/* Abweichung in der Nachkontrolle.
+   BEWUSST OHNE FARBCODIERUNG. Ein rot-gruener Kontrast wuerde eine Abweichung
+   nach oben zu einem Fehler und eine nach unten zu einem Erfolg erklaeren -
+   beides waere eine Wertung, die diese Seite nicht trifft. Das Vorzeichen
+   traegt die Aussage, die Auszeichnung sorgt nur dafuer, dass die Spalte
+   beim Ueberfliegen als Messwert erkennbar bleibt. */
+.ab-plus, .ab-minus { font-weight: 600; font-variant-numeric: tabular-nums; }

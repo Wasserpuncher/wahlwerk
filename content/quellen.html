@@ -17,10 +17,23 @@
 <p><strong>Lizenzfolge:</strong> Diese Website enthaelt eine abgeleitete Datenbank im Sinne der ODbL. Sie steht deshalb ebenfalls unter ODbL, mit Nennung und Verlinkung von dawum.de sowie der Lizenz. Der Datenexport unter <a href="/daten/">Daten</a> traegt diese Angaben maschinenlesbar mit.</p>
 <p>Die Umfragen selbst stammen von den jeweils genannten Meinungsforschungsinstituten und deren Auftraggebern. Weder dawum.de noch {{SITE_NAME}} erheben eigene Umfragen.</p>
 
+<h3>Die Bundeswahlleiterin, kuenftige Wahltermine</h3>
+<div class="provenance"><dl>
+  <dt>Inhalt</dt><dd>Termine kuenftiger Wahlen in Deutschland, amtliche Uebersicht</dd>
+  <dt>Abruf</dt><dd>{{WAHLTERMIN_QUELLE}}</dd>
+  <dt>Abgerufen am</dt><dd>{{WAHLTERMIN_ABRUF}}</dd>
+  <dt>Uebernommene Termine</dt><dd>{{WAHLTERMIN_ANZAHL}}, davon {{WAHLTERMIN_DATIERT}} mit genauem Datum</dd>
+  <dt>Ablage</dt><dd>config/wahltermine.json</dd>
+</dl></div>
+<p>Aus dieser Quelle stammen der Wahlkalender und jeder Countdown auf dieser Website. Die Termine sind <strong>abgeschrieben und festgehalten</strong>, nicht beim Seitenaufruf abgerufen: Der Generator spricht die Bundeswahlleiterin nicht an, im Ergebnis entsteht nur ein gewoehnlicher Link. Damit bleiben die Zusicherungen des Projekts unberuehrt.</p>
+<p><strong>Vorbehalt der Quelle, woertlich:</strong> &bdquo;{{WAHLTERMIN_VORBEHALT}}&ldquo;</p>
+<p><strong>Grenze dieser Quelle:</strong> Wo die Uebersicht nur eine Jahreszeit nennt (&bdquo;Fruehjahr&ldquo;, &bdquo;Herbst&ldquo;), steht auch hier eine Jahreszeit. Es wird kein Datum ergaenzt, und solche Termine bekommen weder eine eigene Seite noch einen Countdown. Aendert die Bundeswahlleiterin einen Termin, muss <code>config/wahltermine.json</code> von Hand nachgezogen werden; eine automatische Aktualisierung gibt es bewusst nicht, weil sie eine unbemerkte stille Aenderung an einer amtlichen Angabe erlauben wuerde.</p>
+<p><strong>Rechtliches:</strong> Wahltermine sind amtliche Angaben und als amtliche Werke nach Paragraf 5 UrhG gemeinfrei. Genannt wird die Quelle trotzdem, weil die Herkunft einer Angabe zu ihr gehoert.</p>
+
 <h2>Vorgesehen, aber noch nicht angebunden</h2>
 <p>Die folgenden Quellen sind im Projekt geplant und im Repository als offene Aufgaben dokumentiert. Sie sind hier aufgefuehrt, damit erkennbar ist, was fehlt, und nicht damit es nach mehr aussieht als vorhanden ist. Solange eine Quelle nicht angebunden ist, erscheint auf der Seite auch kein Wert aus ihr.</p>
 <ul>
-  <li><strong>Die Bundeswahlleiterin.</strong> Amtliche Ergebnisse der Bundestags- und Europawahlen sowie Strukturdaten der Wahlkreise, angeboten als CSV und XML zur maschinellen Weiterverarbeitung. Verwendungszweck hier: Vergleich der letzten Umfrage vor einer Wahl mit dem amtlichen Ergebnis, also eine belegbare Institutsabweichung statt einer geschaetzten.</li>
+  <li><strong>Die Bundeswahlleiterin, amtliche Wahlergebnisse.</strong> Ergebnisse der Bundestags- und Europawahlen sowie Strukturdaten der Wahlkreise, angeboten als CSV und XML. Verwendungszweck hier: Vergleich der letzten Umfrage vor einer Wahl mit dem amtlichen Ergebnis. <em>Nicht zu verwechseln mit den Wahlterminen derselben Stelle:</em> die sind oben unter &bdquo;Verwendet&ldquo; aufgefuehrt und angebunden, die Ergebnisse sind es nicht.</li>
   <li><strong>Landeswahlleitungen der 16 Laender.</strong> Amtliche Landtagswahlergebnisse. Die Formate sind uneinheitlich und muessen je Land einzeln erschlossen werden.</li>
   <li><strong>abgeordnetenwatch.de.</strong> Offene API zu Abgeordneten, Mandaten, Kandidaturen, Wahlkreisen und Abstimmungsverhalten, nutzbar unter Fair-Use-Bedingungen mit einer Begrenzung auf 30 Anfragen pro Minute und der Bitte, groessere Abrufe nachts durchzufuehren.</li>
   <li><strong>Deutscher Bundestag, Open Data.</strong> Plenarprotokolle und Drucksachen ab der ersten Wahlperiode als XML und JSON, Biografiedaten der Abgeordneten seit 1949, namentliche Abstimmungen als Tabellen. Dazu die DIP-Schnittstelle fuer parlamentarische Vorgaenge.</li>
