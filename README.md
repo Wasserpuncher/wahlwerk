@@ -16,25 +16,30 @@ Version 0.2. Was funktioniert:
 - Streuungsanalyse zwischen den Instituten
 - Sitzverteilung nach Sainte-Laguë, Hare/Niemeyer und d'Hondt, gegen von Hand nachgerechnete Beispiele getestet
 - Koalitionsrechner mit minimalen Mehrheiten, rein arithmetisch
-- **Import amtlicher Wahlergebnisse** aus den Dateien der Landeswahlleitung, mit vier erzwungenen Kontrollsummen
-- **Institutsgenauigkeit**: letzte Umfrage je Institut vor der Wahl gegen das amtliche Ergebnis, auf gemeinsamer Grundmenge
-- **Wahlkreise und Direktmandate**, verknüpft mit Kandidaturen von abgeordnetenwatch.de
-- Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, Impressum, 404
+- Szenarien zur Sperrklausel in beide Richtungen: knapp gescheiterte Parteien ziehen doch ein, knapp eingezogene fallen doch heraus
+- fünf serverseitig gerenderte SVG-Diagramme je Parlamentsseite, ohne JavaScript und ohne Zeichenbibliothek
+- **Wahlkalender und Wahlseiten**: alle künftigen Wahltermine aus der amtlichen Übersicht der Bundeswahlleiterin, je datiertem Termin mit Umfragen eine eigene Seite mit Countdown, Trend, Sitzmodell und Nachkontrolle
+- **Nachkontrolle**: der Umfragestand kurz vor einer Wahl gegen das amtliche Ergebnis, mit demselben Verfahren und denselben Parametern gerechnet wie überall sonst. Für Sachsen-Anhalt 2021: mittlerer absoluter Fehler 2,32 Prozentpunkte, größte Abweichung −8,5 Punkte bei der CDU, nur vier von acht Parteien im 95-Prozent-Intervall
+- **Import amtlicher Wahlergebnisse** aus den Dateien der Landeswahlleitung, mit vier erzwungenen Kontrollsummen. Keine Zahl wird abgetippt; die Rohdateien liegen als Beleg im Repository, ihre Prüfsummen in der erzeugten Datei
+- **Wahlkreise und Direktmandate** auf der Wahlseite, verknüpft mit Kandidaturen von abgeordnetenwatch.de
+- **Chronik**: der vollständige Bestand nach Jahr und Monat, damit jede einzelne Umfrage erreichbar ist und nicht nur die jüngsten 200 je Tabelle
+- **Auftraggeber und Erhebungsmethoden** als eigene Achsen, bisher standen beide nur in den Tabellen
+- Seitentypen: Start, Wahlkalender, Wahl, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Auftraggeberübersicht, Auftraggeber, Methodenübersicht, Methode, Chronik, Jahr, Monat, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
 - Sitemap-Index mit automatischer Aufteilung, robots.txt, RSS-Feed, JSON- und CSV-Export
 - JSON-LD je Seite: `Dataset`, `BreadcrumbList`, `CollectionPage`, `WebSite`
-- 143 Selbsttests über Rechenverfahren, Datenimport und erzeugtes HTML
+- 174 Selbsttests über Rechenverfahren und erzeugtes HTML. Neu darunter:
+  - **Erreichbarkeit statt Existenz**: ein Durchlauf von der Startseite aus, Link für Link. Der Bau bricht ab, sobald eine einzige Seite nicht mehr erreichbar ist. Das ist bewusst schärfer als „irgendwo verlinkt“ — eine Seite, die nur von einer selbst unerreichbaren Seite verlinkt ist, wäre unter dem schwächeren Kriterium unauffällig und trotzdem nicht zu finden.
+  - **Wahltag-Probe**: die Seite wird zweimal zusätzlich gebaut, mit künstlich gesetztem Bauzeitpunkt auf den Wahltag und den Tag danach. Damit laufen die beiden Zustände, die im Echtbetrieb genau einmal vorkommen, vorher mindestens einmal — statt erstmals am Wahlabend.
+  - **Gliederung**: keine übersprungene Überschriftenebene, keine doppelt vergebene `id`, auf keiner der 4381 Seiten.
+  - Der Wächter gegen externe Ressourcen prüft jetzt jedes einbindende Element statt nur des ersten Treffers. Vorher blieb er am Canonical-Link hängen und konnte gar nicht auslösen.
 
-Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sieben Landtagswahlen, davon zwei verifiziert. Eine belegbare Institutsabweichung **je Institut** gibt es weiterhin nicht, und zwar bewusst nicht — die Begründung steht in der Roadmap.
 
-Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt.
+Verifizierte Sitzzuteilungen: **Bundestag, Berlin, Brandenburg, Sachsen, Sachsen-Anhalt, Thüringen, Mecklenburg-Vorpommern, Baden-Württemberg, Hessen, Rheinland-Pfalz, Saarland, Nordrhein-Westfalen, Niedersachsen, Schleswig-Holstein und Hamburg** — je Eintrag mit Sitzzahl, Verfahren, Sperrklausel, Paragrafenstelle, Quelle und Prüfdatum, abgelesen am Gesetzeswortlaut.
 
-### Zur Landtagswahl Sachsen-Anhalt am 6. September 2026
+Zwei Parlamente bleiben **bewusst gesperrt**, obwohl ihre Regeln geprüft sind. In **Bayern** zählen Erst- und Zweitstimmen zusammen, zugeteilt wird siebenmal getrennt nach Wahlkreisen mit festen Kontingenten, und Überhang entsteht auf Wahlkreisebene. In **Bremen** gibt es überhaupt kein landesweites Zuteilungsverfahren: Bremen und Bremerhaven werden getrennt gerechnet, mit je eigener Sperrklausel — eine Partei kann mit 2,4 Prozent landesweit einziehen und mit über 5 Prozent leer ausgehen. Aus einer landesweiten Sonntagsfrage ist beides nicht ableitbar. Die Begründung steht auf der jeweiligen Seite, statt dass der Abschnitt kommentarlos leer bleibt.
 
-Das amtliche Ergebnis ist angebunden. Der Rechenkern reproduziert aus den amtlichen Zweitstimmen **exakt** die amtlich festgestellte Sitzverteilung; der Abgleich läuft als Regressionstest mit. Damit ist die Sitzrechnung nicht mehr nur gegen eine zweite Implementierung geprüft, sondern gegen die Wirklichkeit.
-
-Die ausgearbeitete Fachnotiz in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md) enthält das Ergebnis, die Nachprüfung der eigenen Vorwahleinschätzung samt der Stellen, an denen sie danebenlag, und die Fallstricke beim Anbinden der Daten.
-
-Ein Hinweis zum Stand: Die Quelldateien weisen die Ergebnisart `V` aus. Eine Feststellung des endgültigen Ergebnisses durch den Landeswahlausschuss ist daraus nicht belegt, deshalb werden die Zahlen als **vorläufiges amtliches Ergebnis** geführt und überall so gekennzeichnet.
+Eine verifizierte Regel heißt nicht, dass überall eine Sitzverteilung erscheint. Der Trend verlangt drei Umfragen innerhalb von 45 Tagen; zu Ländern ohne bevorstehende Wahl wird seltener gefragt. Derzeit zeigen vier Parlamente eine Modellrechnung, die übrigen sagen auf ihrer Seite, dass die Regel steht und nur die Datengrundlage fehlt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 ist das amtliche Ergebnis angebunden: Der Rechenkern reproduziert daraus **exakt** die amtlich festgestellte Sitzverteilung, der Abgleich läuft als Regressionstest mit. Die Fachnotiz in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md) enthält das Ergebnis, die Nachprüfung der eigenen Vorwahleinschätzung samt der Stellen, an denen sie danebenlag, und die Fallstricke beim Anbinden der Daten.
 
 ## Schnellstart
 
@@ -116,23 +121,24 @@ Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entschei
 ## Struktur
 
 ```
-config/               Site- und Parlamentskonfiguration
-config/wahlergebnisse/ amtliche Ergebnisse, erzeugt vom Importer
-quellen/              amtliche Rohdateien als Beleg, versioniert
-content/              Inhaltsseiten als HTML mit Platzhaltern
-scripts/              Abruf, Import, Build, Tests, Vorschauserver
-scripts/lib/          Rechenkern: dawum, trend, seats, coalitions, accuracy,
-                      abgeordnetenwatch, render, util
-src/styles/           Stylesheet
-fixtures/             synthetische Testdaten
-data/                 erzeugt, nicht versioniert
-                      Ausnahme: abgeordnetenwatch.json gehoert ins Repository
-dist/                 erzeugt, nicht versioniert
-docs/                 Rechtliches, Testfälle, Roadmap, Fachnotizen
+config/          Site, Parlamente, amtliche Ergebnisse, Wahltermine, Wahlleitungen
+config/wahlergebnisse/  amtliche Ergebnisse im Detail, erzeugt vom Importer
+quellen/         amtliche Rohdateien als Beleg, versioniert
+content/         Inhaltsseiten als HTML mit Platzhaltern
+scripts/         Abruf, Import, Build, Tests, Vorschauserver
+scripts/lib/     Rechenkern: dawum, trend, seats, coalitions, charts, stats,
+                 archive, wahltermine, nachkontrolle, abgeordnetenwatch,
+                 render, util
+src/styles/      Stylesheet
+fixtures/        synthetische Testdaten
+data/            erzeugt, nicht versioniert
+                 Ausnahme: abgeordnetenwatch.json gehoert ins Repository
+dist/            erzeugt, nicht versioniert
+docs/            Rechtliches, Testfälle, Roadmap, Fachnotizen
 ```
 
 Warum die amtlichen Rohdateien unter `quellen/` im Repository liegen: Sie sind amtliche Werke nach § 5 UrhG und damit gemeinfrei. Ihre Prüfsummen stehen in der erzeugten Ergebnisdatei. Damit bleibt jede angezeigte Zahl bis zur unveränderten Quelldatei zurückverfolgbar, auch dann noch, wenn die ursprüngliche Fundstelle verschwindet.
 
 ## Grundregel des Projekts
 
-Lieber keine Zahl als eine erfundene. Wo eine Angabe nicht verifiziert ist, bleibt der Abschnitt leer und sagt warum. Das gilt insbesondere für Sitzverteilungen: In `config/parliaments.json` ist bisher nur der Bundestag als verifiziert markiert. Alle anderen Parlamente zeigen keine Sitzrechnung, bis jemand die Sitzzahl und das Zuteilungsverfahren gegen das jeweilige Wahlgesetz geprüft und die Quelle eingetragen hat.
+Lieber keine Zahl als eine erfundene. Wo eine Angabe nicht verifiziert ist, bleibt der Abschnitt leer und sagt warum. Das gilt insbesondere für Sitzverteilungen: In `config/parliaments.json` sind 15 Parlamente als verifiziert markiert, zwei sind trotz geprüfter Regel bewusst gesperrt (Bayern, Bremen). Ein Parlament ohne geprüfte Rechtsgrundlage zeigt keine Sitzrechnung, bis jemand Sitzzahl und Zuteilungsverfahren gegen das jeweilige Wahlgesetz geprüft und die Quelle eingetragen hat. Dasselbe gilt für amtliche Wahlergebnisse: ohne verifiziertes Ergebnis bleibt die Nachkontrolle leer und sagt warum, statt gegen eine ungeprüfte Zahl zu vergleichen.

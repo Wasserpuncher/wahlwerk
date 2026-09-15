@@ -98,10 +98,11 @@ export function computeTrend(surveys, config) {
 
   const sum = Object.values(values).reduce((a, b) => a + b, 0);
 
-  // Effektiver Stichprobenumfang der Zusammenfassung nach Kish. Die blosse
-  // Addition der Fallzahlen waere falsch, weil die Umfragen unterschiedlich
-  // gewichtet eingehen und weil die Werte nicht aus einer einzigen
-  // Zufallsstichprobe stammen.
+  // Effektiver Stichprobenumfang der Zusammenfassung nach Kish. Der Abschlag
+  // gegenueber der blossen Summe der Fallzahlen entsteht dadurch, dass die
+  // Umfragen unterschiedlich gewichtet eingehen. Bei gleichen Gewichten bleibt
+  // exakt die Summe uebrig. Die Varianz zwischen den Instituten ist darin NICHT
+  // enthalten; siehe die ausfuehrliche Warnung ueber kishEffectiveSize.
   const kish = kishEffectiveSize(
     weighted.map((w) => w.weight),
     weighted.map((w) => (w.survey.surveyedPersons && w.survey.surveyedPersons > 0 ? w.survey.surveyedPersons : referenceSampleSize)),

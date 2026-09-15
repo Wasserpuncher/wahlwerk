@@ -1,6 +1,6 @@
 {
   "name": "wahlwerk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Statischer Generator fuer ein quellenbelegtes Portal zu deutschen Wahlumfragen. Keine Laufzeitabhaengigkeiten.",
   "license": "AGPL-3.0-or-later",
   "type": "module",

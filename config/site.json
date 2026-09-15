@@ -72,11 +72,6 @@
     "_hinweis_designEffect": "Varianzaufblaehung durch Quotierung, Gewichtung und Nonresponse. 1.0 unterstellt eine reine Zufallsstichprobe und ist damit die UNTERE Schranke der Unsicherheit. Reale Wahlumfragen liegen darueber. Wer den Wert erhoeht, muss die Quelle dafuer in docs/ nennen."
   },
 
-  "accuracy": {
-    "fensterTage": 45,
-    "_hinweis_fensterTage": "Nur Umfragen, deren Feldzeit hoechstens so viele Tage vor dem Wahltag endete, gehen in die Genauigkeitsauswertung ein. Je Institut zaehlt die jeweils letzte. Der Wert entspricht bewusst trend.maxAgeDays, damit Trend und Genauigkeitsauswertung dieselbe Datengrundlage haben. Wer ihn verkleinert, macht die Auswertung strenger, verliert aber unter Umstaenden ganze Institute: zur Landtagswahl Sachsen-Anhalt 2026 lag die letzte Umfrage von Infratest dimap 40 Tage vor dem Wahltag. Ein Fenster von 30 Tagen haette dieses Institut vollstaendig ausgeschlossen, ohne dass das auf der Seite sichtbar geworden waere.",
-    "_hinweis_grenzen": "Diese Auswertung vergleicht eine Momentaufnahme aus dem Feldzeitraum mit dem Ergebnis des Wahltags. Die Differenz enthaelt damit zwei Anteile, die sich nicht trennen lassen: den Fehler der Erhebung und die tatsaechliche Meinungsaenderung in den Wochen danach. Sie ist deshalb kein Guetesiegel und keine Rangliste der Institute."
-  },
 
   "build": {
     "generateSurveyPages": true,
