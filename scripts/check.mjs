@@ -1025,10 +1025,16 @@ console.log('\nWahltag-Probe');
       // kannte bis zum 15.09.2026 nur den ersten Fall, weil zu keinem
       // datierten Termin ein Ergebnis vorlag. Mit dem Eintrag der Landtagswahl
       // Sachsen-Anhalt 2026 trat der zweite Fall erstmals ein.
+      // Massgeblich ist nicht allein, ob ein Ergebnis in elections.json steht,
+      // sondern ob der Generator es auch verwendet. Auf synthetischen Testdaten
+      // verweigert die Nachkontrolle, damit erfundene Umfragen nicht gegen ein
+      // echtes Ergebnis gerechnet werden; dann gilt die Wahl fuer die Seite als
+      // nicht gelaufen, und am Wahltag steht wieder "Heute wird gewaehlt".
       const elections = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
-      const ergebnisZumTermin = Object.values(elections.elections).some(
-        (e) => e.verified === true && e.date === kandidat.datum,
-      );
+      const provWt = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
+      const ergebnisZumTermin =
+        provWt.mode !== 'fixture' &&
+        Object.values(elections.elections).some((e) => e.verified === true && e.date === kandidat.datum);
 
       assert('Probebau am Wahltag laeuft durch', baue(kandidat.datum));
       const amTag = await seite(kandidat.datum);
@@ -1072,9 +1078,16 @@ console.log('\nWahltag-Probe');
 
       // Ohne verifiziertes amtliches Ergebnis fuer GENAU diese Wahl darf dort
       // keine Fehlerbilanz stehen - schon gar nicht die einer anderen Wahl.
+      //
+      // Ein Eintrag in elections.json genuegt dafuer nicht: Auf synthetischen
+      // Testdaten verweigert die Nachkontrolle die Rechnung, damit erfundene
+      // Umfragen nicht gegen ein echtes Ergebnis gehalten werden. Dann steht
+      // dort zu Recht keine Fehlerbilanz, und dieser Test darf keine erwarten.
       const el = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
+      const provNk = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
       const eintrag = el.elections?.[kandidat.parlament];
-      const eigenesErgebnis = Boolean(eintrag?.verified && eintrag.date === kandidat.datum);
+      const eigenesErgebnis =
+        provNk.mode !== 'fixture' && Boolean(eintrag?.verified && eintrag.date === kandidat.datum);
       if (eigenesErgebnis) {
         assert('nach der Wahl wird das eigene amtliche Ergebnis verglichen', danach.includes('Nachkontrolle: was die Umfragen beim letzten Mal wert waren'));
       } else {
@@ -1112,7 +1125,7 @@ console.log('\nNachkontrolle');
     if (!wahl.verified) continue;
     const name = nameByShortcut.get(kuerzel) ?? kuerzel;
     const sv = surveysData.surveys.filter((s) => s.parliament === name);
-    const nk = nachkontrolle(sv, wahl, siteCfg.trend, el.parteiAliasse ?? {});
+    const nk = nachkontrolle(sv, wahl, siteCfg.trend, el.parteiAliasse ?? {}, { istSynthetisch: prov.mode === 'fixture' });
 
     // Mit synthetischen Testdaten gibt es keine Umfragen aus dem Jahr der
     // letzten Wahl, die Nachkontrolle ist dann zu Recht nicht rechenbar. Statt

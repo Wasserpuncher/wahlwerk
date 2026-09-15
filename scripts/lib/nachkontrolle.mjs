@@ -29,8 +29,24 @@
 
 import { computeTrend } from './trend.mjs';
 
-export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}) {
+export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}, { istSynthetisch = false } = {}) {
   if (!wahl?.date || !wahl?.results) return null;
+
+  // Synthetische Umfragen gegen ein echtes Wahlergebnis zu rechnen ergibt eine
+  // Zahl, die wie eine Fehlerbilanz aussieht und keine ist. Sie waere die
+  // schaedlichste Ausgabe, die dieses Projekt erzeugen kann, weil ihr nichts
+  // anzusehen ist.
+  //
+  // Bis zum 15.09.2026 war dieser Schutz nur zufaellig wirksam: Das einzige
+  // verifizierte Ergebnis stammte von 2021, die Fixture-Umfragen von 2026, und
+  // damit lag schlicht keine Umfrage vor dem Wahltag. Der Selbsttest
+  // "verweigert auf Testdaten sauber" war gruen, ohne dass es dafuer eine
+  // Logik gab. Mit dem Eintrag der Landtagswahl 2026 liegen die Fixture-
+  // Umfragen davor, und die Rechnung lief an - mit erfundenen Umfragen gegen
+  // ein amtliches Ergebnis. Seitdem ist die Verweigerung ausdruecklich.
+  if (istSynthetisch) {
+    return { moeglich: false, grund: 'synthetische Testdaten, ein Vergleich mit einem echten Wahlergebnis waere sinnlos' };
+  }
 
   const davor = surveys.filter((s) => (s.dateEnd ?? s.date) < wahl.date);
   if (davor.length === 0) return { moeglich: false, grund: 'keine Umfrage vor dem Wahltag im Bestand' };

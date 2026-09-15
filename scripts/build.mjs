@@ -241,7 +241,7 @@ for (const [kuerzel, wahl] of Object.entries(electionConfig.elections ?? {})) {
   const name = nameByShortcut.get(kuerzel) ?? kuerzel;
   const surveys = byParliament.get(name);
   if (!surveys) continue;
-  const nk = nachkontrolle(surveys, wahl, site.trend, aliasse);
+  const nk = nachkontrolle(surveys, wahl, site.trend, aliasse, { istSynthetisch: isFixture });
   if (nk) nachkontrollen.set(name, nk);
 }
 
