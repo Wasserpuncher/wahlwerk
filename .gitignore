@@ -1,6 +1,20 @@
 node_modules/
 dist/
-data/
+
+# data/* statt data/: Git kann eine Datei nicht wieder einschliessen, wenn
+# bereits ihr Verzeichnis ausgeschlossen ist. Nur die Schreibweise mit Stern
+# laesst die Ausnahme darunter wirken.
+data/*
+
+# AUSNAHME: Die Daten von abgeordnetenwatch.de gehoeren ins Repository.
+# Alles andere unter data/ entsteht bei jedem Build neu und ist deshalb
+# ignoriert. Diese Datei nicht: Kandidaturen und Wahlkreise einer
+# abgeschlossenen Wahl aendern sich kaum noch, der Abruf ist ein bewusster,
+# seltener Vorgang, und die API ist auf 30 Anfragen je Minute begrenzt. Sie bei
+# jedem Deploy erneut abzurufen waere unnoetige Last auf einer fremden,
+# ehrenamtlich betriebenen Infrastruktur. Aktualisiert wird mit
+# npm run fetch:aw, das Ergebnis wird committet.
+!data/abgeordnetenwatch.json
 
 # WICHTIG: archive/ wird bewusst NICHT ignoriert.
 # Das Archiv ist der eigentliche Wert dieses Projekts. Es gehoert ins
