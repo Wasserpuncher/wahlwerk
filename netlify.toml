@@ -8,6 +8,27 @@
 # Netlify baut nur bei einem Push. Damit die Zahlen auch ohne Codeaenderung
 # frisch bleiben, braucht es einen Build Hook plus Scheduled Function oder einen
 # externen Cron, der den Hook aufruft. Siehe README.
+#
+# BEWUSST NICHT im Build-Befehl:
+#
+#   npm run import:wahl   Liest die amtlichen Ergebnisse aus quellen/ ein. Das
+#                         Ergebnis liegt versioniert in config/wahlergebnisse/
+#                         und aendert sich nur, wenn die Quelldateien sich
+#                         aendern. Bei jedem Deploy neu einzulesen brauchte es
+#                         nicht und wuerde den Deploy an einem Importfehler
+#                         scheitern lassen, obwohl die geprueften Daten bereits
+#                         vorliegen.
+#
+#   npm run fetch:aw      Ruft abgeordnetenwatch.de ab. Die API ist auf 30
+#                         Anfragen je Minute begrenzt und wird ehrenamtlich
+#                         betrieben. Sie bei jedem Deploy anzufragen waere
+#                         unnoetige Last auf fremder Infrastruktur, zumal die
+#                         Angaben zu einer abgeschlossenen Wahl sich kaum noch
+#                         aendern. Das Ergebnis liegt deshalb versioniert in
+#                         data/abgeordnetenwatch.json.
+#
+# Beide werden von Hand ausgefuehrt und ihr Ergebnis committet. Der Build laeuft
+# auch ohne sie durch, dann fehlen die jeweiligen Abschnitte.
 
 [build]
   command = "npm run fetch && npm run build && npm run check"

@@ -8,7 +8,7 @@ Kein JavaScript im Frontend. Keine Cookies. Keine externen Requests. Keine Fremd
 
 ## Stand
 
-Version 0.1. Was funktioniert:
+Version 0.2. Was funktioniert:
 
 - Abruf der Umfragedatenbank von dawum.de mit Aktualitätsprüfung über `last_update.txt`
 - defensive Normalisierung mit protokollierten Datensatzfehlern statt stiller Ersatzwerte
@@ -16,14 +16,25 @@ Version 0.1. Was funktioniert:
 - Streuungsanalyse zwischen den Instituten
 - Sitzverteilung nach Sainte-Laguë, Hare/Niemeyer und d'Hondt, gegen von Hand nachgerechnete Beispiele getestet
 - Koalitionsrechner mit minimalen Mehrheiten, rein arithmetisch
+- **Import amtlicher Wahlergebnisse** aus den Dateien der Landeswahlleitung, mit vier erzwungenen Kontrollsummen
+- **Institutsgenauigkeit**: letzte Umfrage je Institut vor der Wahl gegen das amtliche Ergebnis, auf gemeinsamer Grundmenge
+- **Wahlkreise und Direktmandate**, verknüpft mit Kandidaturen von abgeordnetenwatch.de
 - Seitentypen: Start, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, Impressum, 404
 - Sitemap-Index mit automatischer Aufteilung, robots.txt, RSS-Feed, JSON- und CSV-Export
 - JSON-LD je Seite: `Dataset`, `BreadcrumbList`, `CollectionPage`, `WebSite`
-- 33 Selbsttests über Rechenverfahren und erzeugtes HTML
+- 143 Selbsttests über Rechenverfahren, Datenimport und erzeugtes HTML
 
-Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Insbesondere sind die amtlichen Wahlergebnisse noch nicht angebunden, weshalb es noch keine belegbare Institutsabweichung gibt.
+Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
-Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
+Verifizierte Sitzzuteilungen: Bundestag und Sachsen-Anhalt.
+
+### Zur Landtagswahl Sachsen-Anhalt am 6. September 2026
+
+Das amtliche Ergebnis ist angebunden. Der Rechenkern reproduziert aus den amtlichen Zweitstimmen **exakt** die amtlich festgestellte Sitzverteilung; der Abgleich läuft als Regressionstest mit. Damit ist die Sitzrechnung nicht mehr nur gegen eine zweite Implementierung geprüft, sondern gegen die Wirklichkeit.
+
+Die ausgearbeitete Fachnotiz in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md) enthält das Ergebnis, die Nachprüfung der eigenen Vorwahleinschätzung samt der Stellen, an denen sie danebenlag, und die Fallstricke beim Anbinden der Daten.
+
+Ein Hinweis zum Stand: Die Quelldateien weisen die Ergebnisart `V` aus. Eine Feststellung des endgültigen Ergebnisses durch den Landeswahlausschuss ist daraus nicht belegt, deshalb werden die Zahlen als **vorläufiges amtliches Ergebnis** geführt und überall so gekennzeichnet.
 
 ## Schnellstart
 
@@ -44,6 +55,19 @@ npm run build
 ```
 
 Keine Abhängigkeiten. `npm install` ist nicht nötig, `node_modules` gibt es nicht.
+
+### Amtliche Ergebnisse und Abgeordnetendaten
+
+Diese beiden Schritte laufen **nicht** bei jedem Build, sondern nur, wenn sich die Grundlage ändert. Ihre Ergebnisse liegen im Repository.
+
+```bash
+npm run import:wahl    # amtliches Ergebnis aus quellen/ einlesen
+npm run fetch:aw       # Wahlkreise und Kandidaturen von abgeordnetenwatch.de
+```
+
+`import:wahl` erzwingt vier Kontrollsummen und schreibt bei einem Verstoß **keine** Datei, statt eine plausibel aussehende zu erzeugen. `fetch:aw` hält 2,5 Sekunden Abstand je Anfrage; die API erlaubt 30 je Minute und wird ehrenamtlich betrieben. Deshalb steht das Ergebnis im Repository und wird nicht bei jedem Deploy neu geholt.
+
+Der Build läuft auch ohne beides durch. Fehlt das amtliche Ergebnis, entfallen die zugehörigen Abschnitte; fehlen die Abgeordnetendaten, fehlen nur die Namen der direkt Gewählten.
 
 ## Vor dem ersten Deploy
 
@@ -80,7 +104,9 @@ Siehe [`docs/RECHTLICHES.md`](docs/RECHTLICHES.md). Kurzfassung zum Impressum: D
 
 ## SEO, realistisch betrachtet
 
-Technisch umgesetzt ist alles, was sich umsetzen lässt: vorgerendertes HTML ohne Client-Rendering, eindeutige Titel und Beschreibungen je Seite (durch Test erzwungen), Canonical-Tags, strukturierte Daten, Breadcrumbs, dichte interne Verlinkung, Sitemap-Index, RSS, keine Render-blockierenden Ressourcen, unter 10 KB CSS und null Byte JavaScript.
+Technisch umgesetzt ist alles, was sich umsetzen lässt: vorgerendertes HTML ohne Client-Rendering, eindeutige Titel und Beschreibungen je Seite (durch Test erzwungen), Canonical-Tags, strukturierte Daten, Breadcrumbs, dichte interne Verlinkung, Sitemap-Index, RSS, keine Render-blockierenden Ressourcen, rund 4 KB CSS in der Auslieferung und null Byte JavaScript.
+
+Zur CSS-Angabe: Die Datei misst unkomprimiert etwa 11 KB und komprimiert rund 3,7 KB. Ausgeliefert wird sie komprimiert, deshalb steht oben der Auslieferungswert. Frühere Fassungen dieser Zeile nannten „unter 10 KB", was sich auf die unkomprimierte Größe bezog und schon damals knapp nicht mehr zutraf.
 
 Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entscheidung der Suchmaschine, nicht eine Eigenschaft der Seite. Zwei ehrliche Risiken bei diesem Seitentyp:
 
@@ -90,16 +116,22 @@ Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entschei
 ## Struktur
 
 ```
-config/          Site- und Parlamentskonfiguration
-content/         Inhaltsseiten als HTML mit Platzhaltern
-scripts/         Abruf, Build, Tests, Vorschauserver
-scripts/lib/     Rechenkern: dawum, trend, seats, coalitions, render, util
-src/styles/      Stylesheet
-fixtures/        synthetische Testdaten
-data/            erzeugt, nicht versioniert
-dist/            erzeugt, nicht versioniert
-docs/            Rechtliches, Testfälle, Roadmap
+config/               Site- und Parlamentskonfiguration
+config/wahlergebnisse/ amtliche Ergebnisse, erzeugt vom Importer
+quellen/              amtliche Rohdateien als Beleg, versioniert
+content/              Inhaltsseiten als HTML mit Platzhaltern
+scripts/              Abruf, Import, Build, Tests, Vorschauserver
+scripts/lib/          Rechenkern: dawum, trend, seats, coalitions, accuracy,
+                      abgeordnetenwatch, render, util
+src/styles/           Stylesheet
+fixtures/             synthetische Testdaten
+data/                 erzeugt, nicht versioniert
+                      Ausnahme: abgeordnetenwatch.json gehoert ins Repository
+dist/                 erzeugt, nicht versioniert
+docs/                 Rechtliches, Testfälle, Roadmap, Fachnotizen
 ```
+
+Warum die amtlichen Rohdateien unter `quellen/` im Repository liegen: Sie sind amtliche Werke nach § 5 UrhG und damit gemeinfrei. Ihre Prüfsummen stehen in der erzeugten Ergebnisdatei. Damit bleibt jede angezeigte Zahl bis zur unveränderten Quelldatei zurückverfolgbar, auch dann noch, wenn die ursprüngliche Fundstelle verschwindet.
 
 ## Grundregel des Projekts
 

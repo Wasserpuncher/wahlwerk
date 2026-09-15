@@ -8,8 +8,10 @@ import { page, bar, belegstreifen, note } from './lib/render.mjs';
 import { esc, num, int, deDate, slug, daysBetween } from './lib/util.mjs';
 import { computeTrend, computeSpread } from './lib/trend.mjs';
 import { distribute } from './lib/seats.mjs';
-import { findCoalitions } from './lib/coalitions.mjs';
+import { findCoalitions, mehrheitOhne } from './lib/coalitions.mjs';
 import { hemicycle, timeline, comparison, coalitionBars, scenarioStrip } from './lib/charts.mjs';
+import { computeAccuracy, huerdenVergleich } from './lib/accuracy.mjs';
+import { verknuepfeWahlkreise } from './lib/abgeordnetenwatch.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, 'dist');
@@ -19,6 +21,38 @@ const parliamentConfig = JSON.parse(await readFile(path.join(ROOT, 'config', 'pa
 const data = JSON.parse(await readFile(path.join(ROOT, 'data', 'surveys.json'), 'utf8'));
 const electionConfig = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
 const provenance = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
+
+// Amtliche Wahlergebnisse. Jede Datei unter config/wahlergebnisse/ gehoert zu
+// genau einer Wahl und wird von scripts/import-wahlergebnis.mjs erzeugt. Fehlt
+// die Datei, entfaellt der zugehoerige Abschnitt, ohne den Build zu stoppen:
+// ein Parlament ohne amtliches Ergebnis ist der Normalfall, kein Fehler.
+async function ladeOptional(datei, bezeichnung) {
+  try {
+    return JSON.parse(await readFile(datei, 'utf8'));
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.warn(`[WARNUNG] ${bezeichnung} konnte nicht gelesen werden: ${err.message}`);
+    }
+    return null;
+  }
+}
+
+const wahlergebnisse = new Map();
+for (const [land, eintrag] of Object.entries(electionConfig.elections)) {
+  if (!eintrag.amtlicheDatei) continue;
+  const geladen = await ladeOptional(
+    path.join(ROOT, 'config', eintrag.amtlicheDatei),
+    `Amtliches Ergebnis fuer ${land}`,
+  );
+  if (geladen) wahlergebnisse.set(land, geladen);
+}
+
+// Wahlkreis- und Kandidaturdaten von abgeordnetenwatch.de. Optional: der Build
+// laeuft vollstaendig ohne sie, nur die Namen der direkt Gewaehlten fehlen dann.
+const abgeordnetenwatch = await ladeOptional(
+  path.join(ROOT, 'data', 'abgeordnetenwatch.json'),
+  'Daten von abgeordnetenwatch.de',
+);
 
 const COLORS = parliamentConfig.partyColors;
 const isFixture = provenance.mode === 'fixture';
@@ -64,10 +98,15 @@ const parliamentList = [...byParliament.entries()]
 
 function fixtureBanner() {
   if (!isFixture) return '';
+  // Die Unterscheidung ist wichtig: Seit amtliche Wahlergebnisse angebunden
+  // sind, stehen im Testbuild echte und erfundene Zahlen nebeneinander. Ein
+  // pauschales "alles hier ist erfunden" waere selbst eine Falschaussage und
+  // wuerde das amtliche Ergebnis zu Unrecht in Zweifel ziehen.
   return note(
     'warn',
-    'Testbuild mit synthetischen Daten',
-    '<p>Dieser Build wurde aus <strong>frei erfundenen Testdaten</strong> erzeugt. Kein Wert auf dieser Seite bildet eine reale Umfrage ab. Fuer einen echten Build <code>npm run fetch</code> ausfuehren.</p>',
+    'Testbuild mit synthetischen Umfragedaten',
+    `<p>Die <strong>Umfragewerte</strong> dieses Builds sind <strong>frei erfunden</strong>. Keine der aufgefuehrten Umfragen, Institute und Trendrechnungen bildet etwas Reales ab. Fuer einen echten Build <code>npm run fetch</code> ausfuehren.</p>
+<p>Nicht betroffen sind die <strong>amtlichen Wahlergebnisse</strong>. Sie stammen aus den Dateien der jeweiligen Wahlleitung und sind auch in diesem Testbuild echt. Alles, was Umfragen mit dem amtlichen Ergebnis vergleicht, bleibt dagegen leer: eine Abweichung erfundener Umfragen von einem echten Ergebnis waere eine sinnlose Zahl.</p>`,
   );
 }
 
@@ -208,6 +247,14 @@ ${
 function electionComparison(p) {
   const e = electionConfig.elections[p.name];
   if (!e || e.verified !== true || !p.trend || p.trend.insufficient) return '';
+
+  // Liegt das amtliche Ergebnis derselben Wahl vor, steht der Vergleich von
+  // Trend und Ergebnis bereits im Abschnitt zur Institutsgenauigkeit, und zwar
+  // ausfuehrlicher. Ein zweiter Block "Vergleich mit der Landtagswahl 2026"
+  // waere dann eine Dopplung, die zudem nahelegt, der Trend beziehe sich auf
+  // eine noch bevorstehende Wahl.
+  if (wahlergebnisse.has(p.name) && wahlergebnisse.get(p.name).wahl.wahltag === e.date) return '';
+
   return `<h2 id="vergleich">Vergleich mit der ${esc(e.label)}</h2>
 ${comparison(p.trend.values, e.results, {
     colors: COLORS,
@@ -215,6 +262,333 @@ ${comparison(p.trend.values, e.results, {
     currentLabel: `Trend ${deDate(p.trend.anchorDate)}`,
   })}
 ${e.hinweis ? note('method', 'Zur Einordnung', `<p>${esc(e.hinweis)}</p>`) : ''}`;
+}
+
+/** Aufzaehlung in natuerlichem Deutsch: "A, B und C". */
+function aufzaehlung(teile) {
+  if (teile.length <= 1) return teile.join('');
+  return `${teile.slice(0, -1).join(', ')} und ${teile.at(-1)}`;
+}
+
+/**
+ * Das amtliche Wahlergebnis. Anders als jede Modellrechnung auf dieser Seite
+ * ist das kein Modell, sondern eine Feststellung. Der Abschnitt macht diesen
+ * Unterschied ausdruecklich, weil er der wichtigste auf der ganzen Seite ist.
+ */
+function amtlichesErgebnisBlock(p) {
+  const e = wahlergebnisse.get(p.name);
+  if (!e) return '';
+
+  const b = e.beteiligung;
+  const s = e.sitze;
+  const vorlaeufig = e.status.endgueltig !== true;
+
+  const sitzZeilen = Object.entries(s.verteilung)
+    .filter(([, v]) => v > 0)
+    .sort((a, b2) => b2[1] - a[1]);
+
+  const anteile = e.ergebnisProjektnamen;
+
+  return `<h2 id="amtlich">Amtliches Ergebnis der ${esc(e.wahl.bezeichnung)}</h2>
+<p class="lede">Gewaehlt wurde am ${esc(deDate(e.wahl.wahltag))}. Die folgenden Zahlen sind keine Modellrechnung und keine Umfrage, sondern das ausgezaehlte Ergebnis.</p>
+${
+  vorlaeufig
+    ? note(
+        'warn',
+        'Vorlaeufiges amtliches Ergebnis',
+        `<p>${esc(e.status.hinweis)} Stand der Quelldateien: ${esc(e.status.standDatum)}.</p>`,
+      )
+    : ''
+}
+<dl class="kpis">
+  <div class="kpi"><dt>Wahlbeteiligung</dt><dd>${num(b.wahlbeteiligungProzent)}&thinsp;%<span class="kpi-sub">${int(b.waehler)} von ${int(b.wahlberechtigte)} Wahlberechtigten</span></dd></div>
+  <div class="kpi"><dt>Gueltige Zweitstimmen</dt><dd>${int(b.gueltigeZweitstimmen)}<span class="kpi-sub">${int(b.ungueltigeZweitstimmen)} ungueltig, ${num(b.ungueltigeZweitstimmenProzent)}&thinsp;%</span></dd></div>
+  <div class="kpi"><dt>Sitze im Landtag</dt><dd>${int(s.gesamt)}<span class="kpi-sub">${s.ueberhangUndAusgleich === 0 ? 'genau die gesetzliche Mindestzahl' : `${int(s.ueberhangUndAusgleich)} ueber der Mindestzahl von ${int(s.gesetzlicheMindestzahl)}`}</span></dd></div>
+  <div class="kpi"><dt>Mehrheit ab</dt><dd>${int(s.mehrheit)}<span class="kpi-sub">Sitzen</span></dd></div>
+</dl>
+
+<h3>Zweitstimmen</h3>
+<div class="panel">
+${(() => {
+  const sammel = new Set(parliamentConfig.aggregateCategories.map((x) => x.toLowerCase()));
+  const skala = Math.ceil(Math.max(...Object.values(anteile)) / 5) * 5;
+  // Sammelposten ans Ende, unabhaengig von ihrer Groesse. Sie zwischen die
+  // Parteien zu sortieren legt nahe, sie waeren eine davon.
+  return Object.entries(anteile)
+    .sort((a, b2) => {
+      const aS = sammel.has(a[0].toLowerCase());
+      const bS = sammel.has(b2[0].toLowerCase());
+      if (aS !== bS) return aS ? 1 : -1;
+      return b2[1] - a[1];
+    })
+    .map(([party, value]) => bar(party, value, COLORS, skala))
+    .join('');
+})()}
+</div>
+<div class="table-scroll"><table>
+<caption>Amtliches Zweitstimmenergebnis, absolute Stimmen und Anteile</caption>
+<thead><tr><th class="left">Partei</th><th>Stimmen</th><th>Anteil</th><th>Sitze</th><th>davon direkt</th><th>davon Liste</th></tr></thead>
+<tbody>
+${Object.entries(e.zweitstimmen.stimmen)
+  .sort((a, b2) => b2[1] - a[1])
+  .map(([amtlicherName, stimmen]) => {
+    const anteil = e.zweitstimmen.anteilExakt[amtlicherName];
+    // Die Sitztabelle fuehrt Projektbezeichner, die Stimmtabelle amtliche.
+    // Zusammengefuehrt wird ueber die beim Import festgehaltene Zuordnung.
+    const projektname = e.parteiZuordnung?.[amtlicherName] ?? null;
+    const det = projektname ? s.detail[projektname] ?? null : null;
+    return `<tr>
+  <td class="left">${esc(amtlicherName)}</td>
+  <td>${int(stimmen)}</td>
+  <td>${num(anteil)}&thinsp;%</td>
+  <td>${det ? int(det.gesamt) : '—'}</td>
+  <td>${det ? int(det.direkt) : '—'}</td>
+  <td>${det ? int(det.liste) : '—'}</td>
+</tr>`;
+  })
+  .join('')}
+</tbody>
+</table></div>
+
+<h3>Sitzverteilung</h3>
+${hemicycle(s.verteilung, { colors: COLORS, majority: s.mehrheit, totalSeats: s.gesamt })}
+${(() => {
+  const sitzmap = Object.fromEntries(sitzZeilen);
+  const koalitionen = findCoalitions(sitzmap, s.mehrheit).map((c) => ({
+    ...c,
+    seatsByParty: Object.fromEntries(c.parties.map((party) => [party, s.verteilung[party]])),
+  }));
+  if (koalitionen.length === 0) return '<p>Es ergibt sich keine Mehrheit mit bis zu vier Partnern.</p>';
+
+  // Die staerkste Partei und die Frage, ob es ohne sie eine Mehrheit gibt.
+  // Diese Frage darf nicht an der Obergrenze von vier Partnern scheitern,
+  // sonst entsteht der falsche Eindruck, es gaebe gar keine.
+  const staerkste = sitzZeilen[0][0];
+  const alleMitStaerkster = koalitionen.every((c) => c.parties.includes(staerkste));
+  const ohne = alleMitStaerkster ? mehrheitOhne(sitzmap, s.mehrheit, staerkste) : null;
+
+  return `<h3>Rechnerische Mehrheiten im gewaehlten Landtag</h3>
+<p class="lede">Alle Kombinationen mit Mehrheit und hoechstens vier Partnern, aus denen keine Partei entfernt werden kann, ohne die Mehrheit zu verlieren. Reine Arithmetik, keine Aussage darueber, welche Kombination politisch in Betracht kommt.</p>
+${coalitionBars(koalitionen, { colors: COLORS, totalSeats: s.gesamt, majority: s.mehrheit })}
+${
+  alleMitStaerkster
+    ? note(
+        'warn',
+        `Jede dieser Mehrheiten enthaelt ${esc(staerkste)}`,
+        ohne
+          ? `<p>Das liegt an der Obergrenze von vier Partnern, nicht an der Arithmetik. Eine Mehrheit ohne ${esc(staerkste)} existiert: ${esc(aufzaehlung(ohne.parties))} kommen zusammen auf ${int(ohne.seats)} Sitze und damit ${ohne.surplus === 0 ? 'genau auf die Mehrheit' : `${int(ohne.surplus)} Sitze darueber`}. Sie braucht allerdings ${int(ohne.partnerCount)} Partner und erscheint deshalb nicht in der Liste oben.</p>`
+          : `<p>Und zwar nicht wegen der Obergrenze von vier Partnern: Auch alle uebrigen Parteien zusammen erreichen die Mehrheit von ${int(s.mehrheit)} Sitzen nicht. Ohne ${esc(staerkste)} ist rechnerisch keine Mehrheit moeglich.</p>`,
+      )
+    : ''
+}`;
+})()}
+${note(
+  'method',
+  'Woher diese Zahlen stammen und wie sie geprueft wurden',
+  `<p>Quelle ist ${esc(e.quelle.herausgeber)}, Fundstelle <a href="${esc(e.quelle.fundstelle)}" rel="external">${esc(e.quelle.fundstelle)}</a>. ${esc(e.quelle.rechtsstellung)}</p>
+<p>Die Rohdateien liegen im Repository unter <code>quellen/</code>, ihre Pruefsummen in der erzeugten Datei. Beim Einlesen wurden vier Kontrollen erzwungen: gueltige plus ungueltige Stimmen ergeben die Waehlerzahl, die Summe der Parteistimmen ergibt die gueltigen Stimmen, die Summe der Sitze ergibt die amtliche Gesamtzahl, und die aus den Erststimmen selbst ermittelten Wahlkreissieger stimmen mit den amtlich ausgewiesenen Direktmandaten ueberein. Schlaegt eine davon fehl, entsteht keine Datei.</p>
+<p>Zusaetzlich rechnet der Selbsttest die Sitzverteilung aus den amtlichen Zweitstimmen mit dem Rechenkern dieses Projekts nach und vergleicht sie mit der amtlich festgestellten. Beide stimmen ueberein.</p>`,
+)}`;
+}
+
+/**
+ * Institutsgenauigkeit: die letzten Umfragen vor der Wahl gegen das amtliche
+ * Ergebnis. Das ist der Abschnitt, der aus einer behaupteten Zuverlaessigkeit
+ * eine belegte macht, und zugleich derjenige, bei dem eine Ueberinterpretation
+ * am naechsten liegt. Die Vorbehalte stehen deshalb nicht im Kleingedruckten.
+ */
+function genauigkeitsBlock(p) {
+  const e = wahlergebnisse.get(p.name);
+  if (!e) return '';
+
+  const acc = computeAccuracy(p.surveys, e, {
+    fensterTage: site.accuracy?.fensterTage ?? 45,
+    aggregateCategories: parliamentConfig.aggregateCategories,
+    istSynthetisch: isFixture,
+  });
+
+  if (!acc.verfuegbar) {
+    if (acc.grund === 'synthetisch') {
+      return note(
+        'warn',
+        'Keine Genauigkeitsauswertung im Testmodus',
+        '<p>Dieser Build nutzt synthetische Umfragedaten. Eine Abweichung erfundener Umfragen von einem echten Wahlergebnis waere eine sinnlose Zahl und wird deshalb nicht ausgegeben.</p>',
+      );
+    }
+    if (acc.grund === 'keine-umfragen-im-fenster') {
+      return note(
+        'method',
+        'Keine Genauigkeitsauswertung moeglich',
+        `<p>Im Fenster von ${int(acc.fensterTage)} Tagen vor der Wahl liegt keine Umfrage vor, die sich mit dem amtlichen Ergebnis vergleichen liesse.</p>`,
+      );
+    }
+    return '';
+  }
+
+  const parteiZeilen = Object.entries(acc.jePartei).sort((a, b2) => b2[1].amtlich - a[1].amtlich);
+  const huerde = p.cfg?.thresholdPercent ?? 5;
+  const huerdenZeilen = p.trend && !p.trend.insufficient
+    ? huerdenVergleich(p.trend.values, e.ergebnisProjektnamen, huerde, parliamentConfig.aggregateCategories)
+    : [];
+  const abweichendeHuerde = huerdenZeilen.filter((z) => z.abweichend);
+
+  const vorzeichen = (v) => `${v > 0 ? '+' : ''}${num(v)}`;
+
+  return `<h2 id="genauigkeit">Wie genau waren die Umfragen?</h2>
+<p class="lede">Verglichen wird die jeweils letzte Umfrage eines Instituts vor dem Wahltag mit dem amtlichen Ergebnis. Eine positive Differenz bedeutet: die Partei wurde unterschaetzt, sie hat besser abgeschnitten als gemessen.</p>
+
+<div class="table-scroll"><table>
+<caption>Abweichung je Institut, letzte Umfrage vor der Wahl</caption>
+<thead><tr><th class="left">Institut</th><th class="left">Feldende</th><th>Tage vor der Wahl</th><th>Befragte</th><th>mittlere absolute Abweichung</th><th>groesster Einzelfehler</th></tr></thead>
+<tbody>
+${acc.institute
+  .map(
+    (i) => `<tr>
+  <td class="left">${esc(i.institut)}</td>
+  <td class="left"><time datetime="${esc(i.feldEnde)}">${esc(deDate(i.feldEnde))}</time></td>
+  <td>${int(i.tageVorWahl)}</td>
+  <td>${i.befragte ? int(i.befragte) : 'n.a.'}</td>
+  <td>${num(i.kern?.mittlereAbsoluteAbweichung ?? i.mittlereAbsoluteAbweichung)}&thinsp;Pp</td>
+  <td>${(() => {
+    // Beide Spalten muessen auf derselben Grundmenge beruhen. Sonst stuende
+    // neben einer Kennzahl ueber sechs Parteien ein Einzelfehler, den es in
+    // dieser Grundmenge gar nicht gibt.
+    const f = (i.kern ?? i).groessterFehler;
+    return f ? `${esc(f.partei)} ${vorzeichen(f.differenz)}` : '—';
+  })()}</td>
+</tr>`,
+  )
+  .join('')}
+</tbody>
+</table></div>
+${note(
+  'method',
+  'Was diese Rangfolge nicht sagt',
+  `<p>Verglichen wird auf einer gemeinsamen Grundmenge von ${int(acc.kernparteien.length)} Parteien (${esc(acc.kernparteien.join(', '))}), damit ein Institut nicht dadurch besser dasteht, dass es eine schwierige Partei gar nicht erst ausweist.</p>
+<p>Trotzdem ist das die Momentaufnahme <strong>einer einzigen Wahl</strong>. Ein Institut mit einer grossen Abweichung ist deshalb nicht schlechter als eines mit einer kleinen. Dafuer braeuchte es viele Wahlen. Hinzu kommt: die letzte Umfrage lag ${int(Math.min(...acc.institute.map((i) => i.tageVorWahl)))} bis ${int(Math.max(...acc.institute.map((i) => i.tageVorWahl)))} Tage vor dem Wahltag. Eine Umfrage misst die Stimmung im Feldzeitraum und ist keine Vorhersage des Wahltags.</p>`,
+)}
+
+<h3>Abweichung je Partei</h3>
+<p class="lede">Ueber alle ${int(acc.institute.length)} beruecksichtigten Umfragen. Die mittlere Abweichung mit Vorzeichen zeigt, ob eine Partei von allen Instituten in dieselbe Richtung verschaetzt wurde.</p>
+<div class="table-scroll"><table>
+<thead><tr><th class="left">Partei</th><th>amtlich</th><th>mittlere Abweichung</th><th>mittlere absolute Abweichung</th><th>Spanne</th></tr></thead>
+<tbody>
+${parteiZeilen
+  .map(
+    ([partei, v]) => `<tr>
+  <td class="left">${esc(partei)}</td>
+  <td>${num(v.amtlich)}&thinsp;%</td>
+  <td>${vorzeichen(v.mittlereAbweichung)}&thinsp;Pp</td>
+  <td>${num(v.mittlereAbsoluteAbweichung)}&thinsp;Pp</td>
+  <td>${vorzeichen(v.spanne.min)} bis ${vorzeichen(v.spanne.max)}</td>
+</tr>`,
+  )
+  .join('')}
+</tbody>
+</table></div>
+
+${
+  huerdenZeilen.length > 0
+    ? `<h3>Die Sperrklausel im Rueckblick</h3>
+<p class="lede">An der Fuenfprozenthuerde haengen ganze Sitzbloecke. Hier steht, was der Trend vor der Wahl nahelegte und was tatsaechlich eingetreten ist.</p>
+<div class="table-scroll"><table>
+<thead><tr><th class="left">Partei</th><th>Trend</th><th>amtlich</th><th>Differenz</th><th class="left">Huerde nach Trend</th><th class="left">Huerde tatsaechlich</th></tr></thead>
+<tbody>
+${huerdenZeilen
+  .map(
+    (z) => `<tr${z.abweichend ? ' class="row-flag"' : ''}>
+  <td class="left">${esc(z.partei)}</td>
+  <td>${num(z.trend)}&thinsp;%</td>
+  <td>${num(z.amtlich)}&thinsp;%</td>
+  <td>${vorzeichen(z.differenz)}&thinsp;Pp</td>
+  <td class="left">${z.trendDrin ? 'genommen' : 'verfehlt'}</td>
+  <td class="left">${z.amtlichDrin ? 'genommen' : 'verfehlt'}</td>
+</tr>`,
+  )
+  .join('')}
+</tbody>
+</table></div>
+${
+  abweichendeHuerde.length > 0
+    ? note(
+        'warn',
+        `Bei ${int(abweichendeHuerde.length)} ${abweichendeHuerde.length === 1 ? 'Partei' : 'Parteien'} lag der Trend auf der falschen Seite der Huerde`,
+        `<p>${abweichendeHuerde
+          .map(
+            (z) =>
+              `<strong>${esc(z.partei)}</strong>: im Trend ${num(z.trend)} Prozent und damit ${z.trendDrin ? 'ueber' : 'unter'} der Huerde, amtlich ${num(z.amtlich)} Prozent und damit ${z.amtlichDrin ? 'darueber' : 'darunter'}`,
+          )
+          .join('. ')}. Genau das ist der Grund, warum eine Sitzrechnung auf Umfragebasis mit Vorbehalt zu lesen ist: eine Partei knapp unter der Huerde bekommt im Modell null Sitze, eine knapp darueber einen ganzen Block.</p>`,
+      )
+    : note(
+        'method',
+        'Die Huerde wurde richtig eingeschaetzt',
+        '<p>Bei keiner Partei lag der Trend auf der anderen Seite der Sperrklausel als das amtliche Ergebnis. Das ist der guenstige Fall und keineswegs selbstverstaendlich.</p>',
+      )
+}`
+    : ''
+}`;
+}
+
+/**
+ * Die Wahlkreise mit den direkt gewaehlten Personen. Die Namen stammen von
+ * abgeordnetenwatch.de. Solange dort keine Mandate erfasst sind, werden sie
+ * abgeleitet, und das steht auch so auf der Seite.
+ */
+function wahlkreisBlock(p) {
+  const e = wahlergebnisse.get(p.name);
+  if (!e?.wahlkreise?.liste?.length) return '';
+
+  const passend =
+    abgeordnetenwatch && abgeordnetenwatch.periode?.wahltag === e.wahl.wahltag ? abgeordnetenwatch : null;
+  const v = passend ? verknuepfeWahlkreise(e.wahlkreise.liste, passend) : null;
+  const zeilen = v ? v.zeilen : e.wahlkreise.liste;
+
+  const direkt = Object.entries(e.wahlkreise.direktmandate).sort((a, b2) => b2[1] - a[1]);
+  const knappste = [...e.wahlkreise.liste].sort((a, b2) => a.vorsprungPunkte - b2.vorsprungPunkte)[0];
+
+  return `<h2 id="wahlkreise">Die ${int(e.wahlkreise.anzahl)} Wahlkreise</h2>
+<p class="lede">In jedem Wahlkreis wird eine Person direkt gewaehlt, wer die meisten Erststimmen hat. Direktmandate: ${direkt.map(([party, n]) => `${esc(party)} ${int(n)}`).join(', ')}. Der knappste Wahlkreis war ${esc(knappste.name)} mit ${num(knappste.vorsprungPunkte)} Prozentpunkten Vorsprung.</p>
+${
+  v && v.abgeleitet > 0
+    ? note(
+        'method',
+        'Woher die Namen stammen',
+        `<p>Die Wahlkreisergebnisse sind amtlich. Die Namen der direkt Gewaehlten sind es an dieser Stelle nicht: abgeordnetenwatch.de hat fuer diese Wahlperiode noch keine Mandate erfasst, das geschieht ueblicherweise erst nach der konstituierenden Sitzung.</p>
+<p>Fuer ${int(v.abgeleitet)} der ${int(v.gesamt)} Wahlkreise ist der Name deshalb <strong>abgeleitet</strong>: amtlich steht fest, welche Partei den Wahlkreis gewonnen hat, und bei abgeordnetenwatch.de ist hinterlegt, wer fuer diese Partei dort als einzige Person kandidiert hat. Das ist zulaessig, weil jede Partei je Wahlkreis nur einen Kreiswahlvorschlag einreichen darf, aber es ist eine Ableitung und keine amtliche Feststellung. Sobald die Mandate erfasst sind, tritt die dort hinterlegte Angabe an ihre Stelle.</p>`,
+      )
+    : ''
+}
+<div class="table-scroll"><table>
+<caption>Wahlkreise, direkt gewaehlte Partei und Vorsprung auf den zweiten Platz</caption>
+<thead><tr><th>Nr.</th><th class="left">Wahlkreis</th><th class="left">gewonnen von</th><th>Erststimmenanteil</th><th class="left">zweiter</th><th>Vorsprung</th><th class="left">direkt gewaehlt</th></tr></thead>
+<tbody>
+${zeilen
+  .map(
+    (w) => `<tr>
+  <td>${esc(String(Number(w.nummer)))}</td>
+  <td class="left">${esc(w.name)}</td>
+  <td class="left">${esc(w.sieger)}</td>
+  <td>${num(w.siegerAnteil)}&thinsp;%</td>
+  <td class="left">${w.zweiter ? esc(w.zweiter) : '—'}</td>
+  <td>${w.vorsprungPunkte !== null ? `${num(w.vorsprungPunkte)}&thinsp;Pp` : '—'}</td>
+  <td class="left">${
+    w.gewaehltName
+      ? w.gewaehltProfil
+        ? `<a href="${esc(w.gewaehltProfil)}" rel="external">${esc(w.gewaehltName)}</a>${w.herkunft === 'abgeleitet' ? ' <span class="meta">abgeleitet</span>' : ''}`
+        : esc(w.gewaehltName)
+      : '—'
+  }</td>
+</tr>`,
+  )
+  .join('')}
+</tbody>
+</table></div>
+${
+  passend
+    ? `<p class="attribution">Namen und Profillinks von <a href="${esc(passend.quelle.attributionUrl)}" rel="external">abgeordnetenwatch.de</a>, lizenziert unter <a href="${esc(passend.quelle.lizenzLink)}" rel="license external">${esc(passend.quelle.lizenz)}</a>. Abgerufen am ${esc(deDate(passend.abgerufenAm.slice(0, 10)))}. Wahlkreisergebnisse vom ${esc(e.quelle.herausgeber)}.</p>`
+    : ''
+}`;
 }
 
 function trendBlock(p) {
@@ -319,10 +693,26 @@ function seatBlock(p) {
     })
     .filter(Boolean);
 
-  return `<h2 id="sitze">Modellrechnung zur Sitzverteilung</h2>
+  // Ist die Wahl bereits gelaufen und das Ergebnis angebunden, ist diese
+  // Rechnung eine Rueckschau: Was haette der Trend ergeben? Das ist
+  // aufschlussreich, darf aber nicht wie eine offene Frage aussehen, wenn die
+  // tatsaechliche Sitzverteilung weiter oben auf derselben Seite steht.
+  const amtlich = wahlergebnisse.get(p.name);
+  const rueckschau = Boolean(amtlich);
+
+  return `<h2 id="sitze">${rueckschau ? 'Was die Umfragen fuer die Sitzverteilung bedeutet haetten' : 'Modellrechnung zur Sitzverteilung'}</h2>
+${
+  rueckschau
+    ? note(
+        'warn',
+        'Rueckschau, nicht der Stand der Dinge',
+        `<p>Diese Rechnung beruht auf den <strong>Umfragen vor der Wahl</strong>, nicht auf dem Ergebnis. Die tatsaechliche Sitzverteilung des am ${esc(deDate(amtlich.wahl.wahltag))} gewaehlten Landtags steht <a href="#amtlich">weiter oben</a>. Der Abschnitt bleibt stehen, weil der Vergleich zeigt, wie weit eine Sitzrechnung auf Umfragebasis vom Ergebnis abweichen kann.</p>`,
+      )
+    : ''
+}
 ${note(
   'method',
-  'Modellrechnung, keine Prognose',
+  rueckschau ? 'Wie diese Modellrechnung entstand' : 'Modellrechnung, keine Prognose',
   `<p>Grundlage ist der oben stehende Trend, nicht ein Wahlergebnis. Verfahren: ${esc(dist.method === 'sainte-lague' ? 'Sainte-Lague/Schepers' : dist.method === 'hare-niemeyer' ? 'Hare/Niemeyer' : 'dHondt')}, Sperrklausel ${num(dist.thresholdPercent, 0)}&thinsp;%, ${int(dist.totalSeats)} Sitze, Rechtsgrundlage ${esc(p.cfg.rechtsgrundlage)}. ${dist.excludedParties.length > 0 ? `An der Sperrklausel scheitern im Modell: ${esc(dist.excludedParties.join(', '))}.` : ''} ${dist.removedAggregates.length > 0 ? `Nicht beruecksichtigt, weil Sammelposten mehrerer Parteien: ${esc(dist.removedAggregates.join(', '))}.` : ''} ${p.cfg.hinweis ? esc(p.cfg.hinweis) : ''}</p>`,
 )}
 ${
@@ -364,9 +754,30 @@ function addPage(url, html, { priority = 0.5, changefreq = 'weekly', lastmod = b
 {
   const cards = parliamentList
     .map((p) => {
+      // Liegt das amtliche Ergebnis vor, zeigt die Karte dieses und nicht den
+      // Trend. Sonst stuenden auf der Startseite Umfragewerte, die durch ein
+      // vorliegendes Wahlergebnis ueberholt sind, ohne dass das erkennbar
+      // waere. Im Fall Sachsen-Anhalt lagen Trend und Ergebnis bei der CDU
+      // knapp sechs Prozentpunkte auseinander.
+      const amtlich = wahlergebnisse.get(p.name);
+      if (amtlich) {
+        const sammel = new Set(parliamentConfig.aggregateCategories.map((x) => x.toLowerCase()));
+        const werte = Object.entries(amtlich.ergebnisProjektnamen)
+          .filter(([party]) => !sammel.has(party.toLowerCase()))
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4);
+        return `<article class="card">
+  <h3><a href="/parlament/${p.slug}/">${esc(p.name)}</a></h3>
+  <p class="card-kicker">${esc(amtlich.wahl.bezeichnung)}, amtliches Ergebnis</p>
+  ${werte.map(([party, v]) => bar(party, v, COLORS, 45)).join('')}
+  <p>${int(amtlich.sitze.gesamt)} Sitze, gewaehlt am ${esc(deDate(amtlich.wahl.wahltag))}${amtlich.status.endgueltig ? '' : ' (vorlaeufig)'}</p>
+</article>`;
+      }
+
       const t = p.trend && !p.trend.insufficient ? Object.entries(p.trend.values).sort((a, b) => b[1] - a[1]).slice(0, 4) : [];
       return `<article class="card">
   <h3><a href="/parlament/${p.slug}/">${esc(p.name)}</a></h3>
+  <p class="card-kicker">Sonntagsfrage, gewichteter Trend</p>
   ${t.length > 0 ? t.map(([party, v]) => bar(party, v, COLORS, 40)).join('') : '<p>Kein Trend verfuegbar.</p>'}
   <p>${int(p.surveys.length)} Umfragen, juengstes Feldende ${esc(deDate(p.latest.dateEnd ?? p.latest.date))}</p>
 </article>`;
@@ -431,7 +842,11 @@ addPage(
 <ul class="linklist">${parliamentList
       .map(
         (p) =>
-          `<li><a href="/parlament/${p.slug}/">${esc(p.name)}</a><span class="meta">${int(p.surveys.length)} Umfragen, ab ${esc(deDate(p.surveys.at(-1).date))}</span></li>`,
+          `<li><a href="/parlament/${p.slug}/">${esc(p.name)}</a><span class="meta">${
+            wahlergebnisse.has(p.name)
+              ? `${esc(wahlergebnisse.get(p.name).wahl.bezeichnung)}, ${int(p.surveys.length)} Umfragen`
+              : `${int(p.surveys.length)} Umfragen, ab ${esc(deDate(p.surveys.at(-1).date))}`
+          }</span></li>`,
       )
       .join('')}</ul>`,
   }),
@@ -448,8 +863,15 @@ for (const p of parliamentList) {
     page({
       site,
       url: `/parlament/${p.slug}/`,
-      title: `Sonntagsfrage ${p.name}`,
-      description: `Alle ${int(p.surveys.length)} verfuegbaren Umfragen zu ${p.name} mit Institut, Auftraggeber, Feldzeit und Fallzahl. Gewichteter Trend, Streuung und Quellenangabe je Wert.`,
+      // Liegt ein amtliches Ergebnis vor, ist es der wichtigste Inhalt der
+      // Seite. Titel und Beschreibung muessen das nennen, sonst versprechen sie
+      // eine Vorschau auf eine Wahl, die bereits stattgefunden hat.
+      title: wahlergebnisse.has(p.name)
+        ? wahlergebnisse.get(p.name).wahl.langbezeichnung
+        : `Sonntagsfrage ${p.name}`,
+      description: wahlergebnisse.has(p.name)
+        ? `Amtliches Ergebnis der ${wahlergebnisse.get(p.name).wahl.bezeichnung} in ${p.name}: Zweitstimmen, Sitzverteilung, alle ${int(wahlergebnisse.get(p.name).wahlkreise.anzahl)} Wahlkreise. Dazu der Vergleich mit den ${int(p.surveys.length)} Umfragen vor der Wahl und die Abweichung je Institut.`
+        : `Alle ${int(p.surveys.length)} verfuegbaren Umfragen zu ${p.name} mit Institut, Auftraggeber, Feldzeit und Fallzahl. Gewichteter Trend, Streuung und Quellenangabe je Wert.`,
       breadcrumbs: [
         { label: 'Start', url: '/' },
         { label: 'Parlamente', url: '/parlamente/' },
@@ -481,9 +903,18 @@ for (const p of parliamentList) {
       updated: buildTime,
       body: `${fixtureBanner()}
 <p class="eyebrow">${esc(p.surveys[0].parliamentElection ?? 'Wahl')}</p>
-<h1>Sonntagsfrage ${esc(p.name)}</h1>
-<p class="lede">${int(p.surveys.length)} Umfragen von ${int(institutesHere.length)} Instituten, aeltester Datensatz vom ${esc(deDate(p.surveys.at(-1).date))}, juengster vom ${esc(deDate(p.surveys[0].date))}.</p>
+${
+  wahlergebnisse.has(p.name)
+    ? `<h1>${esc(wahlergebnisse.get(p.name).wahl.langbezeichnung)}</h1>
+<p class="lede">Das amtliche Ergebnis der Wahl vom ${esc(deDate(wahlergebnisse.get(p.name).wahl.wahltag))}, die Sitzverteilung im Landtag und alle ${int(wahlergebnisse.get(p.name).wahlkreise.anzahl)} Wahlkreise. Darunter die ${int(p.surveys.length)} Umfragen aus der Zeit davor und die Frage, wie nah sie am Ergebnis lagen.</p>`
+    : `<h1>Sonntagsfrage ${esc(p.name)}</h1>
+<p class="lede">${int(p.surveys.length)} Umfragen von ${int(institutesHere.length)} Instituten, aeltester Datensatz vom ${esc(deDate(p.surveys.at(-1).date))}, juengster vom ${esc(deDate(p.surveys[0].date))}.</p>`
+}
 ${kpiBand(p)}
+${amtlichesErgebnisBlock(p)}
+${wahlkreisBlock(p)}
+${genauigkeitsBlock(p)}
+<h2 id="umfragen">Die Umfragen vor der Wahl</h2>
 ${timeline(p.surveys, { colors: COLORS, threshold: p.cfg?.thresholdPercent ?? 5 })}
 ${electionComparison(p)}
 ${belegstreifen(p.surveys)}
@@ -881,8 +1312,33 @@ await writeFile(
       generatedAt: buildTime,
       sourceLastUpdate: provenance.sourceLastUpdate ?? null,
       synthetic: isFixture,
+
+      // WICHTIG: Die Lizenzangabe oben gilt fuer die Umfragedaten. Die
+      // amtlichen Wahlergebnisse stehen unter einer anderen Rechtsstellung:
+      // Als amtliche Werke nach Paragraf 5 UrhG sind sie gemeinfrei und
+      // gerade NICHT Teil der ODbL-Datenbank. Sie stehen deshalb in einem
+      // eigenen Block mit eigener Lizenzangabe. Wer beides in einen Topf
+      // wirft, gibt die Lizenzlage beider Quellen falsch wieder.
+      _lizenzhinweis:
+        'license und attribution gelten fuer surveys und trends. Die amtlichen Ergebnisse unter elections tragen ihre eigene Rechtsstellung und unterliegen nicht der ODbL.',
+
       surveys: data.surveys,
       trends: Object.fromEntries(parliamentList.map((p) => [p.name, p.trend])),
+      elections: Object.fromEntries(
+        [...wahlergebnisse.entries()].map(([land, e]) => [
+          land,
+          {
+            wahl: e.wahl,
+            status: e.status,
+            beteiligung: e.beteiligung,
+            zweitstimmen: { stimmen: e.zweitstimmen.stimmen, anteilExakt: e.zweitstimmen.anteilExakt },
+            erststimmen: { stimmen: e.erststimmen.stimmen, anteilExakt: e.erststimmen.anteilExakt },
+            sitze: e.sitze,
+            wahlkreise: e.wahlkreise,
+            quelle: e.quelle,
+          },
+        ]),
+      ),
     },
     null,
     2,

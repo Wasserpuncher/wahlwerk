@@ -43,6 +43,31 @@
 <p>Aus der Modellsitzverteilung werden alle Parteienkombinationen mit bis zu vier Partnern ermittelt, die mehr als die Haelfte der Sitze erreichen. Ausgegeben werden nur <em>minimale</em> Mehrheiten, also solche, bei denen der Verlust eines beliebigen Partners die Mehrheit kostet.</p>
 <p>Diese Liste ist rein arithmetisch. Sie enthaelt bewusst auch Kombinationen, die politisch ausgeschlossen sind. Der Grund: welche Kombination als ausgeschlossen gilt, ist eine redaktionelle Wertung, die sich mit Parteitagsbeschluessen aendert. {{SITE_NAME}} trifft diese Wertung nicht.</p>
 
+<p>Die Obergrenze von vier Partnern hat eine Nebenwirkung, die eigens abgefangen wird. Enthalten alle gefundenen Kombinationen dieselbe Partei, so kann das daran liegen, dass eine Mehrheit ohne sie zwar existiert, aber mehr Partner braucht. Genau dieser Fall trat im Landtag von Sachsen-Anhalt der 9. Wahlperiode ein. Deshalb wird zusaetzlich und unabhaengig von der Partnerzahl geprueft, ob ohne die staerkste Partei eine Mehrheit besteht, und das Ergebnis ausgewiesen. Ohne diese Pruefung legte die Liste einen falschen Schluss nahe.</p>
+
+<h2>Amtliche Wahlergebnisse</h2>
+<p>Amtliche Ergebnisse werden nicht abgetippt. Sie werden aus den veroeffentlichten Dateien der jeweiligen Wahlleitung eingelesen, die als amtliche Werke nach Paragraf 5 UrhG gemeinfrei sind und im Repository als Beleg liegen. Beim Einlesen werden vier Kontrollsummen erzwungen:</p>
+<ol>
+  <li>Gueltige plus ungueltige Stimmen ergeben die Waehlerzahl.</li>
+  <li>Die Summe der Parteistimmen ergibt die gueltigen Stimmen.</li>
+  <li>Die Summe der Sitze ergibt die amtlich ausgewiesene Gesamtzahl.</li>
+  <li>Die aus den Erststimmen selbst ermittelten Wahlkreissieger stimmen mit den amtlich ausgewiesenen Direktmandaten ueberein.</li>
+</ol>
+<p>Schlaegt eine davon fehl, entsteht keine Datei. Der Build laeuft dann mit dem bisherigen Stand weiter, statt eine plausibel aussehende, aber ungepruefte Zahl zu uebernehmen. Die Pruefsummen der Quelldateien werden mitgeschrieben, sodass sich jede Zahl bis zur unveraenderten Quelle zurueckverfolgen laesst.</p>
+<p>Die vierte Kontrolle ist die wichtigste, weil sie eine ganze Fehlerklasse ausschliesst. Wahlkreissieger werden aus den Erststimmen neu berechnet und nicht aus einer Begleittabelle uebernommen. Im Fall Sachsen-Anhalt enthielt eine mitgelieferte Vergleichstabelle noch Namen aus einer Vorlage, die vor dem Wahltag erstellt worden war. Wer sie ungeprueft uebernommen haette, haette 41 falsche Direktmandate veroeffentlicht.</p>
+<p>Solange nicht belegt ist, dass der zustaendige Wahlausschuss das Ergebnis endgueltig festgestellt hat, wird es als <em>vorlaeufiges amtliches Ergebnis</em> gefuehrt und auf jeder Seite so gekennzeichnet.</p>
+
+<h2>Institutsgenauigkeit</h2>
+<p>Verglichen wird die jeweils <strong>letzte</strong> Umfrage eines Instituts vor dem Wahltag mit dem amtlichen Ergebnis. Wer viele Umfragen veroeffentlicht, hat dadurch weder Vor- noch Nachteil. Massgeblich ist das Ende der Feldzeit, nicht das Veroeffentlichungsdatum, denn eine Umfrage misst die Stimmung im Befragungszeitraum.</p>
+<p>Vier Regeln begrenzen die Auswertung:</p>
+<ul>
+  <li>Verglichen wird nur, was beide Seiten ausweisen. Eine Partei, die ein Institut nicht abfragt, wird uebersprungen und <strong>nicht</strong> als null gewertet.</li>
+  <li>Sammelposten wie <em>Sonstige</em> bleiben aussen vor. Sie sind auf beiden Seiten nicht dasselbe.</li>
+  <li>Fuer den Vergleich zwischen Instituten wird eine gemeinsame Grundmenge gebildet: die Parteien, die jedes beruecksichtigte Institut ausweist. Sonst stuende ein Institut besser da, nur weil es eine schwierige Partei gar nicht erst erhoben hat.</li>
+  <li>Bei synthetischen Testdaten unterbleibt die Auswertung vollstaendig. Eine Abweichung erfundener Umfragen von einem echten Ergebnis waere eine sinnlose Zahl.</li>
+</ul>
+<p><strong>Was diese Auswertung nicht ist.</strong> Sie ist kein Guetesiegel und keine Rangliste. Sie zeigt die Momentaufnahme einer einzigen Wahl; fuer eine belastbare Aussage ueber die Zuverlaessigkeit eines Instituts braeuchte es viele. Hinzu kommt, dass die gemessene Differenz zwei Anteile enthaelt, die sich nicht trennen lassen: den Fehler der Erhebung und die tatsaechliche Meinungsaenderung zwischen Feldzeit und Wahltag. Eine Korrektur systematischer Hauseffekte findet ausdruecklich nicht statt.</p>
+
 <h2>Rundung und Darstellung</h2>
 <p>Alle Prozentwerte werden mit einer Nachkommastelle angezeigt, intern aber ungerundet weitergerechnet. Gewichte werden mit drei Nachkommastellen ausgewiesen. Bei exakten Gleichstaenden in der Sitzzuteilung entscheidet die alphabetische Reihenfolge des Parteikuerzels. Das ist willkuerlich, aber deterministisch, damit zwei Builds derselben Daten dasselbe Ergebnis liefern.</p>
 
