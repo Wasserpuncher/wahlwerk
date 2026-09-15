@@ -72,6 +72,7 @@
     "_hinweis_designEffect": "Varianzaufblaehung durch Quotierung, Gewichtung und Nonresponse. 1.0 unterstellt eine reine Zufallsstichprobe und ist damit die UNTERE Schranke der Unsicherheit. Reale Wahlumfragen liegen darueber. Wer den Wert erhoeht, muss die Quelle dafuer in docs/ nennen."
   },
 
+
   "build": {
     "generateSurveyPages": true,
     "surveyPageMinAgeDays": 0,

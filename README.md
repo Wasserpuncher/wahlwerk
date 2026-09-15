@@ -20,6 +20,8 @@ Version 0.2. Was funktioniert:
 - fünf serverseitig gerenderte SVG-Diagramme je Parlamentsseite, ohne JavaScript und ohne Zeichenbibliothek
 - **Wahlkalender und Wahlseiten**: alle künftigen Wahltermine aus der amtlichen Übersicht der Bundeswahlleiterin, je datiertem Termin mit Umfragen eine eigene Seite mit Countdown, Trend, Sitzmodell und Nachkontrolle
 - **Nachkontrolle**: der Umfragestand kurz vor einer Wahl gegen das amtliche Ergebnis, mit demselben Verfahren und denselben Parametern gerechnet wie überall sonst. Für Sachsen-Anhalt 2021: mittlerer absoluter Fehler 2,32 Prozentpunkte, größte Abweichung −8,5 Punkte bei der CDU, nur vier von acht Parteien im 95-Prozent-Intervall
+- **Import amtlicher Wahlergebnisse** aus den Dateien der Landeswahlleitung, mit vier erzwungenen Kontrollsummen. Keine Zahl wird abgetippt; die Rohdateien liegen als Beleg im Repository, ihre Prüfsummen in der erzeugten Datei
+- **Wahlkreise und Direktmandate** auf der Wahlseite, verknüpft mit Kandidaturen von abgeordnetenwatch.de
 - **Chronik**: der vollständige Bestand nach Jahr und Monat, damit jede einzelne Umfrage erreichbar ist und nicht nur die jüngsten 200 je Tabelle
 - **Auftraggeber und Erhebungsmethoden** als eigene Achsen, bisher standen beide nur in den Tabellen
 - Seitentypen: Start, Wahlkalender, Wahl, Parlamentsübersicht, Parlament, Parlament × Institut, Institutsübersicht, Institut, Parteiübersicht, Partei, Auftraggeberübersicht, Auftraggeber, Methodenübersicht, Methode, Chronik, Jahr, Monat, Einzelumfrage, Methodik, Quellen, Daten, Datenschutz, 404 (die Impressumsseite ist über `legal.renderImpressum` abschaltbar und steht derzeit auf `false`, Begründung in `config/site.json`)
@@ -31,13 +33,13 @@ Version 0.2. Was funktioniert:
   - **Gliederung**: keine übersprungene Überschriftenebene, keine doppelt vergebene `id`, auf keiner der 4381 Seiten.
   - Der Wächter gegen externe Ressourcen prüft jetzt jedes einbindende Element statt nur des ersten Treffers. Vorher blieb er am Canonical-Link hängen und konnte gar nicht auslösen.
 
-Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind erst angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sechs Landtagswahlen, davon eine nach dem Zwei-Quellen-Kriterium verifiziert. Eine belegbare Institutsabweichung gibt es deshalb noch nicht.
+Was noch fehlt, steht ehrlich in [`docs/ROADMAP.md`](docs/ROADMAP.md). Die amtlichen Wahlergebnisse sind angefangen: `config/elections.json` trägt bisher nur Sachsen-Anhalt mit sieben Landtagswahlen, davon zwei verifiziert. Eine belegbare Institutsabweichung **je Institut** gibt es weiterhin nicht, und zwar bewusst nicht — die Begründung steht in der Roadmap.
 
 Verifizierte Sitzzuteilungen: **Bundestag, Berlin, Brandenburg, Sachsen, Sachsen-Anhalt, Thüringen, Mecklenburg-Vorpommern, Baden-Württemberg, Hessen, Rheinland-Pfalz, Saarland, Nordrhein-Westfalen, Niedersachsen, Schleswig-Holstein und Hamburg** — je Eintrag mit Sitzzahl, Verfahren, Sperrklausel, Paragrafenstelle, Quelle und Prüfdatum, abgelesen am Gesetzeswortlaut.
 
 Zwei Parlamente bleiben **bewusst gesperrt**, obwohl ihre Regeln geprüft sind. In **Bayern** zählen Erst- und Zweitstimmen zusammen, zugeteilt wird siebenmal getrennt nach Wahlkreisen mit festen Kontingenten, und Überhang entsteht auf Wahlkreisebene. In **Bremen** gibt es überhaupt kein landesweites Zuteilungsverfahren: Bremen und Bremerhaven werden getrennt gerechnet, mit je eigener Sperrklausel — eine Partei kann mit 2,4 Prozent landesweit einziehen und mit über 5 Prozent leer ausgehen. Aus einer landesweiten Sonntagsfrage ist beides nicht ableitbar. Die Begründung steht auf der jeweiligen Seite, statt dass der Abschnitt kommentarlos leer bleibt.
 
-Eine verifizierte Regel heißt nicht, dass überall eine Sitzverteilung erscheint. Der Trend verlangt drei Umfragen innerhalb von 45 Tagen; zu Ländern ohne bevorstehende Wahl wird seltener gefragt. Derzeit zeigen vier Parlamente eine Modellrechnung, die übrigen sagen auf ihrer Seite, dass die Regel steht und nur die Datengrundlage fehlt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 gibt es eine ausgearbeitete Fachnotiz mit Datenlage, Szenarien und Fallstricken in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md).
+Eine verifizierte Regel heißt nicht, dass überall eine Sitzverteilung erscheint. Der Trend verlangt drei Umfragen innerhalb von 45 Tagen; zu Ländern ohne bevorstehende Wahl wird seltener gefragt. Derzeit zeigen vier Parlamente eine Modellrechnung, die übrigen sagen auf ihrer Seite, dass die Regel steht und nur die Datengrundlage fehlt. Zur Landtagswahl Sachsen-Anhalt am 6. September 2026 ist das amtliche Ergebnis angebunden: Der Rechenkern reproduziert daraus **exakt** die amtlich festgestellte Sitzverteilung, der Abgleich läuft als Regressionstest mit. Die Fachnotiz in [`docs/SACHSEN-ANHALT-2026.md`](docs/SACHSEN-ANHALT-2026.md) enthält das Ergebnis, die Nachprüfung der eigenen Vorwahleinschätzung samt der Stellen, an denen sie danebenlag, und die Fallstricke beim Anbinden der Daten.
 
 ## Schnellstart
 
@@ -58,6 +60,19 @@ npm run build
 ```
 
 Keine Abhängigkeiten. `npm install` ist nicht nötig, `node_modules` gibt es nicht.
+
+### Amtliche Ergebnisse und Abgeordnetendaten
+
+Diese beiden Schritte laufen **nicht** bei jedem Build, sondern nur, wenn sich die Grundlage ändert. Ihre Ergebnisse liegen im Repository.
+
+```bash
+npm run import:wahl    # amtliches Ergebnis aus quellen/ einlesen
+npm run fetch:aw       # Wahlkreise und Kandidaturen von abgeordnetenwatch.de
+```
+
+`import:wahl` erzwingt vier Kontrollsummen und schreibt bei einem Verstoß **keine** Datei, statt eine plausibel aussehende zu erzeugen. `fetch:aw` hält 2,5 Sekunden Abstand je Anfrage; die API erlaubt 30 je Minute und wird ehrenamtlich betrieben. Deshalb steht das Ergebnis im Repository und wird nicht bei jedem Deploy neu geholt.
+
+Der Build läuft auch ohne beides durch. Fehlt das amtliche Ergebnis, entfallen die zugehörigen Abschnitte; fehlen die Abgeordnetendaten, fehlen nur die Namen der direkt Gewählten.
 
 ## Vor dem ersten Deploy
 
@@ -94,7 +109,9 @@ Siehe [`docs/RECHTLICHES.md`](docs/RECHTLICHES.md). Kurzfassung zum Impressum: D
 
 ## SEO, realistisch betrachtet
 
-Technisch umgesetzt ist alles, was sich umsetzen lässt: vorgerendertes HTML ohne Client-Rendering, eindeutige Titel und Beschreibungen je Seite (durch Test erzwungen), Canonical-Tags, strukturierte Daten, Breadcrumbs, dichte interne Verlinkung, Sitemap-Index, RSS, keine Render-blockierenden Ressourcen, unter 10 KB CSS und null Byte JavaScript.
+Technisch umgesetzt ist alles, was sich umsetzen lässt: vorgerendertes HTML ohne Client-Rendering, eindeutige Titel und Beschreibungen je Seite (durch Test erzwungen), Canonical-Tags, strukturierte Daten, Breadcrumbs, dichte interne Verlinkung, Sitemap-Index, RSS, keine Render-blockierenden Ressourcen, rund 4 KB CSS in der Auslieferung und null Byte JavaScript.
+
+Zur CSS-Angabe: Die Datei misst unkomprimiert etwa 11 KB und komprimiert rund 3,7 KB. Ausgeliefert wird sie komprimiert, deshalb steht oben der Auslieferungswert. Frühere Fassungen dieser Zeile nannten „unter 10 KB", was sich auf die unkomprimierte Größe bezog und schon damals knapp nicht mehr zutraf.
 
 Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entscheidung der Suchmaschine, nicht eine Eigenschaft der Seite. Zwei ehrliche Risiken bei diesem Seitentyp:
 
@@ -105,16 +122,22 @@ Was niemand zusichern kann: dass Google indexiert. Indexierung ist eine Entschei
 
 ```
 config/          Site, Parlamente, amtliche Ergebnisse, Wahltermine, Wahlleitungen
+config/wahlergebnisse/  amtliche Ergebnisse im Detail, erzeugt vom Importer
+quellen/         amtliche Rohdateien als Beleg, versioniert
 content/         Inhaltsseiten als HTML mit Platzhaltern
-scripts/         Abruf, Build, Tests, Vorschauserver
+scripts/         Abruf, Import, Build, Tests, Vorschauserver
 scripts/lib/     Rechenkern: dawum, trend, seats, coalitions, charts, stats,
-                 archive, wahltermine, nachkontrolle, render, util
+                 archive, wahltermine, nachkontrolle, abgeordnetenwatch,
+                 render, util
 src/styles/      Stylesheet
 fixtures/        synthetische Testdaten
 data/            erzeugt, nicht versioniert
+                 Ausnahme: abgeordnetenwatch.json gehoert ins Repository
 dist/            erzeugt, nicht versioniert
-docs/            Rechtliches, Testfälle, Roadmap
+docs/            Rechtliches, Testfälle, Roadmap, Fachnotizen
 ```
+
+Warum die amtlichen Rohdateien unter `quellen/` im Repository liegen: Sie sind amtliche Werke nach § 5 UrhG und damit gemeinfrei. Ihre Prüfsummen stehen in der erzeugten Ergebnisdatei. Damit bleibt jede angezeigte Zahl bis zur unveränderten Quelldatei zurückverfolgbar, auch dann noch, wenn die ursprüngliche Fundstelle verschwindet.
 
 ## Grundregel des Projekts
 
