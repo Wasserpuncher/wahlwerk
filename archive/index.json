@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-23T09:31:12.064Z",
-  "totalSnapshots": 76,
-  "totalBytes": 37865236,
-  "totalCompressedBytes": 3569470,
-  "headChain": "4eab80487433236c8dfeea9dbed79095bb34b52ad007fcc0ba0e5ef08ae4fa18",
+  "generatedAt": "2026-09-23T19:47:45.954Z",
+  "totalSnapshots": 78,
+  "totalBytes": 38895746,
+  "totalCompressedBytes": 3666552,
+  "headChain": "d26a152401bcdff616aa09ccbbd3ad81d8b9f8ccf51bf6778f93102ce08d7a2c",
   "sources": {
     "lokal": {
       "snapshots": 2,
@@ -28,10 +28,10 @@
       ]
     },
     "dawum-api": {
-      "snapshots": 37,
+      "snapshots": 38,
       "firstRecordedAt": "2026-08-16T16:57:33.305Z",
-      "lastRecordedAt": "2026-09-23T09:31:11.929Z",
-      "bytes": 37845709,
+      "lastRecordedAt": "2026-09-23T19:47:45.806Z",
+      "bytes": 38876194,
       "license": "ODC Open Database License (ODbL) 1.0",
       "sourceUrl": "https://api.dawum.de/",
       "entries": [
@@ -515,14 +515,27 @@
             "oldestSurvey": "2017-01-18",
             "newestSurvey": "2026-09-23"
           }
+        },
+        {
+          "seq": 77,
+          "recordedAt": "2026-09-23T19:47:45.806Z",
+          "contentHash": "32b3fdec25d298fb20ce83405ecc5438587d3c41f80db6223e40b95f7f59ac2e",
+          "meta": {
+            "surveys": 3959,
+            "parliaments": 18,
+            "institutes": 22,
+            "sourceLastUpdate": "2026-09-23T18:06:45+02:00",
+            "oldestSurvey": "2017-01-18",
+            "newestSurvey": "2026-09-23"
+          }
         }
       ]
     },
     "dawum-last-update": {
-      "snapshots": 37,
+      "snapshots": 38,
       "firstRecordedAt": "2026-08-16T16:57:33.408Z",
-      "lastRecordedAt": "2026-09-23T09:31:12.062Z",
-      "bytes": 925,
+      "lastRecordedAt": "2026-09-23T19:47:45.952Z",
+      "bytes": 950,
       "license": "ODC Open Database License (ODbL) 1.0",
       "sourceUrl": "https://api.dawum.de/last_update.txt",
       "entries": [
@@ -746,6 +759,12 @@
           "seq": 76,
           "recordedAt": "2026-09-23T09:31:12.062Z",
           "contentHash": "4889e27ca83b0047ecf3c8daa4892b57f7d2287f7781787cef44cbbcbf85cd45",
+          "meta": {}
+        },
+        {
+          "seq": 78,
+          "recordedAt": "2026-09-23T19:47:45.952Z",
+          "contentHash": "5f4c7228e084e35d20608c7789cd785cffe4b30067d03d1dc404488689c8b6b0",
           "meta": {}
         }
       ]
