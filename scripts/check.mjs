@@ -13,7 +13,8 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { sainteLague, hareNiemeyer, dHondt, distribute, detectTies } from './lib/seats.mjs';
 import { wilson, marginPercent, seDifferenceSameSample, kishEffectiveSize, Z } from './lib/stats.mjs';
-import { findCoalitions } from './lib/coalitions.mjs';
+import { findCoalitions, mehrheitOhne } from './lib/coalitions.mjs';
+import { bereinigeBezeichnung, zuordnePartei, verknuepfeWahlkreise } from './lib/abgeordnetenwatch.mjs';
 import { slug } from './lib/util.mjs';
 import { nachkontrolle } from './lib/nachkontrolle.mjs';
 import { phase, tageZwischen } from './lib/wahltermine.mjs';
@@ -248,6 +249,177 @@ console.log('\nHistorische Wahlergebnisse');
     }
   }
   assert('mindestens vier historische Wahlen erfasst', geprueft >= 4, String(geprueft));
+}
+
+// ------------------------------------------- Amtliches Ergebnis Sachsen-Anhalt
+//
+// Der schaerfste Test, den dieses Projekt hat: Der Rechenkern bekommt die
+// amtlichen Zweitstimmen der Landtagswahl vom 06.09.2026 und muss daraus exakt
+// die amtlich festgestellte Sitzverteilung erzeugen. Anders als beim Abgleich
+// mit dawum.de steht hier kein zweites Programm gegenueber, sondern die
+// Wirklichkeit.
+console.log('\nAmtliches Ergebnis Sachsen-Anhalt 2026');
+{
+  const datei = path.join(ROOT, 'config', 'wahlergebnisse', 'sachsen-anhalt-2026.json');
+  if (!existsSync(datei)) {
+    assert('amtliches Ergebnis vorhanden', false, 'config/wahlergebnisse/sachsen-anhalt-2026.json fehlt, node scripts/import-wahlergebnis.mjs ausfuehren');
+  } else {
+    const e = JSON.parse(await readFile(datei, 'utf8'));
+    const parl = JSON.parse(await readFile(path.join(ROOT, 'config', 'parliaments.json'), 'utf8'));
+    const cfg = parl.parliaments['Sachsen-Anhalt'];
+
+    // Kontrollsummen der Quelle
+    const b = e.beteiligung;
+    assert('gueltige plus ungueltige Zweitstimmen ergeben die Waehlerzahl',
+      b.gueltigeZweitstimmen + b.ungueltigeZweitstimmen === b.waehler,
+      `${b.gueltigeZweitstimmen} + ${b.ungueltigeZweitstimmen} != ${b.waehler}`);
+    assert('gueltige plus ungueltige Erststimmen ergeben die Waehlerzahl',
+      b.gueltigeErststimmen + b.ungueltigeErststimmen === b.waehler);
+    const summeStimmen = Object.values(e.zweitstimmen.stimmen).reduce((a, x) => a + x, 0);
+    assert('Summe der Parteistimmen ergibt die gueltigen Zweitstimmen',
+      summeStimmen === b.gueltigeZweitstimmen, `${summeStimmen} != ${b.gueltigeZweitstimmen}`);
+
+    // Sitzverteilung aus den amtlichen Stimmen nachgerechnet
+    const anteile = {};
+    for (const [partei, stimmen] of Object.entries(e.zweitstimmen.stimmen)) {
+      const ziel = e.parteiZuordnung[partei];
+      if (ziel) anteile[ziel] = (stimmen / b.gueltigeZweitstimmen) * 100;
+    }
+    const gerechnet = distribute(anteile, cfg, { aggregateCategories: parl.aggregateCategories });
+    assert('Rechenkern reproduziert die amtliche Sitzverteilung',
+      eq(gerechnet.seats, Object.fromEntries(Object.entries(e.sitze.verteilung).filter(([, v]) => v > 0))),
+      `berechnet ${JSON.stringify(gerechnet.seats)}, amtlich ${JSON.stringify(e.sitze.verteilung)}`);
+    assert('Summe der amtlichen Sitze ergibt die ausgewiesene Gesamtzahl',
+      Object.values(e.sitze.verteilung).reduce((a, x) => a + x, 0) === e.sitze.gesamt);
+    assert('kein Gleichstand bei der Restsitzvergabe', gerechnet.ties.length === 0, JSON.stringify(gerechnet.ties));
+
+    // Direkt- und Listenmandate
+    const summeDirekt = Object.values(e.sitze.detail).reduce((a, d) => a + d.direkt, 0);
+    assert('41 Direktmandate aus 41 Wahlkreisen', summeDirekt === 41, String(summeDirekt));
+    assert('41 Wahlkreise erfasst', e.wahlkreise.liste.length === 41, String(e.wahlkreise.liste.length));
+    for (const [partei, d] of Object.entries(e.sitze.detail)) {
+      assert(`${partei}: direkt plus Liste ergibt die Gesamtsitze`, d.direkt + d.liste === d.gesamt);
+    }
+
+    // Wahlkreissieger unabhaengig aus den Erststimmenanteilen nachgeprueft
+    const ausWahlkreisen = {};
+    for (const w of e.wahlkreise.liste) ausWahlkreisen[w.sieger] = (ausWahlkreisen[w.sieger] ?? 0) + 1;
+    assert('Wahlkreissieger stimmen mit den amtlichen Direktmandaten ueberein',
+      eq(ausWahlkreisen, e.wahlkreise.direktmandate),
+      `${JSON.stringify(ausWahlkreisen)} gegen ${JSON.stringify(e.wahlkreise.direktmandate)}`);
+    assert('jeder Wahlkreissieger liegt vor dem Zweitplatzierten',
+      e.wahlkreise.liste.every((w) => w.vorsprungPunkte === null || w.vorsprungPunkte > 0));
+
+    // Uebereinstimmung mit config/elections.json. Verhindert, dass dort ein
+    // Wert von Hand geaendert wird, ohne dass es auffaellt.
+    const elections = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
+    const eintrag = elections.elections['Sachsen-Anhalt'];
+    assert('elections.json nennt denselben Wahltag', eintrag.date === e.wahl.wahltag, `${eintrag.date} gegen ${e.wahl.wahltag}`);
+    assert('elections.json nennt dieselbe Sitzzahl', eintrag.seatsActual === e.sitze.gesamt);
+    let abweichung = null;
+    for (const [partei, wert] of Object.entries(e.ergebnisProjektnamen)) {
+      if (Math.abs((eintrag.results[partei] ?? -1) - wert) > 0.051) {
+        abweichung = `${partei}: elections.json ${eintrag.results[partei]}, amtlich ${wert}`;
+        break;
+      }
+    }
+    assert('elections.json gibt die amtlichen Anteile korrekt wieder', abweichung === null, abweichung ?? '');
+
+    // Der Status ist die Angabe, die am ehesten veraltet. Solange er auf
+    // vorlaeufig steht, muss die Begruendung dafuer in der Datei stehen.
+    // Ohne Langbezeichnung faellt der Seitentitel auf einen Platzhalter
+    // zurueck. Das faellt bei einer neuen Wahl sonst erst im fertigen HTML auf.
+    assert('Wahl traegt eine ausgeschriebene Langbezeichnung',
+      typeof e.wahl.langbezeichnung === 'string' && e.wahl.langbezeichnung.includes(String(new Date(e.wahl.wahltag).getFullYear())),
+      String(e.wahl.langbezeichnung));
+
+    assert('Ergebnisstatus ist ausgewiesen',
+      typeof e.status.endgueltig === 'boolean' && typeof e.status.bezeichnung === 'string' && e.status.hinweis.length > 20);
+    if (e.status.endgueltig === true) {
+      assert('endgueltiges Ergebnis nennt Feststellungsdatum und Fundstelle',
+        Boolean(e.status.festgestelltAm) && Boolean(e.status.festgestelltQuelle),
+        'endgueltig true erfordert festgestelltAm und festgestelltQuelle');
+    }
+  }
+}
+
+// ------------------------------------------------- Mehrheit ohne eine Partei
+console.log('\nMehrheit ohne die staerkste Partei');
+{
+  // Realer Fall: der Landtag von Sachsen-Anhalt der 9. Wahlperiode. Alle
+  // minimalen Mehrheiten mit bis zu vier Partnern enthalten die AfD. Eine
+  // Mehrheit ohne sie existiert trotzdem, sie braucht fuenf Partner. Wer nur
+  // findCoalitions befragt, zieht daraus den falschen Schluss.
+  const sitze = { AfD: 39, CDU: 15, Linke: 8, SPD: 8, 'Grüne': 8, BSW: 5 };
+  const viererliste = findCoalitions(sitze, 42);
+  assert('alle Viererbuendnisse enthalten die staerkste Partei',
+    viererliste.every((c) => c.parties.includes('AfD')), JSON.stringify(viererliste.map((c) => c.parties)));
+
+  const ohne = mehrheitOhne(sitze, 42, 'AfD');
+  assert('eine Mehrheit ohne die staerkste Partei wird gefunden', ohne !== null);
+  assert('sie umfasst alle fuenf uebrigen Parteien', ohne.partnerCount === 5, String(ohne?.partnerCount));
+  assert('sie kommt auf 44 Sitze', ohne.seats === 44, String(ohne?.seats));
+  assert('sie ist minimal', ohne.parties.every((p) => ohne.seats - sitze[p] < 42));
+
+  // Gegenprobe: Wenn die uebrigen Parteien zusammen die Mehrheit nicht
+  // erreichen, muss null herauskommen und nicht etwa ein Scheinergebnis.
+  assert('ohne Mehrheit wird null zurueckgegeben',
+    mehrheitOhne({ A: 60, B: 20, C: 20 }, 51, 'A') === null);
+}
+
+// -------------------------------------------------------- abgeordnetenwatch
+console.log('\nabgeordnetenwatch');
+{
+  // Realer Fall: abgeordnetenwatch fuehrt die Gruenen mit einem weichen
+  // Trennzeichen im Namen. Ohne Bereinigung schlaegt die Zuordnung fehl, und
+  // zwar unsichtbar, weil die Bezeichnung im Protokoll normal aussieht.
+  const mitWeichtrenner = 'BÜNDNIS 90/­DIE GRÜNEN';
+  assert('weiches Trennzeichen wird entfernt',
+    bereinigeBezeichnung(mitWeichtrenner) === 'BÜNDNIS 90/DIE GRÜNEN', bereinigeBezeichnung(mitWeichtrenner));
+  assert('Gruene werden trotz Weichtrenner zugeordnet',
+    zuordnePartei(mitWeichtrenner) === 'Grüne', String(zuordnePartei(mitWeichtrenner)));
+  assert('geschuetztes Leerzeichen wird normalisiert',
+    bereinigeBezeichnung('FREIE WÄHLER') === 'FREIE WÄHLER');
+  assert('unbekannte Partei behaelt ihre Bezeichnung', zuordnePartei('Gartenpartei') === 'Gartenpartei');
+
+  // Verknuepfung: amtlicher Sieger plus eindeutige Kandidatur ergibt den Namen.
+  const amtlicheWk = [
+    { nummer: '001', name: 'Salzwedel', sieger: 'AfD' },
+    { nummer: '002', name: 'Stendal', sieger: 'CDU' },
+  ];
+  const aw = {
+    wahlkreise: [{ nummer: 1, name: 'Salzwedel' }, { nummer: 2, name: 'Stendal' }],
+    kandidaturen: [
+      { name: 'Erste Person', partei: 'AfD', wahlkreisNummer: 1, profil: 'https://example.org/1' },
+      { name: 'Zweite Person', partei: 'CDU', wahlkreisNummer: 2, profil: 'https://example.org/2' },
+      { name: 'Dritte Person', partei: 'CDU', wahlkreisNummer: 2, profil: 'https://example.org/3' },
+    ],
+    mandate: [],
+  };
+  const v = verknuepfeWahlkreise(amtlicheWk, aw);
+  assert('eindeutige Kandidatur wird zugeordnet',
+    v.zeilen[0].gewaehltName === 'Erste Person' && v.zeilen[0].herkunft === 'abgeleitet');
+  assert('mehrdeutige Kandidatur wird NICHT zugeordnet',
+    v.zeilen[1].gewaehltName === null && v.zeilen[1].herkunft === 'mehrdeutig',
+    JSON.stringify(v.zeilen[1]));
+  assert('dreistellige und numerische Wahlkreisnummern passen zusammen', v.zugeordnet === 1);
+
+  // Ein erfasstes Mandat hat Vorrang vor der Ableitung.
+  const mitMandat = verknuepfeWahlkreise(amtlicheWk, {
+    ...aw,
+    mandate: [{ name: 'Amtlich Gewaehlte', partei: 'CDU', wahlkreisNummer: 2, profil: 'https://example.org/4' }],
+  });
+  assert('erfasstes Mandat schlaegt die Ableitung',
+    mitMandat.zeilen[1].gewaehltName === 'Amtlich Gewaehlte' && mitMandat.zeilen[1].herkunft === 'mandat');
+  assert('Herkunft aus Mandat wird gezaehlt', mitMandat.ausMandat === 1);
+
+  // Widerspruechliche Wahlkreisnamen duerfen keine Zuordnung erzeugen.
+  const falscheNamen = verknuepfeWahlkreise(amtlicheWk, {
+    ...aw,
+    wahlkreise: [{ nummer: 1, name: 'Ganz anderer Ort' }, { nummer: 2, name: 'Stendal' }],
+  });
+  assert('abweichender Wahlkreisname verhindert die Zuordnung',
+    falscheNamen.zeilen[0].herkunft === 'namensabweichung' && falscheNamen.namensabweichungen.length === 1);
 }
 
 // Slug-Stabilitaet
@@ -734,10 +906,18 @@ console.log('\nWahltermine');
   // weniger prueft als ihr Name sagt, schlimmer ist als gar keine.
   const prov = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
   const fehlendeKuerzel = wt.termine.filter((t) => t.parlament && !kuerzel.has(t.parlament)).map((t) => t.parlament);
-  if (prov.mode === 'fixture') {
+
+  // Nicht nur die Fixture fuehrt einen eingeschraenkten Bestand. Auch ein Bau
+  // aus einer lokalen Datei (--file, etwa seed/sachsen-anhalt.json) kennt oft
+  // nur ein einziges Parlament. Frueher lief dafuer der strenge Zweig, und der
+  // Selbsttest meldete vierzehn fehlende Kuerzel als Fehler, obwohl nichts
+  // kaputt war: Die Termine sind vollstaendig, nur der Umfragebestand ist es
+  // nicht. Massgeblich ist deshalb der Bestand, nicht der Betriebsmodus.
+  const bestandEingeschraenkt = prov.mode === 'fixture' || prov.mode === 'file';
+  if (bestandEingeschraenkt) {
     const vorhanden = wt.termine.filter((t) => t.parlament && kuerzel.has(t.parlament));
-    console.log(`  hinw Testdaten: nur ${vorhanden.length} von ${wt.termine.filter((t) => t.parlament).length} verknuepften Terminen pruefbar (Fixture fuehrt ${kuerzel.size} Parlamente)`);
-    assert('auf Testdaten loesen die vorhandenen Parlamentsschluessel auf', vorhanden.length > 0);
+    console.log(`  hinw Eingeschraenkter Bestand (${prov.mode}): nur ${vorhanden.length} von ${wt.termine.filter((t) => t.parlament).length} verknuepften Terminen pruefbar, der Bestand fuehrt ${kuerzel.size} Parlament(e)`);
+    assert('im eingeschraenkten Bestand loesen die vorhandenen Parlamentsschluessel auf', vorhanden.length > 0);
   } else {
     assert('jeder verknuepfte Parlamentsschluessel existiert im Bestand', fehlendeKuerzel.length === 0, fehlendeKuerzel.join(', '));
   }
@@ -836,9 +1016,35 @@ console.log('\nWahltag-Probe');
         readFile(path.join(probeDir, tag, 'wahl', slug(`${kandidat.art}-${kandidat.land}-${kandidat.jahr}`), 'index.html'), 'utf8');
 
       // 1. Am Wahltag selbst.
+      //
+      // Was dort stehen muss, haengt davon ab, ob das amtliche Ergebnis DIESER
+      // Wahl bereits eingetragen ist. Ist es das nicht, steht die Wahl an:
+      // "Heute wird gewaehlt". Ist es das, ist sie am selben Kalendertag
+      // bereits gelaufen: "Heute wurde gewaehlt". Beides ist richtig, und der
+      // Generator unterscheidet es seit jeher in statusBand(); nur diese Probe
+      // kannte bis zum 15.09.2026 nur den ersten Fall, weil zu keinem
+      // datierten Termin ein Ergebnis vorlag. Mit dem Eintrag der Landtagswahl
+      // Sachsen-Anhalt 2026 trat der zweite Fall erstmals ein.
+      // Massgeblich ist nicht allein, ob ein Ergebnis in elections.json steht,
+      // sondern ob der Generator es auch verwendet. Auf synthetischen Testdaten
+      // verweigert die Nachkontrolle, damit erfundene Umfragen nicht gegen ein
+      // echtes Ergebnis gerechnet werden; dann gilt die Wahl fuer die Seite als
+      // nicht gelaufen, und am Wahltag steht wieder "Heute wird gewaehlt".
+      const elections = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
+      const provWt = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
+      const ergebnisZumTermin =
+        provWt.mode !== 'fixture' &&
+        Object.values(elections.elections).some((e) => e.verified === true && e.date === kandidat.datum);
+
       assert('Probebau am Wahltag laeuft durch', baue(kandidat.datum));
       const amTag = await seite(kandidat.datum);
-      assert('am Wahltag steht "Heute wird gewaehlt"', amTag.includes('Heute wird gewaehlt'));
+      assert(
+        ergebnisZumTermin
+          ? 'am Wahltag mit eingetragenem Ergebnis steht "Heute wurde gewaehlt"'
+          : 'am Wahltag steht "Heute wird gewaehlt"',
+        ergebnisZumTermin ? amTag.includes('Heute wurde gewaehlt') : amTag.includes('Heute wird gewaehlt'),
+        ergebnisZumTermin ? 'Ergebnis zum Termin ist verifiziert eingetragen' : 'kein Ergebnis zu diesem Termin',
+      );
       assert('am Wahltag laeuft kein Countdown mehr', !/Noch <strong>\d+<\/strong>/.test(amTag) && !/<strong>Noch \d+/.test(amTag));
 
       // 2. Am Tag nach der Wahl.
@@ -872,9 +1078,16 @@ console.log('\nWahltag-Probe');
 
       // Ohne verifiziertes amtliches Ergebnis fuer GENAU diese Wahl darf dort
       // keine Fehlerbilanz stehen - schon gar nicht die einer anderen Wahl.
+      //
+      // Ein Eintrag in elections.json genuegt dafuer nicht: Auf synthetischen
+      // Testdaten verweigert die Nachkontrolle die Rechnung, damit erfundene
+      // Umfragen nicht gegen ein echtes Ergebnis gehalten werden. Dann steht
+      // dort zu Recht keine Fehlerbilanz, und dieser Test darf keine erwarten.
       const el = JSON.parse(await readFile(path.join(ROOT, 'config', 'elections.json'), 'utf8'));
+      const provNk = JSON.parse(await readFile(path.join(ROOT, 'data', 'provenance.json'), 'utf8'));
       const eintrag = el.elections?.[kandidat.parlament];
-      const eigenesErgebnis = Boolean(eintrag?.verified && eintrag.date === kandidat.datum);
+      const eigenesErgebnis =
+        provNk.mode !== 'fixture' && Boolean(eintrag?.verified && eintrag.date === kandidat.datum);
       if (eigenesErgebnis) {
         assert('nach der Wahl wird das eigene amtliche Ergebnis verglichen', danach.includes('Nachkontrolle: was die Umfragen beim letzten Mal wert waren'));
       } else {
@@ -912,7 +1125,7 @@ console.log('\nNachkontrolle');
     if (!wahl.verified) continue;
     const name = nameByShortcut.get(kuerzel) ?? kuerzel;
     const sv = surveysData.surveys.filter((s) => s.parliament === name);
-    const nk = nachkontrolle(sv, wahl, siteCfg.trend, el.parteiAliasse ?? {});
+    const nk = nachkontrolle(sv, wahl, siteCfg.trend, el.parteiAliasse ?? {}, { istSynthetisch: prov.mode === 'fixture' });
 
     // Mit synthetischen Testdaten gibt es keine Umfragen aus dem Jahr der
     // letzten Wahl, die Nachkontrolle ist dann zu Recht nicht rechenbar. Statt

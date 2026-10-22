@@ -30,12 +30,35 @@
 <p><strong>Grenze dieser Quelle:</strong> Wo die Uebersicht nur eine Jahreszeit nennt (&bdquo;Fruehjahr&ldquo;, &bdquo;Herbst&ldquo;), steht auch hier eine Jahreszeit. Es wird kein Datum ergaenzt, und solche Termine bekommen weder eine eigene Seite noch einen Countdown. Aendert die Bundeswahlleiterin einen Termin, muss <code>config/wahltermine.json</code> von Hand nachgezogen werden; eine automatische Aktualisierung gibt es bewusst nicht, weil sie eine unbemerkte stille Aenderung an einer amtlichen Angabe erlauben wuerde.</p>
 <p><strong>Rechtliches:</strong> Wahltermine sind amtliche Angaben und als amtliche Werke nach Paragraf 5 UrhG gemeinfrei. Genannt wird die Quelle trotzdem, weil die Herkunft einer Angabe zu ihr gehoert.</p>
 
+<h3>Statistisches Landesamt Sachsen-Anhalt, Landeswahlleiterin</h3>
+<div class="provenance"><dl>
+  <dt>Inhalt</dt><dd>Amtliches Ergebnis der Landtagswahl vom 6. September 2026</dd>
+  <dt>Abruf</dt><dd>Veroeffentlichte Ergebnisdateien, im Repository unter <code>quellen/sachsen-anhalt-2026/</code> abgelegt</dd>
+  <dt>Fundstelle</dt><dd>https://wahlergebnisse.sachsen-anhalt.de/</dd>
+  <dt>Rechtsstellung</dt><dd>Amtliches Werk nach Paragraf 5 UrhG, gemeinfrei</dd>
+  <dt>Stand</dt><dd>Vorlaeufiges amtliches Ergebnis, Quelldateien vom 7. September 2026</dd>
+</dl></div>
+<p>Die Dateien enthalten Erst- und Zweitstimmen auf Landes-, Kreis- und Wahlkreisebene sowie die festgestellte Sitzverteilung mit der Aufteilung in Kreis- und Landeswahlvorschlaege. Eingelesen werden sie von <code>scripts/import-wahlergebnis.mjs</code>. Dabei werden vier Kontrollsummen erzwungen: gueltige plus ungueltige Stimmen ergeben die Waehlerzahl, die Summe der Parteistimmen ergibt die gueltigen Stimmen, die Summe der Sitze ergibt die amtliche Gesamtzahl, und die aus den Erststimmen selbst ermittelten Wahlkreissieger stimmen mit den amtlich ausgewiesenen Direktmandaten ueberein. Schlaegt eine davon fehl, entsteht keine Datei und der Build laeuft mit dem alten Stand weiter.</p>
+<p><strong>Grenze dieser Quelle:</strong> Die Dateien weisen durchgaengig die Ergebnisart <em>V</em> aus. Dass der Landeswahlausschuss das Ergebnis endgueltig festgestellt hat, laesst sich daraus nicht belegen. Die Zahlen werden deshalb als vorlaeufiges amtliches Ergebnis gefuehrt und auf der Parlamentsseite auch so gekennzeichnet. Erfahrungsgemaess aendern sich bei der endgueltigen Feststellung einzelne Stimmen und nicht die Sitzverteilung, zugesichert ist das aber nicht.</p>
+<p><strong>Warum die Rohdateien im Repository liegen:</strong> Als amtliche Werke sind sie gemeinfrei und duerfen dauerhaft vorgehalten werden. Ihre Pruefsummen stehen in der erzeugten Datei. Damit ist jede angezeigte Zahl bis zur unveraenderten Quelldatei zurueckverfolgbar, auch dann noch, wenn die urspruengliche Fundstelle verschwindet.</p>
+
+<h3>abgeordnetenwatch.de</h3>
+<div class="provenance"><dl>
+  <dt>Inhalt</dt><dd>Wahlkreise, Kandidaturen und Mandate zur Landtagswahl Sachsen-Anhalt 2026</dd>
+  <dt>Abruf</dt><dd>https://www.abgeordnetenwatch.de/api/v2/ als JSON</dd>
+  <dt>Lizenz</dt><dd>CC0 1.0, Verzicht auf das Urheberrecht</dd>
+  <dt>Fair Use</dt><dd>30 Anfragen je Minute und IP-Adresse</dd>
+</dl></div>
+<p>Verwendet werden die 41 Wahlkreise der Wahl und die dort eingereichten Kandidaturen. Der Abruf durch <code>scripts/fetch-abgeordnetenwatch.mjs</code> haelt einen Mindestabstand von 2,5 Sekunden zwischen den Anfragen ein und bleibt damit sicher unter der Fair-Use-Grenze. Das Ergebnis wird im Repository abgelegt und nicht bei jedem Seitenaufbau neu geholt, weil die Angaben zu einer abgeschlossenen Wahl sich kaum noch aendern und die API ehrenamtlich betrieben wird.</p>
+<p><strong>Grenze dieser Quelle:</strong> Fuer die 9. Wahlperiode sind dort bisher <strong>keine Mandate</strong> erfasst; das geschieht ueblicherweise erst nach der konstituierenden Sitzung. Die Namen der direkt Gewaehlten sind deshalb derzeit <em>abgeleitet</em>: Amtlich steht fest, welche Partei einen Wahlkreis gewonnen hat, und bei abgeordnetenwatch.de ist hinterlegt, wer fuer diese Partei dort als einzige Person kandidiert hat. Das ist zulaessig, weil je Wahlkreis nur ein Kreiswahlvorschlag je Partei zulaessig ist, bleibt aber eine Ableitung und ist auf der Seite als solche gekennzeichnet. Sobald die Mandate erfasst sind, tritt die dort hinterlegte Angabe an ihre Stelle.</p>
+<p>Obwohl CC0 keine Attribution verlangt, wird die Quelle genannt und verlinkt. Eine Herkunftsangabe wegzulassen, nur weil eine Lizenz sie nicht erzwingt, widerspraeche dem Anspruch dieses Projekts.</p>
+
 <h2>Vorgesehen, aber noch nicht angebunden</h2>
 <p>Die folgenden Quellen sind im Projekt geplant und im Repository als offene Aufgaben dokumentiert. Sie sind hier aufgefuehrt, damit erkennbar ist, was fehlt, und nicht damit es nach mehr aussieht als vorhanden ist. Solange eine Quelle nicht angebunden ist, erscheint auf der Seite auch kein Wert aus ihr.</p>
 <ul>
   <li><strong>Die Bundeswahlleiterin, amtliche Wahlergebnisse.</strong> Ergebnisse der Bundestags- und Europawahlen sowie Strukturdaten der Wahlkreise, angeboten als CSV und XML. Verwendungszweck hier: Vergleich der letzten Umfrage vor einer Wahl mit dem amtlichen Ergebnis. <em>Nicht zu verwechseln mit den Wahlterminen derselben Stelle:</em> die sind oben unter &bdquo;Verwendet&ldquo; aufgefuehrt und angebunden, die Ergebnisse sind es nicht.</li>
-  <li><strong>Landeswahlleitungen der 16 Laender.</strong> Amtliche Landtagswahlergebnisse. Die Formate sind uneinheitlich und muessen je Land einzeln erschlossen werden.</li>
-  <li><strong>abgeordnetenwatch.de.</strong> Offene API zu Abgeordneten, Mandaten, Kandidaturen, Wahlkreisen und Abstimmungsverhalten, nutzbar unter Fair-Use-Bedingungen mit einer Begrenzung auf 30 Anfragen pro Minute und der Bitte, groessere Abrufe nachts durchzufuehren.</li>
+  <li><strong>Landeswahlleitungen der uebrigen Laender.</strong> Amtliche Landtagswahlergebnisse. Die Formate sind uneinheitlich und muessen je Land einzeln erschlossen werden. Sachsen-Anhalt ist angebunden, die anderen fuenfzehn nicht.</li>
+  <li><strong>abgeordnetenwatch.de, weitere Entitaeten.</strong> Angebunden sind bisher Wahlkreise, Kandidaturen und Mandate zu einer Wahlperiode. Die API bietet darueber hinaus Ausschuesse, Abstimmungsverhalten und Politikerprofile, die hier noch nicht verwendet werden.</li>
   <li><strong>Deutscher Bundestag, Open Data.</strong> Plenarprotokolle und Drucksachen ab der ersten Wahlperiode als XML und JSON, Biografiedaten der Abgeordneten seit 1949, namentliche Abstimmungen als Tabellen. Dazu die DIP-Schnittstelle fuer parlamentarische Vorgaenge.</li>
   <li><strong>GESIS.</strong> Archivierte Politbarometer-Mikrodaten seit 1977. Nur nach Registrierung und nicht fuer beliebige Weiterverbreitung, deshalb allenfalls fuer aggregierte Auswertungen geeignet.</li>
 </ul>
