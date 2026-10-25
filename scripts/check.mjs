@@ -965,6 +965,9 @@ console.log('\nNachkontrolle');
 }
 
 // Groesse
+const cacheProbe = spawnSync(process.execPath, ['--test', path.join(ROOT, 'scripts', 'fetch-cache.test.mjs')], { stdio: 'inherit' });
+assert('Abruf-Cache erholt sich ohne unnoetigen Netzabruf', cacheProbe.status === 0);
+
 const sizes = await Promise.all(htmlFiles.map(async (f) => (await stat(f)).size));
 const totalKb = Math.round(sizes.reduce((a, b) => a + b, 0) / 1024);
 const cssKb = Math.round((await stat(path.join(OUT, 'assets', 'wahlwerk.css'))).size / 1024);
