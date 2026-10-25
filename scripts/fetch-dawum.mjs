@@ -21,6 +21,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 import { normalize } from './lib/dawum.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -79,24 +80,41 @@ async function main() {
     if (!force && existsSync(localMetaPath)) {
       const local = JSON.parse(await readFile(localMetaPath, 'utf8'));
       if (local.sourceLastUpdate === remoteStamp && existsSync(path.join(DATA_DIR, 'raw-dawum.json'))) {
-        console.log(`Datenbank unveraendert (Stand ${remoteStamp}). Kein Abruf noetig. Mit --force erzwingen.`);
-        return;
+        const cachedRaw = await readFile(path.join(DATA_DIR, 'raw-dawum.json'), 'utf8');
+        const expected = normalize(JSON.parse(cachedRaw));
+        if (expected.meta.sourceLastUpdate === remoteStamp && expected.surveys.length > 0) {
+          let cached;
+          try {
+            cached = JSON.parse(await readFile(path.join(DATA_DIR, 'surveys.json'), 'utf8'));
+          } catch {
+            // Fehlende oder abgebrochene JSON-Dateien aus den Rohdaten wiederherstellen.
+          }
+          if (isDeepStrictEqual(cached, expected)) {
+            console.log(`Datenbank unveraendert (Stand ${remoteStamp}). Kein Abruf noetig. Mit --force erzwingen.`);
+            return;
+          }
+          console.log('Normalisierte Daten fehlen oder weichen ab. Wiederherstellung aus vorhandenen Rohdaten.');
+          rawText = cachedRaw;
+          provenance = local;
+        }
       }
     }
 
-    console.log(`Abruf von ${API_URL} (Fernstand ${remoteStamp})`);
-    rawText = await getText(API_URL);
-    provenance = {
-      mode: 'live',
-      source: API_URL,
-      sourceLastUpdate: remoteStamp,
-      fetchedAt: new Date().toISOString(),
-      license: 'ODC Open Database License (ODbL) 1.0',
-      licenseUrl: 'https://opendatacommons.org/licenses/odbl/1-0/',
-      attribution: 'Daten von dawum.de (Open Database License (ODbL))',
-      attributionUrl: 'https://dawum.de',
-      bytes: Buffer.byteLength(rawText, 'utf8'),
-    };
+    if (rawText === undefined) {
+      console.log(`Abruf von ${API_URL} (Fernstand ${remoteStamp})`);
+      rawText = await getText(API_URL);
+      provenance = {
+        mode: 'live',
+        source: API_URL,
+        sourceLastUpdate: remoteStamp,
+        fetchedAt: new Date().toISOString(),
+        license: 'ODC Open Database License (ODbL) 1.0',
+        licenseUrl: 'https://opendatacommons.org/licenses/odbl/1-0/',
+        attribution: 'Daten von dawum.de (Open Database License (ODbL))',
+        attributionUrl: 'https://dawum.de',
+        bytes: Buffer.byteLength(rawText, 'utf8'),
+      };
+    }
   }
 
   let raw;
