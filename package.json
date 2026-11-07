@@ -10,6 +10,8 @@
   "scripts": {
     "fetch": "node scripts/fetch-dawum.mjs",
     "fetch:fixture": "node scripts/fetch-dawum.mjs --fixture",
+    "fetch:aw": "node scripts/fetch-abgeordnetenwatch.mjs",
+    "import:wahl": "node scripts/import-wahlergebnis.mjs",
     "build": "node scripts/build.mjs",
     "all": "npm run fetch && npm run build",
     "serve": "node scripts/serve.mjs",
