@@ -29,8 +29,24 @@
 
 import { computeTrend } from './trend.mjs';
 
-export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}) {
+export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}, { istSynthetisch = false } = {}) {
   if (!wahl?.date || !wahl?.results) return null;
+
+  // Synthetische Umfragen gegen ein echtes Wahlergebnis zu rechnen ergibt eine
+  // Zahl, die wie eine Fehlerbilanz aussieht und keine ist. Sie waere die
+  // schaedlichste Ausgabe, die dieses Projekt erzeugen kann, weil ihr nichts
+  // anzusehen ist.
+  //
+  // Bis zum 15.09.2026 war dieser Schutz nur zufaellig wirksam: Das einzige
+  // verifizierte Ergebnis stammte von 2021, die Fixture-Umfragen von 2026, und
+  // damit lag schlicht keine Umfrage vor dem Wahltag. Der Selbsttest
+  // "verweigert auf Testdaten sauber" war gruen, ohne dass es dafuer eine
+  // Logik gab. Mit dem Eintrag der Landtagswahl 2026 liegen die Fixture-
+  // Umfragen davor, und die Rechnung lief an - mit erfundenen Umfragen gegen
+  // ein amtliches Ergebnis. Seitdem ist die Verweigerung ausdruecklich.
+  if (istSynthetisch) {
+    return { moeglich: false, grund: 'synthetische Testdaten, ein Vergleich mit einem echten Wahlergebnis waere sinnlos' };
+  }
 
   const davor = surveys.filter((s) => (s.dateEnd ?? s.date) < wahl.date);
   if (davor.length === 0) return { moeglich: false, grund: 'keine Umfrage vor dem Wahltag im Bestand' };
@@ -47,13 +63,55 @@ export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}) {
   // Amtlicher Name -> Name im Umfragebestand.
   const nachBestand = (amtlich) => aliasse[amtlich] ?? amtlich;
 
+  // Alle Parteibezeichnungen, die im herangezogenen Umfragebestand ueberhaupt
+  // vorkommen. Damit lassen sich zwei grundverschiedene Faelle trennen, die
+  // sonst beide nur als "kein Umfragewert" erscheinen wuerden:
+  //
+  //   1. Die Partei steht im Bestand, aber unter anderer Schreibweise. Das ist
+  //      ein Zuordnungsfehler. Er ist gefaehrlich, weil die Partei still aus
+  //      dem Mittelwert faellt und der Fehler zu gut aussieht. Abhilfe ist ein
+  //      Eintrag unter parteiAliasse.
+  //   2. Die Partei kommt im Bestand nirgends vor, weil kein Institut sie
+  //      einzeln erhoben hat. Das ist bei Kleinparteien der Normalfall und
+  //      kein Fehler, den eine Aliaszuordnung beheben koennte.
+  //
+  // Realer Anlass: Die Freien Waehler holten bei der Landtagswahl Sachsen-
+  // Anhalt 2026 1,17 Prozent und wurden von keinem der vier Institute mehr
+  // einzeln abgefragt. Ohne diese Unterscheidung waere das als Zuordnungs-
+  // fehler gemeldet worden, und die naheliegende "Abhilfe" waere gewesen, die
+  // Partei aus dem amtlichen Ergebnis zu entfernen - also Daten wegzuwerfen,
+  // um einen Test zufriedenzustellen.
+  const imBestand = new Set();
+  for (const s of davor) for (const p of Object.keys(s.results ?? {})) imBestand.add(p);
+
+  // Umfrageparteien, denen im amtlichen Ergebnis nichts entspricht. Bleibt auf
+  // BEIDEN Seiten etwas uebrig, ist eine fehlende Aliaszuordnung die
+  // wahrscheinlichste Erklaerung, und genau dann muss der Test anschlagen.
+  // Bleibt nur auf der amtlichen Seite etwas uebrig, gibt es im Bestand
+  // niemanden, dem man die Partei zuordnen koennte: dann wurde sie schlicht
+  // nicht erhoben, und kein Alias der Welt wuerde daran etwas aendern.
+  const amtlicheKeysVorab = new Set(Object.keys(wahl.results).map(nachBestand));
+  const bestandOhneAmtlich = [...Object.keys(trend.values)].filter((k) => !amtlicheKeysVorab.has(k));
+
   const zeilen = [];
   const ohneUmfragewert = [];
+  const nichtErhoben = [];
   for (const [partei, amtlich] of Object.entries(wahl.results)) {
     const key = nachBestand(partei);
     const umfrage = trend.values[key];
     if (umfrage === undefined) {
-      ohneUmfragewert.push({ partei, gesuchtAls: key });
+      if (bestandOhneAmtlich.length > 0) {
+        ohneUmfragewert.push({ partei, gesuchtAls: key, offeneBestandsnamen: [...bestandOhneAmtlich] });
+      } else {
+        nichtErhoben.push({
+          partei,
+          gesuchtAls: key,
+          amtlich,
+          grund: imBestand.has(key)
+            ? 'zuletzt nicht mehr erhoben, im aelteren Bestand aber vorhanden'
+            : 'von keinem Institut einzeln erhoben',
+        });
+      }
       continue;
     }
     zeilen.push({
@@ -99,6 +157,7 @@ export function nachkontrolle(surveys, wahl, trendConfig, aliasse = {}) {
     verwendeteUmfragen: trend.surveysUsed,
     zeilen,
     ohneUmfragewert,
+    nichtErhoben,
     ohneAmtlichenWert,
     mittlererFehler,
     groesster,

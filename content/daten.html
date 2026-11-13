@@ -2,7 +2,7 @@
 <p class="lede">Der gesamte Bestand steht als JSON und CSV bereit. Kein Login, kein Schluessel, keine Begrenzung.</p>
 
 <ul class="linklist">
-  <li><a href="/daten/wahlwerk.json">wahlwerk.json</a><span class="meta">alle Umfragen und alle berechneten Trends</span></li>
+  <li><a href="/daten/wahlwerk.json">wahlwerk.json</a><span class="meta">Umfragen, Trends und amtliche Wahlergebnisse</span></li>
   <li><a href="/daten/umfragen.csv">umfragen.csv</a><span class="meta">Semikolon getrennt, UTF-8 mit BOM, Dezimalkomma</span></li>
   <li><a href="/feed.xml">feed.xml</a><span class="meta">RSS mit den 50 zuletzt veroeffentlichten Umfragen</span></li>
 </ul>
@@ -10,6 +10,11 @@
 <h2>Lizenz und Pflichten bei Weiterverwendung</h2>
 <p>Diese Daten sind eine abgeleitete Datenbank auf Grundlage von dawum.de und stehen unter der <a href="https://opendatacommons.org/licenses/odbl/1-0/" rel="license external">ODC Open Database License (ODbL) 1.0</a>. Wer sie weiterverwendet, muss dawum.de und die Lizenz nennen und verlinken. Wer daraus eine eigene Datenbank baut und veroeffentlicht, muss diese ebenfalls unter ODbL stellen. Der Code dieser Website steht getrennt davon unter der AGPL-3.0.</p>
 <p>Die Umfragen selbst stammen von den jeweils genannten Instituten. Die Lizenz betrifft die Datenbank, nicht die Urheberschaft an den Erhebungen.</p>
+
+<h3>Amtliche Wahlergebnisse: andere Rechtslage</h3>
+<p>Der Abschnitt <code>elections</code> in der JSON-Datei enthaelt amtliche Wahlergebnisse. Fuer sie gilt die ODbL <strong>nicht</strong>. Amtliche Werke sind nach Paragraf 5 UrhG gemeinfrei und damit ohne Einschraenkung und ohne Attributionspflicht verwendbar. Sie sind deshalb kein Bestandteil der abgeleiteten Datenbank, und wer sie uebernimmt, loest damit keine ODbL-Pflichten aus.</p>
+<p>Die Datei weist das im Feld <code>_lizenzhinweis</code> ausdruecklich aus. Beides in einen Topf zu werfen, wuerde die Lizenzlage beider Quellen falsch wiedergeben: Es wuerde einerseits Pflichten fuer gemeinfreie Daten behaupten, die nicht bestehen, und andererseits die tatsaechlich bestehende Attributionspflicht fuer die Umfragedaten verwaessern.</p>
+<p>Zu jedem amtlichen Ergebnis gehoeren ein Statusblock, der sagt, ob es sich um ein vorlaeufiges oder ein endgueltiges Ergebnis handelt, und ein Quellenblock mit Herausgeber, Fundstelle und den Pruefsummen der eingelesenen Rohdateien.</p>
 
 <h2>Felder in der CSV</h2>
 <div class="table-scroll"><table>

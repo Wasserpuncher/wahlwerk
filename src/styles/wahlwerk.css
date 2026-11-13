@@ -117,6 +117,9 @@ h3 { font-size: var(--step-1); margin: 1.5rem 0 0.4rem; }
 .card { background: var(--card); border: 1px solid var(--rule); padding: 1rem; }
 .card h3 { margin-top: 0; }
 .card p { margin-bottom: 0; color: var(--muted); font-size: 0.9rem; }
+/* Sagt, worauf die Balken darunter beruhen: amtliches Ergebnis oder Trend aus
+   Umfragen. Ohne diese Zeile sehen beide Faelle identisch aus. */
+.card-kicker { margin: -0.35rem 0 0.6rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 
 /* Balken */
 .bar-row { display: grid; grid-template-columns: 6.5rem 1fr 4.5rem; align-items: center; gap: 0.6rem; padding-block: 0.22rem; }
@@ -141,6 +144,19 @@ th, td { padding: 0.42rem 0.6rem; text-align: right; border-bottom: 1px solid va
 th:first-child, td:first-child, th.left, td.left { text-align: left; }
 thead th { position: sticky; top: 0; background: var(--card); border-bottom: 2px solid var(--rule-strong); font-weight: 600; }
 tbody tr:hover { background: var(--accent-soft); }
+
+/* Hervorgehobene Tabellenzeile fuer einen inhaltlich bemerkenswerten Fall,
+   etwa eine Partei, bei der Umfrage und amtliches Ergebnis auf verschiedenen
+   Seiten der Sperrklausel liegen. Der Farbstreifen links traegt die Aussage
+   nicht allein: die Tabelle nennt den Sachverhalt in eigenen Spalten, und der
+   Hinweiskasten darunter benennt die betroffenen Parteien im Text. Farbe ist
+   hier also Zugabe, nicht Traeger der Information. */
+tbody tr.row-flag { background: var(--warn-bg); color: var(--warn-ink); }
+tbody tr.row-flag td:first-child { box-shadow: inset 3px 0 0 var(--warn-rule); }
+tbody tr.row-flag:hover { background: var(--warn-bg); }
+
+/* Herkunftsvermerk in einer Tabellenzelle, etwa "abgeleitet". */
+td .meta { color: var(--muted); font-size: 0.76rem; font-family: var(--font-num); white-space: nowrap; }
 
 /* Belegblock: Herkunftsangaben zu einer Zahl */
 .provenance { border-left: 3px solid var(--accent); padding: 0.75rem 1rem; background: var(--card); font-size: 0.86rem; }
